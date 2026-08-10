@@ -6,8 +6,7 @@ export const metadata: Metadata = {
   description: 'Get in touch with Chambé.',
 };
 
-// Placeholder contact address — swap for the real shared inbox before
-// launch. Deliberately not using a personal email here.
+// Matches the address used in the Privacy Policy and Terms of Service.
 const CONTACT_EMAIL = 'hello@chambe.ca';
 
 export default function ContactPage() {
