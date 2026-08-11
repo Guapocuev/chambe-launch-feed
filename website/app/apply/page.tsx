@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
 import { ApplyForm } from './ApplyForm';
+import { pageMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: 'Become a Contractor',
-  description: 'Apply to join the Chambé contractor network in Toronto and the GTA.',
-};
+export const metadata: Metadata = pageMetadata(
+  'Become a Contractor',
+  'Apply to join the Chambé contractor network in Toronto and the GTA.',
+  '/apply',
+);
 
 export default function ApplyPage() {
   return (

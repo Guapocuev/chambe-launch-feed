@@ -13,9 +13,23 @@ function ImagePane({ label, src }: { label: string; src?: string }) {
   );
 }
 
-function ProjectCard({ project }: { project: GalleryProject }) {
+function ProjectCard({
+  project,
+  active,
+  onSelect,
+}: {
+  project: GalleryProject;
+  active: boolean;
+  onSelect?: (id: string) => void;
+}) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-border bg-background">
+    <button
+      type="button"
+      onClick={() => onSelect?.(project.id)}
+      className={`w-full overflow-hidden rounded-2xl border bg-background text-left transition ${
+        active ? 'border-accent ring-2 ring-accent/30' : 'border-border hover:border-foreground/20'
+      }`}
+    >
       <div className="grid grid-cols-2 gap-px bg-border">
         <div className="aspect-square">
           <ImagePane label="Before" src={project.beforeImage} />
@@ -27,30 +41,33 @@ function ProjectCard({ project }: { project: GalleryProject }) {
       <div className="p-5">
         <div className="text-xs font-semibold uppercase tracking-wide text-accent">{project.trade}</div>
         <h3 className="mt-1 text-lg font-semibold text-foreground">{project.title}</h3>
-        <p className="mt-1 text-sm text-foreground/60">{project.location}</p>
+        <p className="mt-1 text-sm text-foreground/60">{project.neighborhood}</p>
         <p className="mt-3 text-sm text-foreground/80">{project.description}</p>
       </div>
-    </div>
+    </button>
   );
 }
 
-/**
- * Renders the before/after gallery from lib/gallery-data.ts's array. That
- * file ships empty (no real project photos exist yet) — this shows a
- * designed empty state instead of fake placeholder projects.
- */
-export function GalleryGrid({ projects }: { projects: GalleryProject[] }) {
+export function GalleryGrid({
+  projects,
+  activeProjectId,
+  onProjectSelect,
+}: {
+  projects: GalleryProject[];
+  activeProjectId?: string | null;
+  onProjectSelect?: (id: string) => void;
+}) {
   if (projects.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-border bg-surface px-8 py-16 text-center">
         <h3 className="text-lg font-semibold text-foreground">Our first projects are in progress</h3>
         <p className="mx-auto mt-2 max-w-md text-sm text-foreground/70">
-          We&apos;re just getting started — real before/after photos from Chambé jobs will show up here
-          as our contractors complete their first projects. Check back soon.
+          Real before/after photos from Chambé jobs will show up here — and as pins on the map
+          above — as contractors complete their first projects.
         </p>
         <Link
           href="/get-a-quote"
-          className="mt-6 inline-block rounded-full bg-accent px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-accent-dark"
+          className="mt-6 inline-block rounded-full bg-accent px-6 py-2.5 text-sm font-semibold text-brand transition hover:bg-accent-dark"
         >
           Be one of our first projects
         </Link>
@@ -61,7 +78,12 @@ export function GalleryGrid({ projects }: { projects: GalleryProject[] }) {
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {projects.map((project) => (
-        <ProjectCard key={project.id} project={project} />
+        <ProjectCard
+          key={project.id}
+          project={project}
+          active={activeProjectId === project.id}
+          onSelect={onProjectSelect}
+        />
       ))}
     </div>
   );

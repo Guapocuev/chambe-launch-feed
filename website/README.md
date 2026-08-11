@@ -52,3 +52,6 @@ Site: http://localhost:3001
   needs to change.
 - **Privacy/Terms**: structural placeholders only. Do not treat as real policy — see the
   draft banner on each page.
+
+**Conversion improvements:** see [`IMPROVEMENTS.md`](IMPROVEMENTS.md) for the full ROI
+audit, what's shipped (Batches A–C partial), what's blocked, and what's next.

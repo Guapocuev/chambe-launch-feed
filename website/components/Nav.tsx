@@ -3,11 +3,14 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
+import { Logo } from '@/components/Logo';
+import { trackEvent } from '@/lib/analytics';
+import { CONTACT_PHONE, CONTACT_PHONE_TEL } from '@/lib/site';
 
 const LINKS = [
   { href: '/how-it-works', label: 'How It Works' },
   { href: '/about', label: 'About' },
-  { href: '/gallery', label: 'Gallery' },
+  { href: '/gallery', label: 'Past Work' },
   { href: '/contact', label: 'Contact' },
 ];
 
@@ -18,9 +21,7 @@ export function Nav() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/" className="text-xl font-bold tracking-tight text-brand dark:text-brand">
-          Chambé
-        </Link>
+        <Logo size="lg" />
 
         <nav className="hidden items-center gap-8 md:flex">
           {LINKS.map((link) => (
@@ -37,6 +38,15 @@ export function Nav() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
+          {CONTACT_PHONE && (
+            <a
+              href={CONTACT_PHONE_TEL}
+              onClick={() => trackEvent({ name: 'phone_click', params: { location: 'nav_desktop' } })}
+              className="text-sm font-medium text-foreground/80 transition hover:text-brand"
+            >
+              {CONTACT_PHONE}
+            </a>
+          )}
           <Link
             href="/apply"
             className="text-sm font-medium text-foreground/80 transition hover:text-brand"
@@ -45,7 +55,13 @@ export function Nav() {
           </Link>
           <Link
             href="/get-a-quote"
-            className="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-accent-dark"
+            onClick={() =>
+              trackEvent({
+                name: 'cta_click',
+                params: { location: 'nav_desktop', label: 'Get a Free Estimate', href: '/get-a-quote' },
+              })
+            }
+            className="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-brand transition hover:bg-accent-dark"
           >
             Get a Free Estimate
           </Link>
@@ -79,6 +95,18 @@ export function Nav() {
               {link.label}
             </Link>
           ))}
+          {CONTACT_PHONE && (
+            <a
+              href={CONTACT_PHONE_TEL}
+              onClick={() => {
+                trackEvent({ name: 'phone_click', params: { location: 'nav_mobile_menu' } });
+                setOpen(false);
+              }}
+              className="rounded-md px-2 py-2 text-sm font-medium text-foreground/80 hover:bg-surface"
+            >
+              Call {CONTACT_PHONE}
+            </a>
+          )}
           <Link
             href="/apply"
             onClick={() => setOpen(false)}
@@ -88,8 +116,14 @@ export function Nav() {
           </Link>
           <Link
             href="/get-a-quote"
-            onClick={() => setOpen(false)}
-            className="mt-2 rounded-full bg-accent px-5 py-2.5 text-center text-sm font-semibold text-white"
+            onClick={() => {
+              trackEvent({
+                name: 'cta_click',
+                params: { location: 'nav_mobile_menu', label: 'Get a Free Estimate', href: '/get-a-quote' },
+              });
+              setOpen(false);
+            }}
+            className="mt-2 rounded-full bg-accent px-5 py-2.5 text-center text-sm font-semibold text-brand"
           >
             Get a Free Estimate
           </Link>

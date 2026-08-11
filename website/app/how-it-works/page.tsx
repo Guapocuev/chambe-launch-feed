@@ -1,17 +1,19 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { pageMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: 'How It Works',
-  description: 'From describing your job to a vetted contractor showing up — how Chambé works, step by step.',
-};
+export const metadata: Metadata = pageMetadata(
+  'How It Works',
+  'From describing your job to a vetted contractor showing up — how Chambé works, step by step.',
+  '/how-it-works',
+);
 
 const STEPS = [
   {
     number: '1',
     title: 'Tell us the job',
     description:
-      "Describe what needs fixing in your own words — a leaky faucet, a dead outlet, a fence that needs rebuilding. Add a few photos if you have them and your address. It takes about two minutes, and there's no account to create.",
+      "Describe what needs fixing in your own words — a leaky faucet, a dead outlet, a fence that needs rebuilding. Add your address. It takes about two minutes, and there's no account to create.",
   },
   {
     number: '2',
@@ -39,7 +41,7 @@ export default function HowItWorksPage() {
       <div className="mt-14 space-y-10">
         {STEPS.map((step) => (
           <div key={step.number} className="flex gap-6">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand text-lg font-bold text-white">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-accent text-lg font-bold text-brand">
               {step.number}
             </div>
             <div>
@@ -55,7 +57,7 @@ export default function HowItWorksPage() {
         <p className="mt-2 text-foreground/70">It takes about two minutes and costs nothing.</p>
         <Link
           href="/get-a-quote"
-          className="mt-6 inline-block rounded-full bg-accent px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-accent-dark"
+          className="mt-6 inline-block rounded-full bg-accent px-7 py-3.5 text-sm font-semibold text-brand transition hover:bg-accent-dark"
         >
           Get a Free Estimate
         </Link>

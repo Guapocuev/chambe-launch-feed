@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { pageMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: 'About',
-  description: 'Why Chambé exists and how we vet the contractors on our platform.',
-};
+export const metadata: Metadata = pageMetadata(
+  'About',
+  'Why Chambé exists and how we vet the contractors on our platform.',
+  '/about',
+);
 
 export default function AboutPage() {
   return (

@@ -1,11 +1,16 @@
 'use client';
 
 import { useActionState } from 'react';
+import { FormTrustNote } from '@/components/FormTrustNote';
+import { PhoneField, ValidatedTextField } from '@/components/FormFields';
+import { ApplySuccessTimeline } from '@/components/PostSubmitTimeline';
 import { SubmitButton } from '@/components/SubmitButton';
+import { useFormAnalytics } from '@/hooks/useFormAnalytics';
+import { isValidEmail, isValidName } from '@/lib/phone';
 import { initialApplyFormState, submitContractorApplication } from './actions';
 
 const inputClass =
-  'w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-foreground/40 focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand';
+  'w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-foreground/40 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent';
 
 const labelClass = 'block text-sm font-medium text-foreground';
 
@@ -17,41 +22,49 @@ const TRADES = [
 
 export function ApplyForm() {
   const [state, formAction] = useActionState(submitContractorApplication, initialApplyFormState);
+  const { markStarted } = useFormAnalytics('apply', state.status);
 
   if (state.status === 'success') {
     return (
-      <div className="rounded-2xl border border-brand/30 bg-brand/5 p-8">
+      <div className="rounded-2xl border border-accent/30 bg-accent/5 p-8">
         <h2 className="text-xl font-semibold text-foreground">Application received!</h2>
         <p className="mt-2 text-sm text-foreground/70">
-          Thanks for applying to Chambé. Our team reviews every application by hand — we&apos;ll be
-          in touch about next steps and vetting.
+          Thanks for applying to Chambé. Our team reviews every application by hand.
         </p>
+        <ApplySuccessTimeline />
       </div>
     );
   }
 
   return (
-    <form action={formAction} className="space-y-5">
+    <form action={formAction} className="space-y-5" onFocusCapture={markStarted}>
       {state.status === 'error' && (
         <div className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
           {state.message}
         </div>
       )}
 
-      <div>
-        <label htmlFor="full_name" className={labelClass}>Full name</label>
-        <input id="full_name" name="full_name" type="text" required autoComplete="name" className={`mt-1.5 ${inputClass}`} />
-      </div>
+      <ValidatedTextField
+        id="full_name"
+        name="full_name"
+        label="Full name"
+        required
+        autoComplete="name"
+        validate={isValidName}
+        errorMessage="Please enter your full name."
+      />
 
       <div className="grid gap-5 sm:grid-cols-2">
-        <div>
-          <label htmlFor="phone" className={labelClass}>Phone number</label>
-          <input id="phone" name="phone" type="tel" required autoComplete="tel" placeholder="(647) 555-0199" className={`mt-1.5 ${inputClass}`} />
-        </div>
-        <div>
-          <label htmlFor="email" className={labelClass}>Email (optional)</label>
-          <input id="email" name="email" type="email" autoComplete="email" className={`mt-1.5 ${inputClass}`} />
-        </div>
+        <PhoneField id="phone" name="phone" />
+        <ValidatedTextField
+          id="email"
+          name="email"
+          label="Email (optional)"
+          type="email"
+          autoComplete="email"
+          validate={isValidEmail}
+          errorMessage="Please enter a valid email address."
+        />
       </div>
 
       <fieldset>
@@ -67,7 +80,9 @@ export function ApplyForm() {
       </fieldset>
 
       <div>
-        <label htmlFor="service_area" className={labelClass}>Service area</label>
+        <label htmlFor="service_area" className={labelClass}>
+          Service area
+        </label>
         <input
           id="service_area"
           name="service_area"
@@ -79,12 +94,23 @@ export function ApplyForm() {
       </div>
 
       <div>
-        <label htmlFor="years_experience" className={labelClass}>Years of experience</label>
-        <input id="years_experience" name="years_experience" type="number" min="0" step="1" className={`mt-1.5 ${inputClass}`} />
+        <label htmlFor="years_experience" className={labelClass}>
+          Years of experience
+        </label>
+        <input
+          id="years_experience"
+          name="years_experience"
+          type="number"
+          min="0"
+          step="1"
+          className={`mt-1.5 ${inputClass}`}
+        />
       </div>
 
       <div>
-        <label htmlFor="notes" className={labelClass}>Anything else we should know?</label>
+        <label htmlFor="notes" className={labelClass}>
+          Anything else we should know?
+        </label>
         <textarea
           id="notes"
           name="notes"
@@ -94,7 +120,17 @@ export function ApplyForm() {
         />
       </div>
 
+      <FormTrustNote variant="contractor" />
+
       <SubmitButton>Submit Application</SubmitButton>
+
+      <p className="text-center text-xs text-foreground/50">
+        By submitting, you agree to our{' '}
+        <a href="/privacy" className="underline hover:text-brand">
+          Privacy Policy
+        </a>
+        .
+      </p>
     </form>
   );
 }

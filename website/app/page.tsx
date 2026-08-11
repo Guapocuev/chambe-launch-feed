@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { GalleryGrid } from '@/components/GalleryGrid';
+import { MapTeaser } from '@/components/MapTeaser';
 import { galleryProjects } from '@/lib/gallery-data';
 
 const STEPS = [
@@ -7,7 +8,7 @@ const STEPS = [
     number: '1',
     title: 'Tell us the job',
     description:
-      'Describe what needs fixing, add a few photos if you have them, and share your address. Takes about two minutes.',
+      'Describe what needs fixing and share your address. Takes about two minutes.',
   },
   {
     number: '2',
@@ -41,7 +42,7 @@ export default function Home() {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
                 href="/get-a-quote"
-                className="rounded-full bg-accent px-7 py-3.5 text-center text-sm font-semibold text-white transition hover:bg-accent-dark"
+                className="rounded-full bg-accent px-7 py-3.5 text-center text-sm font-semibold text-brand transition hover:bg-accent-dark"
               >
                 Get a Free Estimate
               </Link>
@@ -53,8 +54,8 @@ export default function Home() {
               </Link>
             </div>
           </div>
-          <div className="hidden justify-self-end rounded-3xl bg-brand/10 p-10 md:block">
-            <div className="rounded-2xl bg-background p-6 shadow-sm">
+          <div className="hidden justify-self-end rounded-3xl bg-brand/5 p-10 md:block">
+            <div className="rounded-2xl border border-border bg-background p-6 shadow-sm">
               <div className="text-xs font-semibold uppercase tracking-wide text-accent">
                 Instant estimate
               </div>
@@ -79,7 +80,7 @@ export default function Home() {
         <div className="mt-12 grid gap-8 md:grid-cols-3">
           {STEPS.map((step) => (
             <div key={step.number} className="rounded-2xl border border-border p-6">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand text-sm font-bold text-white">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-sm font-bold text-brand">
                 {step.number}
               </div>
               <h3 className="mt-4 text-lg font-semibold text-foreground">{step.title}</h3>
@@ -111,6 +112,8 @@ export default function Home() {
         </div>
       </section>
 
+      <MapTeaser />
+
       {/* Gallery teaser */}
       <section className="mx-auto max-w-6xl px-6 py-20">
         <div className="flex items-end justify-between gap-4">
@@ -119,7 +122,7 @@ export default function Home() {
             <p className="mt-2 text-foreground/70">A look at recent work from Chambé contractors.</p>
           </div>
           <Link href="/gallery" className="hidden shrink-0 text-sm font-semibold text-brand hover:underline sm:block">
-            View full gallery →
+            Explore past work →
           </Link>
         </div>
         <div className="mt-10">
@@ -128,15 +131,15 @@ export default function Home() {
       </section>
 
       {/* Bottom CTA */}
-      <section className="bg-brand">
+      <section className="bg-inverse">
         <div className="mx-auto max-w-3xl px-6 py-16 text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-white">Ready to get it fixed?</h2>
-          <p className="mt-3 text-brand-dark/90 text-white/80">
+          <h2 className="text-3xl font-bold tracking-tight text-inverse-foreground">Ready to get it fixed?</h2>
+          <p className="mt-3 text-inverse-foreground/70">
             Get a free, instant estimate — no account, no phone call required.
           </p>
           <Link
             href="/get-a-quote"
-            className="mt-6 inline-block rounded-full bg-white px-7 py-3.5 text-sm font-semibold text-brand transition hover:bg-white/90"
+            className="mt-6 inline-block rounded-full bg-accent px-7 py-3.5 text-sm font-semibold text-brand transition hover:bg-accent-dark"
           >
             Get a Free Estimate
           </Link>

@@ -1,14 +1,17 @@
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
 
 :root {
   --background: #ffffff;
-  --foreground: #14231f;
-  --brand: #0f4c4a;
-  --brand-dark: #0a3432;
-  --accent: #e8873a;
-  --accent-dark: #c96f28;
-  --surface: #f6f4ef;
-  --border: #e4e0d6;
+  --foreground: #0d0d0d;
+  --brand: #111111;
+  --brand-dark: #000000;
+  --accent: #f2c94c;
+  --accent-dark: #d4ad3a;
+  --surface: #f5f5f5;
+  --border: #e0e0e0;
+  --inverse: #111111;
+  --inverse-foreground: #ffffff;
 }
 
 @theme inline {
@@ -20,19 +23,30 @@
   --color-accent-dark: var(--accent-dark);
   --color-surface: var(--surface);
   --color-border: var(--border);
+  --color-inverse: var(--inverse);
+  --color-inverse-foreground: var(--inverse-foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0b1512;
-    --foreground: #eef2f0;
-    --brand: #4fb3ae;
-    --brand-dark: #a7e0db;
-    --surface: #101c19;
-    --border: #223531;
+    --background: #0a0a0a;
+    --foreground: #f2f2f2;
+    --brand: #f2f2f2;
+    --brand-dark: #ffffff;
+    --accent: #f2c94c;
+    --accent-dark: #d4ad3a;
+    --surface: #141414;
+    --border: #2e2e2e;
+    --inverse: #111111;
+    --inverse-foreground: #ffffff;
   }
+}
+
+.leaflet-container {
+  font-family: inherit;
+  z-index: 0;
 }
 
 body {
