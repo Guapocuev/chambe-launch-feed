@@ -9,6 +9,9 @@ original Webflow site. Next.js 16 (App Router) + TypeScript + Tailwind CSS 4.
 - `/get-a-quote` — client job intake form. Replaces the old Tally form; submits to the
   Demand Engine's `POST /webhooks/tally-intake` (see `app/get-a-quote/actions.ts`) with the
   exact field names `demand-engine/src/services/tally-normalize.service.ts` expects.
+  Returning homeowners can be looked up server-side via `lookupClientAction`
+  (`app/get-a-quote/lookupClient.ts`) → Demand Engine `POST /clients/lookup`
+  (exact E.164 phone match; name/email/address only).
 - `/apply` — contractor application form (new — didn't exist before this). Submits to the
   Demand Engine's `POST /contractors/apply` (see `app/apply/actions.ts`), added on the
   Chambe-mvp `contractor-application-endpoint` branch.
