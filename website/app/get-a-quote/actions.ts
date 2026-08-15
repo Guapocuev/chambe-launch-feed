@@ -1,6 +1,6 @@
 'use server';
 
-import { DEMAND_ENGINE_URL } from '@/lib/config';
+import { DEMAND_ENGINE_API_KEY, DEMAND_ENGINE_URL } from '@/lib/config';
 
 /**
  * Submits the job request form to the Demand Engine's
@@ -52,7 +52,7 @@ export async function submitJobRequest(
   try {
     const res = await fetch(`${DEMAND_ENGINE_URL}/webhooks/tally-intake`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-Api-Key': DEMAND_ENGINE_API_KEY },
       body: JSON.stringify(payload),
       signal: AbortSignal.timeout(20_000),
     });
