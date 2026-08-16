@@ -2,7 +2,7 @@
 
 import { useActionState } from 'react';
 import { FormTrustNote } from '@/components/FormTrustNote';
-import { PhoneField, ValidatedTextField } from '@/components/FormFields';
+import { FormErrorBanner, PhoneField, ValidatedTextField } from '@/components/FormFields';
 import { ApplySuccessTimeline } from '@/components/PostSubmitTimeline';
 import { SubmitButton } from '@/components/SubmitButton';
 import { useFormAnalytics } from '@/hooks/useFormAnalytics';
@@ -31,6 +31,13 @@ export function ApplyForm() {
         <p className="mt-2 text-sm text-foreground/70">
           Thanks for applying to Chambé. Our team reviews every application by hand.
         </p>
+        {state.contact?.phone && (
+          <p className="mt-2 text-sm text-foreground/70">
+            {state.contact.email
+              ? `We'll follow up at ${state.contact.phone} and ${state.contact.email}.`
+              : `We'll follow up at ${state.contact.phone}.`}
+          </p>
+        )}
         <ApplySuccessTimeline />
       </div>
     );
@@ -38,11 +45,7 @@ export function ApplyForm() {
 
   return (
     <form action={formAction} className="space-y-5" onFocusCapture={markStarted}>
-      {state.status === 'error' && (
-        <div className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
-          {state.message}
-        </div>
-      )}
+      {state.status === 'error' && state.message && <FormErrorBanner message={state.message} />}
 
       <ValidatedTextField
         id="full_name"
