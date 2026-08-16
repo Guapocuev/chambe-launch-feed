@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { formatPhoneInput, isValidEmail, isValidName, isValidPhone } from '@/lib/phone';
+import { CONTACT_EMAIL } from '@/lib/site';
 
 const inputBase =
   'w-full rounded-lg border bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-1';
@@ -117,6 +118,29 @@ export function ValidatedTextField({
 }
 
 export { isValidEmail, isValidName, isValidPhone };
+
+const errorBannerClass =
+  'rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-300';
+
+/** Server/network error banner. Turns hello@chambe.ca into a mailto link. */
+export function FormErrorBanner({ message }: { message: string }) {
+  const escaped = CONTACT_EMAIL.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const parts = message.split(new RegExp(`(${escaped})`));
+
+  return (
+    <div className={errorBannerClass} role="alert">
+      {parts.map((part, i) =>
+        part === CONTACT_EMAIL ? (
+          <a key={i} href={`mailto:${CONTACT_EMAIL}`} className="underline underline-offset-2">
+            {CONTACT_EMAIL}
+          </a>
+        ) : (
+          <span key={i}>{part}</span>
+        ),
+      )}
+    </div>
+  );
+}
 
 /** Lazy-mount children when the wrapper scrolls into view. */
 export function LazyWhenVisible({

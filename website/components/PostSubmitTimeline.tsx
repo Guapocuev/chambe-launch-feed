@@ -41,27 +41,50 @@ export function PostSubmitTimeline({ steps }: PostSubmitTimelineProps) {
   );
 }
 
-/** Default homeowner post-submit steps for the quote form. */
-export function QuoteSuccessTimeline() {
+export const CONTRACTOR_FOLLOWUP =
+  'Expect a call or text — usually within the hour during business hours.';
+
+/** Homeowner post-submit steps. Use hasEstimate only when a price is actually on screen. */
+export function QuoteSuccessTimeline({ hasEstimate }: { hasEstimate: boolean }) {
   return (
     <PostSubmitTimeline
-      steps={[
-        {
-          title: 'Estimate received',
-          description: 'Your price range is locked in based on the job details you provided.',
-          status: 'done',
-        },
-        {
-          title: 'Matching a vetted contractor',
-          description: 'We are finding a licensed, insured pro in your neighbourhood right now.',
-          status: 'active',
-        },
-        {
-          title: 'Contractor reaches out',
-          description: 'Expect a call or text — usually within the hour during business hours.',
-          status: 'upcoming',
-        },
-      ]}
+      steps={
+        hasEstimate
+          ? [
+              {
+                title: 'Estimate received',
+                description: 'Your price range is locked in based on the job details you provided.',
+                status: 'done',
+              },
+              {
+                title: 'Matching a vetted contractor',
+                description: 'We are finding a licensed, insured pro in your neighbourhood right now.',
+                status: 'active',
+              },
+              {
+                title: 'Contractor reaches out',
+                description: CONTRACTOR_FOLLOWUP,
+                status: 'upcoming',
+              },
+            ]
+          : [
+              {
+                title: 'Request received',
+                description: 'Your job details are in. We are still preparing your estimate.',
+                status: 'done',
+              },
+              {
+                title: 'Preparing your estimate',
+                description: 'A price range will follow as soon as it is ready.',
+                status: 'active',
+              },
+              {
+                title: 'Contractor reaches out',
+                description: CONTRACTOR_FOLLOWUP,
+                status: 'upcoming',
+              },
+            ]
+      }
     />
   );
 }
@@ -82,8 +105,8 @@ export function ApplySuccessTimeline() {
           status: 'active',
         },
         {
-          title: 'Onboarding follow-up',
-          description: 'We will reach out within one business day about next steps.',
+          title: 'Review outcome',
+          description: "We'll follow up either way — typically within one business day.",
           status: 'upcoming',
         },
       ]}

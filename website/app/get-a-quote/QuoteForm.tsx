@@ -1,9 +1,10 @@
 'use client';
 
-import { useActionState, useState } from 'react';
+import { useActionState, useEffect, useRef, useState } from 'react';
+import { FormErrorBanner } from '@/components/FormFields';
 import { FormStepProgress } from '@/components/FormStepProgress';
 import { FormTrustNote } from '@/components/FormTrustNote';
-import { QuoteSuccessTimeline } from '@/components/PostSubmitTimeline';
+import { CONTRACTOR_FOLLOWUP, QuoteSuccessTimeline } from '@/components/PostSubmitTimeline';
 import { SubmitButton } from '@/components/SubmitButton';
 import { useFormAnalytics } from '@/hooks/useFormAnalytics';
 import {
@@ -12,7 +13,11 @@ import {
   isValidName,
   isValidPhone,
 } from '@/lib/phone';
-import { initialQuoteFormState, submitJobRequest } from './actions';
+import { reverseGeocode } from '@/lib/reverse-geocode';
+import { submitJobRequest } from './actions';
+import { initialQuoteFormState } from './quote-form-state';
+
+type LocationStatus = 'prompting' | 'suggested' | 'declined' | 'unavailable' | 'idle';
 
 const inputClass =
   'w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-foreground/40 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent';
@@ -47,51 +52,92 @@ function fieldClass(hasError: boolean) {
   return `${inputClass} ${hasError ? 'border-red-400 focus:border-red-400 focus:ring-red-400/30' : ''}`;
 }
 
+function FieldError({ id, show, children }: { id: string; show: boolean; children: string }) {
+  if (!show) return null;
+  return (
+    <p id={id} className="mt-1.5 text-xs text-red-600" role="alert">
+      {children}
+    </p>
+  );
+}
+
 export function QuoteForm() {
   const [state, formAction] = useActionState(submitJobRequest, initialQuoteFormState);
   const { markStarted } = useFormAnalytics('quote', state.status);
   const [step, setStep] = useState(1);
   const [values, setValues] = useState<FormValues>(INITIAL);
-  const [stepError, setStepError] = useState<string | null>(null);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [locationStatus, setLocationStatus] = useState<LocationStatus>('prompting');
+  const [suggestedAddress, setSuggestedAddress] = useState<string | null>(null);
+  const addressInputRef = useRef<HTMLInputElement>(null);
+  const addressEditedRef = useRef(false);
 
   const set = (key: keyof FormValues, value: string) => {
+    if (key === 'address') addressEditedRef.current = true;
     setValues((v) => ({ ...v, [key]: value }));
-    setStepError(null);
+  };
+
+  useEffect(() => {
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+      setLocationStatus('unavailable');
+      return;
+    }
+
+    let cancelled = false;
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const suggestion = await reverseGeocode(pos.coords.latitude, pos.coords.longitude);
+        if (cancelled) return;
+        if (!suggestion) {
+          setLocationStatus('unavailable');
+          return;
+        }
+        setSuggestedAddress(suggestion);
+        setLocationStatus('suggested');
+        if (!addressEditedRef.current) {
+          setValues((v) => (v.address.trim() ? v : { ...v, address: suggestion }));
+        }
+      },
+      (err) => {
+        if (cancelled) return;
+        setLocationStatus(err.code === err.PERMISSION_DENIED ? 'declined' : 'unavailable');
+      },
+      { enableHighAccuracy: false, timeout: 10_000, maximumAge: 5 * 60_000 },
+    );
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const clearSuggestedAddress = () => {
+    addressEditedRef.current = true;
+    setSuggestedAddress(null);
+    set('address', '');
+    setLocationStatus('idle');
+    requestAnimationFrame(() => addressInputRef.current?.focus());
+  };
+
+  const markTouched = (...keys: string[]) => {
+    setTouched((t) => {
+      const next = { ...t };
+      for (const key of keys) next[key] = true;
+      return next;
+    });
   };
 
   const validateStep = (s: number): boolean => {
     if (s === 1) {
-      if (!values.description.trim()) {
-        setStepError('Please describe what needs doing.');
-        return false;
-      }
-      return true;
+      markTouched('description');
+      return Boolean(values.description.trim());
     }
     if (s === 2) {
-      if (!values.address.trim()) {
-        setStepError('Please enter the job address.');
-        return false;
-      }
-      return true;
+      markTouched('address');
+      return Boolean(values.address.trim());
     }
     if (s === 3) {
-      if (!isValidName(values.fullName)) {
-        setStepError('Please enter your full name.');
-        setTouched({ fullName: true, phone: true, email: true });
-        return false;
-      }
-      if (!isValidPhone(values.phone)) {
-        setStepError('Please enter a valid 10-digit phone number.');
-        setTouched({ fullName: true, phone: true, email: true });
-        return false;
-      }
-      if (!isValidEmail(values.email)) {
-        setStepError('Please enter a valid email address.');
-        setTouched({ fullName: true, phone: true, email: true });
-        return false;
-      }
-      return true;
+      markTouched('fullName', 'phone', 'email');
+      return isValidName(values.fullName) && isValidPhone(values.phone) && isValidEmail(values.email);
     }
     return true;
   };
@@ -101,26 +147,33 @@ export function QuoteForm() {
   };
 
   const goBack = () => {
-    setStepError(null);
     setStep((s) => Math.max(s - 1, 1));
   };
+
+  const descriptionError = Boolean(touched.description && !values.description.trim());
+  const addressError = Boolean(touched.address && !values.address.trim());
+  const nameError = Boolean(touched.fullName && !isValidName(values.fullName));
+  const phoneError = Boolean(touched.phone && !isValidPhone(values.phone));
+  const emailError = Boolean(touched.email && !isValidEmail(values.email));
+  const hasEstimate =
+    typeof state.quote?.low === 'number' && typeof state.quote?.high === 'number';
 
   if (state.status === 'success') {
     return (
       <div className="rounded-2xl border border-accent/30 bg-accent/5 p-8">
         <h2 className="text-xl font-semibold text-foreground">You&apos;re all set!</h2>
-        {typeof state.quote?.low === 'number' && typeof state.quote?.high === 'number' && (
+        {hasEstimate && (
           <p className="mt-2 text-3xl font-bold text-accent">
-            ${state.quote.low} – ${state.quote.high}{' '}
+            ${state.quote?.low} – ${state.quote?.high}{' '}
             <span className="text-base font-normal text-foreground/60">CAD</span>
           </p>
         )}
         <p className="mt-3 text-sm text-foreground/70">
           {state.quote?.offers_sent
-            ? `We've matched your job with ${state.quote.offers_sent} nearby contractor${state.quote.offers_sent === 1 ? '' : 's'}. They'll be in touch shortly.`
-            : "We've logged your job and are lining up a contractor match — we'll be in touch shortly."}
+            ? `We've matched your job with ${state.quote.offers_sent} nearby contractor${state.quote.offers_sent === 1 ? '' : 's'}. ${CONTRACTOR_FOLLOWUP}`
+            : `We've logged your job and are lining up a contractor match. ${CONTRACTOR_FOLLOWUP}`}
         </p>
-        <QuoteSuccessTimeline />
+        <QuoteSuccessTimeline hasEstimate={hasEstimate} />
       </div>
     );
   }
@@ -130,7 +183,7 @@ export function QuoteForm() {
       <div className="rounded-2xl border border-accent/30 bg-accent/5 p-8">
         <h2 className="text-xl font-semibold text-foreground">Got it!</h2>
         <p className="mt-2 text-sm text-foreground/70">{state.message}</p>
-        <QuoteSuccessTimeline />
+        <QuoteSuccessTimeline hasEstimate={false} />
       </div>
     );
   }
@@ -139,17 +192,7 @@ export function QuoteForm() {
     <form action={formAction} className="space-y-5" onFocusCapture={markStarted}>
       <FormStepProgress current={step} />
 
-      {state.status === 'error' && (
-        <div className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
-          {state.message}
-        </div>
-      )}
-
-      {stepError && (
-        <div className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
-          {stepError}
-        </div>
-      )}
+      {state.status === 'error' && state.message && <FormErrorBanner message={state.message} />}
 
       {/* Hidden fields — always submitted with correct server-action names */}
       <input type="hidden" name="Detailed Job Description" value={values.description} />
@@ -177,9 +220,15 @@ export function QuoteForm() {
               rows={4}
               value={values.description}
               onChange={(e) => set('description', e.target.value)}
+              onBlur={() => markTouched('description')}
               placeholder="e.g. Kitchen outlet stopped working and sparks a little when I plug things in"
-              className={`mt-1.5 ${inputClass}`}
+              aria-invalid={descriptionError}
+              aria-describedby={descriptionError ? 'description-error' : undefined}
+              className={`mt-1.5 ${fieldClass(descriptionError)}`}
             />
+            <FieldError id="description-error" show={descriptionError}>
+              Please describe what needs doing.
+            </FieldError>
           </div>
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
@@ -215,6 +264,12 @@ export function QuoteForm() {
               </select>
             </div>
           </div>
+          {locationStatus === 'prompting' && (
+            <p className="rounded-lg border border-border bg-surface px-4 py-3 text-xs text-foreground/65">
+              Your browser may ask for location so we can suggest a starting address. That is
+              optional — you can always type the job address yourself.
+            </p>
+          )}
           <fieldset>
             <legend className={labelClass}>Is this affecting safety or causing damage?</legend>
             <div className="mt-2 flex gap-6">
@@ -241,23 +296,64 @@ export function QuoteForm() {
           <div>
             <h2 className="text-lg font-semibold text-foreground">Where is the job?</h2>
             <p className="mt-1 text-sm text-foreground/60">
-              We use this to match you with a contractor in your neighbourhood.
+              We use this to match you with a contractor in your neighbourhood. Location is only
+              a suggestion — type the real job address if this isn&apos;t it.
             </p>
           </div>
+          {locationStatus === 'prompting' && (
+            <p className="rounded-lg border border-border bg-surface px-4 py-3 text-xs text-foreground/65">
+              Asking for your current location to suggest a starting address. Decline anytime and
+              type it instead.
+            </p>
+          )}
+          {locationStatus === 'declined' && (
+            <p className="rounded-lg border border-border bg-surface px-4 py-3 text-xs text-foreground/65">
+              No problem — we don&apos;t need location access. Type the job address below.
+            </p>
+          )}
+          {locationStatus === 'unavailable' && (
+            <p className="rounded-lg border border-border bg-surface px-4 py-3 text-xs text-foreground/65">
+              We couldn&apos;t detect your location. Type the job address below.
+            </p>
+          )}
           <div>
             <label htmlFor="address" className={labelClass}>
               Job address
             </label>
             <input
+              ref={addressInputRef}
               id="address"
               type="text"
               required
               autoComplete="street-address"
               value={values.address}
               onChange={(e) => set('address', e.target.value)}
+              onBlur={() => markTouched('address')}
               placeholder="123 Queen St W, Toronto"
-              className={`mt-1.5 ${inputClass}`}
+              aria-invalid={addressError}
+              aria-describedby={
+                [addressError ? 'address-error' : null, 'address-hint'].filter(Boolean).join(' ') ||
+                undefined
+              }
+              className={`mt-1.5 ${fieldClass(addressError)}`}
             />
+            <p id="address-hint" className="mt-1.5 text-xs text-foreground/55">
+              {locationStatus === 'suggested' && suggestedAddress
+                ? 'Suggested from your current location. Edit freely — this is not locked.'
+                : 'Type or edit the address where the work will happen.'}
+            </p>
+            {locationStatus === 'suggested' && suggestedAddress && (
+              <button
+                type="button"
+                onClick={clearSuggestedAddress}
+                className="mt-2 text-sm font-semibold text-brand hover:underline"
+              >
+                This isn&apos;t where the job is
+              </button>
+            )}
+            <FieldError id="address-error" show={addressError}>
+              Please enter the job address.
+            </FieldError>
           </div>
         </div>
       )}
@@ -281,10 +377,14 @@ export function QuoteForm() {
               autoComplete="name"
               value={values.fullName}
               onChange={(e) => set('fullName', e.target.value)}
-              onBlur={() => setTouched((t) => ({ ...t, fullName: true }))}
-              aria-invalid={touched.fullName && !isValidName(values.fullName)}
-              className={`mt-1.5 ${fieldClass(touched.fullName && !isValidName(values.fullName))}`}
+              onBlur={() => markTouched('fullName')}
+              aria-invalid={nameError}
+              aria-describedby={nameError ? 'full-name-error' : undefined}
+              className={`mt-1.5 ${fieldClass(nameError)}`}
             />
+            <FieldError id="full-name-error" show={nameError}>
+              Please enter your full name.
+            </FieldError>
           </div>
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
@@ -299,11 +399,15 @@ export function QuoteForm() {
                 inputMode="tel"
                 value={values.phone}
                 onChange={(e) => set('phone', formatPhoneInput(e.target.value))}
-                onBlur={() => setTouched((t) => ({ ...t, phone: true }))}
+                onBlur={() => markTouched('phone')}
                 placeholder="(647) 555-0199"
-                aria-invalid={touched.phone && !isValidPhone(values.phone)}
-                className={`mt-1.5 ${fieldClass(touched.phone && !isValidPhone(values.phone))}`}
+                aria-invalid={phoneError}
+                aria-describedby={phoneError ? 'phone-error' : undefined}
+                className={`mt-1.5 ${fieldClass(phoneError)}`}
               />
+              <FieldError id="phone-error" show={phoneError}>
+                Please enter a valid 10-digit phone number.
+              </FieldError>
             </div>
             <div>
               <label htmlFor="email" className={labelClass}>
@@ -315,10 +419,14 @@ export function QuoteForm() {
                 autoComplete="email"
                 value={values.email}
                 onChange={(e) => set('email', e.target.value)}
-                onBlur={() => setTouched((t) => ({ ...t, email: true }))}
-                aria-invalid={touched.email && !isValidEmail(values.email)}
-                className={`mt-1.5 ${fieldClass(touched.email && !isValidEmail(values.email))}`}
+                onBlur={() => markTouched('email')}
+                aria-invalid={emailError}
+                aria-describedby={emailError ? 'email-error' : undefined}
+                className={`mt-1.5 ${fieldClass(emailError)}`}
               />
+              <FieldError id="email-error" show={emailError}>
+                Please enter a valid email address.
+              </FieldError>
             </div>
           </div>
         </div>

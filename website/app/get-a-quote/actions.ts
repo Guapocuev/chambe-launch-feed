@@ -1,6 +1,8 @@
 'use server';
 
 import { DEMAND_ENGINE_URL } from '@/lib/config';
+import { CONTACT_EMAIL } from '@/lib/site';
+import type { QuoteFormState } from './quote-form-state';
 
 /**
  * Submits the job request form to the Demand Engine's
@@ -10,20 +12,6 @@ import { DEMAND_ENGINE_URL } from '@/lib/config';
  * field() lookups check for (Chambe-mvp, same repo family). Don't rename
  * these keys without checking that file first.
  */
-
-export interface QuoteFormState {
-  status: 'idle' | 'success' | 'pending_retry' | 'error';
-  message?: string;
-  quote?: {
-    low: number;
-    high: number;
-    priority: string;
-    trade: string | null;
-    offers_sent: number;
-  };
-}
-
-export const initialQuoteFormState: QuoteFormState = { status: 'idle' };
 
 export async function submitJobRequest(
   _prevState: QuoteFormState,
@@ -75,7 +63,8 @@ export async function submitJobRequest(
     if (res.status === 202) {
       return {
         status: 'pending_retry',
-        message: "We've received your request and are finishing up your estimate — a Chambé team member will follow up shortly.",
+        message:
+          "We've received your request and are finishing up your estimate. A Chambé team member will follow up — usually within the hour during business hours.",
       };
     }
 
@@ -87,7 +76,7 @@ export async function submitJobRequest(
   } catch {
     return {
       status: 'error',
-      message: 'We could not reach the Chambé request service. Please try again shortly, or email us directly.',
+      message: `We could not reach the Chambé request service. Please try again shortly, or email ${CONTACT_EMAIL}.`,
     };
   }
 }
