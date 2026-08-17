@@ -1,7 +1,8 @@
 'use client';
 
-import { useActionState, useState } from 'react';
+import { useActionState, useCallback, useEffect, useRef, useState } from 'react';
 import { SubmitButton } from '@/components/SubmitButton';
+import { reverseGeocode } from '@/lib/reverse-geocode';
 import { checkReturningClient, initialQuoteFormState, submitJobRequest } from './actions';
 
 const inputClass =
@@ -16,6 +17,11 @@ interface Prefill {
 }
 
 type PhoneStage = 'entry' | 'checking' | 'ask-consent';
+
+// 'prompting'/'suggested'/'declined'/'unavailable' mirror the browser
+// Geolocation API's actual outcomes; 'idle' means "not asked yet" (still
+// on step 1) or "user cleared the suggestion and is typing their own."
+type LocationStatus = 'idle' | 'prompting' | 'suggested' | 'declined' | 'unavailable';
 
 export function QuoteForm() {
   const [state, formAction] = useActionState(submitJobRequest, initialQuoteFormState);
@@ -35,6 +41,33 @@ export function QuoteForm() {
   const [remember, setRemember] = useState(false);
   const [prefill, setPrefill] = useState<Prefill | null>(null);
   const [isReturning, setIsReturning] = useState(false);
+
+  // Address is controlled (not defaultValue) specifically so a
+  // geolocation suggestion can fill it in after the field has already
+  // rendered — a returning-client prefill still wins if one exists;
+  // geolocation only ever fills a field that's still empty (see the
+  // effect below and addressSource state).
+  type AddressSource = 'empty' | 'prefill' | 'geolocation' | 'user';
+  const [address, setAddress] = useState('');
+  const [addressSource, setAddressSourceState] = useState<AddressSource>('empty');
+  // Mirrors addressSource for reads inside the geolocation effect's async
+  // callback below, which can fire many seconds after the effect ran (the
+  // browser's permission prompt has no time limit) — by then, a closure
+  // over the `addressSource` state variable would be stale if the user
+  // had started typing in the meantime, and could overwrite their input
+  // with a late-arriving geolocation guess. A ref's `.current` is always
+  // current when read, so keeping this in lockstep via setAddressSource
+  // (below) avoids that. Never read during render — that's what the
+  // `addressSource` state above is for.
+  const addressSourceRef = useRef<AddressSource>('empty');
+  const setAddressSource = useCallback((value: AddressSource) => {
+    addressSourceRef.current = value;
+    setAddressSourceState(value);
+  }, []);
+  const addressInputRef = useRef<HTMLInputElement>(null);
+  const [locationStatus, setLocationStatus] = useState<LocationStatus>('idle');
+  const [suggestedAddress, setSuggestedAddress] = useState<string | null>(null);
+  const geolocationRequestedRef = useRef(false);
 
   async function handlePhoneContinue() {
     const trimmed = phone.trim();
@@ -57,6 +90,10 @@ export function QuoteForm() {
       // lets them turn it back off in one click, so consent stays
       // revocable instead of just assumed forever.
       setPrefill({ full_name: match.full_name, email: match.email, address: match.address });
+      if (match.address) {
+        setAddress(match.address);
+        setAddressSource('prefill');
+      }
       setRemember(true);
       setIsReturning(true);
       setStep('details');
@@ -69,6 +106,71 @@ export function QuoteForm() {
   function chooseRemember(value: boolean) {
     setRemember(value);
     setStep('details');
+  }
+
+  // Only asks for location once step 2 is actually reached, not on
+  // initial page load — a location permission prompt before someone's
+  // even entered their phone number reads as premature. Runs once per
+  // visit to step 2 (geolocationRequestedRef), and a returning-client
+  // address (addressSource === 'prefill') always wins over a guess.
+  useEffect(() => {
+    if (step !== 'details' || geolocationRequestedRef.current) return;
+    geolocationRequestedRef.current = true;
+    if (addressSourceRef.current === 'prefill') return;
+
+    let cancelled = false;
+
+    // The state updates below all happen inside this callback rather
+    // than directly in the effect body (even the "not supported at
+    // all" early exit) — react-hooks/set-state-in-effect flags setState
+    // calls that run synchronously during the effect's own execution,
+    // even one-time capability checks like this one.
+    const requestLocation = () => {
+      if (cancelled) return;
+
+      if (typeof navigator === 'undefined' || !navigator.geolocation) {
+        setLocationStatus('unavailable');
+        return;
+      }
+
+      setLocationStatus('prompting');
+
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const suggestion = await reverseGeocode(pos.coords.latitude, pos.coords.longitude);
+          if (cancelled) return;
+          if (!suggestion) {
+            setLocationStatus('unavailable');
+            return;
+          }
+          setSuggestedAddress(suggestion);
+          setLocationStatus('suggested');
+          if (addressSourceRef.current === 'empty') {
+            setAddress(suggestion);
+            setAddressSource('geolocation');
+          }
+        },
+        (err) => {
+          if (cancelled) return;
+          setLocationStatus(err.code === err.PERMISSION_DENIED ? 'declined' : 'unavailable');
+        },
+        { enableHighAccuracy: false, timeout: 10_000, maximumAge: 5 * 60_000 },
+      );
+    };
+
+    queueMicrotask(requestLocation);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [step, setAddressSource]);
+
+  function clearSuggestedAddress() {
+    setAddressSource('user');
+    setSuggestedAddress(null);
+    setAddress('');
+    setLocationStatus('idle');
+    requestAnimationFrame(() => addressInputRef.current?.focus());
   }
 
   if (state.status === 'success') {
@@ -244,16 +346,46 @@ export function QuoteForm() {
 
           <div>
             <label htmlFor="address" className={labelClass}>Job address</label>
+            {locationStatus === 'prompting' && (
+              <p className="mb-1.5 rounded-lg border border-border bg-surface px-4 py-3 text-xs text-foreground/65">
+                Your browser may ask for location so we can suggest a starting address. That&apos;s
+                optional — you can always type the job address yourself.
+              </p>
+            )}
+            {locationStatus === 'declined' && (
+              <p className="mb-1.5 rounded-lg border border-border bg-surface px-4 py-3 text-xs text-foreground/65">
+                No problem — we don&apos;t need location access. Type the job address below.
+              </p>
+            )}
             <input
+              ref={addressInputRef}
               id="address"
               name="Full Address"
               type="text"
               required
               autoComplete="street-address"
               placeholder="123 Queen St W, Toronto"
-              defaultValue={prefill?.address ?? ''}
+              value={address}
+              onChange={(e) => {
+                setAddress(e.target.value);
+                setAddressSource('user');
+              }}
               className={`mt-1.5 ${inputClass}`}
             />
+            {locationStatus === 'suggested' && suggestedAddress && addressSource === 'geolocation' && (
+              <>
+                <p className="mt-1.5 text-xs text-foreground/55">
+                  Suggested from your current location. Edit freely — this isn&apos;t locked.
+                </p>
+                <button
+                  type="button"
+                  onClick={clearSuggestedAddress}
+                  className="mt-1 text-sm font-semibold text-brand hover:underline"
+                >
+                  This isn&apos;t where the job is
+                </button>
+              </>
+            )}
           </div>
 
           <div>

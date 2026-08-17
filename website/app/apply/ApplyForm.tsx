@@ -26,6 +26,13 @@ export function ApplyForm() {
           Thanks for applying to Chambé. Our team reviews every application by hand — we&apos;ll be
           in touch about next steps and vetting.
         </p>
+        {state.contact?.phone && (
+          <p className="mt-2 text-sm text-foreground/70">
+            {state.contact.email
+              ? `We'll follow up at ${state.contact.phone} and ${state.contact.email}.`
+              : `We'll follow up at ${state.contact.phone}.`}
+          </p>
+        )}
       </div>
     );
   }

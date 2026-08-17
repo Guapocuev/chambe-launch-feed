@@ -2,6 +2,21 @@ import Link from 'next/link';
 import { GalleryGrid } from '@/components/GalleryGrid';
 import { galleryProjects } from '@/lib/gallery-data';
 
+const TRUST_SIGNALS = [
+  {
+    title: 'Vetted Toronto contractors',
+    detail: 'Background-checked and insured. No unlicensed stand-ins.',
+  },
+  {
+    title: 'AI-priced in minutes',
+    detail: 'An itemized range from our pricing engine — not a sales call.',
+  },
+  {
+    title: 'Local, not a national marketplace',
+    detail: 'Toronto-built, GTA-only. That is the whole market.',
+  },
+];
+
 const STEPS = [
   {
     number: '1',
@@ -65,6 +80,19 @@ export default function Home() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Trust signals */}
+      <section className="border-b border-border">
+        <div className="mx-auto grid max-w-6xl gap-8 px-6 py-12 md:grid-cols-3 md:gap-0 md:divide-x md:divide-border">
+          {TRUST_SIGNALS.map((signal) => (
+            <div key={signal.title} className="md:px-8 first:md:pl-0 last:md:pr-0">
+              <div className="h-1 w-8 rounded-full bg-accent" aria-hidden="true" />
+              <p className="mt-4 text-lg font-semibold text-foreground">{signal.title}</p>
+              <p className="mt-2 text-sm text-foreground/70">{signal.detail}</p>
+            </div>
+          ))}
         </div>
       </section>
 
