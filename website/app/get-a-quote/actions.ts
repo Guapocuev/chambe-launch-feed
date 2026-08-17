@@ -33,6 +33,11 @@ export async function submitJobRequest(
   const phone = String(formData.get('Phone Number') ?? '').trim();
   const address = String(formData.get('Full Address') ?? '').trim();
   const description = String(formData.get('Detailed Job Description') ?? '').trim();
+  // Set by QuoteForm.tsx's step-1 consent choice (or auto-set true for a
+  // returning-client match, or false if nothing was ever set) — a hidden
+  // field, not something the user types, so it's always present as a
+  // literal "true"/"false" string rather than missing.
+  const rememberClient = formData.get('rememberClient') === 'true';
 
   if (!fullName || !phone || !address || !description) {
     return { status: 'error', message: 'Please fill in your name, phone number, address, and a description of the job.' };
@@ -47,6 +52,7 @@ export async function submitJobRequest(
     'Urgency': String(formData.get('Urgency') ?? '').trim() || undefined,
     'Is the issue affecting safety or causing damage?': String(formData.get('Safety') ?? '').trim() || undefined,
     'Job Length': String(formData.get('Job Length') ?? '').trim() || undefined,
+    rememberClient,
   };
 
   try {
@@ -89,5 +95,53 @@ export async function submitJobRequest(
       status: 'error',
       message: 'We could not reach the Chambé request service. Please try again shortly, or email us directly.',
     };
+  }
+}
+
+export interface ReturningClientMatch {
+  found: boolean;
+  full_name?: string;
+  email?: string;
+  address?: string;
+}
+
+/**
+ * Step 1 of /get-a-quote: called when the user submits their phone
+ * number, before anything else is shown. Proxies Chambe-mvp's
+ * POST /clients/lookup server-side — DEMAND_ENGINE_API_KEY never
+ * reaches the browser this way, same reasoning as DEMAND_ENGINE_URL
+ * (see lib/config.ts). A direct client-side fetch to that route would
+ * need the key exposed via NEXT_PUBLIC_, which would let anyone read
+ * it out of the page bundle and query it themselves.
+ *
+ * Deliberately fails soft: a lookup error (bad network, demand-engine
+ * down, whatever) just means "treat this like a new client" — it must
+ * never block someone from getting a quote.
+ */
+export async function checkReturningClient(phone: string): Promise<ReturningClientMatch> {
+  const trimmed = phone.trim();
+  if (!trimmed) return { found: false };
+
+  try {
+    const res = await fetch(`${DEMAND_ENGINE_URL}/clients/lookup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Api-Key': DEMAND_ENGINE_API_KEY },
+      body: JSON.stringify({ phone: trimmed }),
+      signal: AbortSignal.timeout(8_000),
+    });
+
+    if (!res.ok) return { found: false };
+
+    const body = await res.json().catch(() => ({}));
+    if (body?.found !== true) return { found: false };
+
+    return {
+      found: true,
+      full_name: typeof body.full_name === 'string' ? body.full_name : undefined,
+      email: typeof body.email === 'string' ? body.email : undefined,
+      address: typeof body.address === 'string' ? body.address : undefined,
+    };
+  } catch {
+    return { found: false };
   }
 }
