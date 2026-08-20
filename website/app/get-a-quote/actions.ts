@@ -53,6 +53,15 @@ export async function submitJobRequest(
     'Is the issue affecting safety or causing damage?': String(formData.get('Safety') ?? '').trim() || undefined,
     'Job Length': String(formData.get('Job Length') ?? '').trim() || undefined,
     rememberClient,
+    photo_paths: formData
+      .getAll('photo_paths')
+      .map((v) => String(v).trim())
+      .filter((path) =>
+        /^pending\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/[a-zA-Z0-9._-]+$/i.test(
+          path,
+        ),
+      )
+      .slice(0, 4),
   };
 
   try {

@@ -3,6 +3,7 @@
 import { useActionState, useState } from 'react';
 import { SubmitButton } from '@/components/SubmitButton';
 import { checkReturningClient, initialQuoteFormState, submitJobRequest } from './actions';
+import { QuotePhotoUpload } from './QuotePhotoUpload';
 
 const inputClass =
   'w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-foreground/40 focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand';
@@ -35,6 +36,7 @@ export function QuoteForm() {
   const [remember, setRemember] = useState(false);
   const [prefill, setPrefill] = useState<Prefill | null>(null);
   const [isReturning, setIsReturning] = useState(false);
+  const [photosBusy, setPhotosBusy] = useState(false);
 
   async function handlePhoneContinue() {
     const trimmed = phone.trim();
@@ -99,7 +101,13 @@ export function QuoteForm() {
   }
 
   return (
-    <form action={formAction} className="space-y-5">
+    <form
+      action={formAction}
+      onSubmit={(e) => {
+        if (photosBusy) e.preventDefault();
+      }}
+      className="space-y-5"
+    >
       {state.status === 'error' && (
         <div className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
           {state.message}
@@ -268,6 +276,8 @@ export function QuoteForm() {
             />
           </div>
 
+          <QuotePhotoUpload onBusyChange={setPhotosBusy} />
+
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
               <label htmlFor="urgency" className={labelClass}>How urgent is this?</label>
@@ -301,7 +311,7 @@ export function QuoteForm() {
             </div>
           </fieldset>
 
-          <SubmitButton>Get My Free Estimate</SubmitButton>
+          <SubmitButton disabled={photosBusy}>Get My Free Estimate</SubmitButton>
         </div>
       )}
     </form>
