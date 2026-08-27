@@ -1,67 +1,102 @@
-import Link from 'next/link';
+'use client';
+
+import { useState } from 'react';
+import Image from 'next/image';
 import type { GalleryProject } from '@/lib/gallery-data';
+import { TRADE_LABELS } from '@/lib/gallery-data';
 
-function ImagePane({ label, src }: { label: string; src?: string }) {
-  if (src) {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img src={src} alt={label} className="h-full w-full object-cover" />;
-  }
-  return (
-    <div className="flex h-full w-full items-center justify-center bg-surface text-xs font-medium uppercase tracking-wide text-foreground/40">
-      {label}
-    </div>
-  );
-}
+function ProjectCard({ project, priority }: { project: GalleryProject; priority?: boolean }) {
+  const shots = project.photos.length > 0 ? project.photos : [project.coverImage];
+  const [active, setActive] = useState(0);
+  const current = shots[active] ?? project.coverImage;
+  const hasBeforeAfter = Boolean(project.beforeImage && project.afterImage);
 
-function ProjectCard({ project }: { project: GalleryProject }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-border bg-background">
-      <div className="grid grid-cols-2 gap-px bg-border">
-        <div className="aspect-square">
-          <ImagePane label="Before" src={project.beforeImage} />
+    <article id={`job-${project.id}`} className="scroll-mt-24 overflow-hidden rounded-2xl border border-border bg-background">
+      {hasBeforeAfter ? (
+        <div className="grid grid-cols-2 gap-px bg-border">
+          <div className="relative aspect-square">
+            <Image
+              src={project.beforeImage!}
+              alt={`${project.title} — before, ${project.location}`}
+              fill
+              priority={priority}
+              quality={90}
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 40vw, 420px"
+              className="object-contain bg-surface"
+            />
+            <span className="absolute left-2 top-2 rounded bg-background/90 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-foreground">
+              Before
+            </span>
+          </div>
+          <div className="relative aspect-square">
+            <Image
+              src={project.afterImage!}
+              alt={`${project.title} — after, ${project.location}`}
+              fill
+              priority={priority}
+              quality={90}
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 40vw, 420px"
+              className="object-contain bg-surface"
+            />
+            <span className="absolute left-2 top-2 rounded bg-background/90 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-foreground">
+              After
+            </span>
+          </div>
         </div>
-        <div className="aspect-square">
-          <ImagePane label="After" src={project.afterImage} />
+      ) : (
+        <div>
+          <div className="relative aspect-[3/2] bg-[color-mix(in_srgb,var(--foreground)_10%,var(--background))]">
+            <Image
+              key={current}
+              src={current}
+              alt={`${project.title}, ${project.location}`}
+              fill
+              priority={priority}
+              quality={90}
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 640px"
+              className="object-contain"
+            />
+          </div>
+          {shots.length > 1 && (
+            <div className="flex gap-1 overflow-x-auto bg-surface p-2">
+              {shots.map((src, index) => (
+                <button
+                  key={src}
+                  type="button"
+                  onClick={() => setActive(index)}
+                  aria-label={`Photo ${index + 1} of ${shots.length}`}
+                  aria-pressed={index === active}
+                  className={`relative h-14 w-16 shrink-0 overflow-hidden rounded border ${
+                    index === active ? 'border-accent' : 'border-border'
+                  }`}
+                >
+                  <Image src={src} alt="" fill quality={90} className="object-cover" sizes="96px" />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
-      </div>
+      )}
       <div className="p-5">
-        <div className="text-xs font-semibold uppercase tracking-wide text-accent">{project.trade}</div>
+        <div className="text-xs font-semibold uppercase tracking-wide text-accent">
+          {TRADE_LABELS[project.trade]}
+        </div>
         <h3 className="mt-1 text-lg font-semibold text-foreground">{project.title}</h3>
         <p className="mt-1 text-sm text-foreground/60">{project.location}</p>
         <p className="mt-3 text-sm text-foreground/80">{project.description}</p>
       </div>
-    </div>
+    </article>
   );
 }
 
-/**
- * Renders the before/after gallery from lib/gallery-data.ts's array. That
- * file ships empty (no real project photos exist yet) — this shows a
- * designed empty state instead of fake placeholder projects.
- */
 export function GalleryGrid({ projects }: { projects: GalleryProject[] }) {
-  if (projects.length === 0) {
-    return (
-      <div className="rounded-2xl border border-dashed border-border bg-surface px-8 py-16 text-center">
-        <h3 className="text-lg font-semibold text-foreground">Our first projects are in progress</h3>
-        <p className="mx-auto mt-2 max-w-md text-sm text-foreground/70">
-          We&apos;re just getting started — real before/after photos from Chambé jobs will show up here
-          as our contractors complete their first projects. Check back soon.
-        </p>
-        <Link
-          href="/get-a-quote"
-          className="mt-6 inline-block rounded-full bg-accent px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-accent-dark"
-        >
-          Be one of our first projects
-        </Link>
-      </div>
-    );
-  }
+  if (projects.length === 0) return null;
 
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {projects.map((project) => (
-        <ProjectCard key={project.id} project={project} />
+      {projects.map((project, index) => (
+        <ProjectCard key={project.id} project={project} priority={index === 0} />
       ))}
     </div>
   );

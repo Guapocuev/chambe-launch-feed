@@ -1,6 +1,7 @@
 'use server';
 
 import { DEMAND_ENGINE_API_KEY, DEMAND_ENGINE_URL } from '@/lib/config';
+import { PENDING_RETRY_COPY } from '@/lib/response-time';
 
 /**
  * Submits the job request form to the Demand Engine's
@@ -20,10 +21,12 @@ export interface QuoteFormState {
     priority: string;
     trade: string | null;
     offers_sent: number;
+    display_score?: number;
+    explanations?: string[];
+    follow_up_questions?: string[];
+    time_estimate?: { label: string; hours_low: number | null; hours_high: number | null } | null;
   };
 }
-
-export const initialQuoteFormState: QuoteFormState = { status: 'idle' };
 
 export async function submitJobRequest(
   _prevState: QuoteFormState,
@@ -32,11 +35,13 @@ export async function submitJobRequest(
   const fullName = String(formData.get('Full Name') ?? '').trim();
   const phone = String(formData.get('Phone Number') ?? '').trim();
   const address = String(formData.get('Full Address') ?? '').trim();
-  const description = String(formData.get('Detailed Job Description') ?? '').trim();
-  // Set by QuoteForm.tsx's step-1 consent choice (or auto-set true for a
-  // returning-client match, or false if nothing was ever set) — a hidden
-  // field, not something the user types, so it's always present as a
-  // literal "true"/"false" string rather than missing.
+  const followUpNotes = String(formData.get('Follow-up Notes') ?? '').trim();
+  const description = [String(formData.get('Detailed Job Description') ?? '').trim(), followUpNotes]
+    .filter(Boolean)
+    .join('\n\n');
+  // Set by QuoteForm's "Save my info for next time" checkbox (or auto-set
+  // true after a returning-client phone match). Hidden input, always a
+  // literal "true"/"false" string.
   const rememberClient = formData.get('rememberClient') === 'true';
 
   if (!fullName || !phone || !address || !description) {
@@ -53,6 +58,15 @@ export async function submitJobRequest(
     'Is the issue affecting safety or causing damage?': String(formData.get('Safety') ?? '').trim() || undefined,
     'Job Length': String(formData.get('Job Length') ?? '').trim() || undefined,
     rememberClient,
+    photo_paths: formData
+      .getAll('photo_paths')
+      .map((v) => String(v).trim())
+      .filter((path) =>
+        /^pending\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/[a-zA-Z0-9._-]+$/i.test(
+          path,
+        ),
+      )
+      .slice(0, 4),
   };
 
   try {
@@ -74,6 +88,17 @@ export async function submitJobRequest(
           priority: body.priority,
           trade: body.trade ?? null,
           offers_sent: body.offers_sent ?? 0,
+          display_score:
+            typeof body.quote?.display_score === 'number'
+              ? Math.min(99, body.quote.display_score)
+              : typeof body.quote?.confidence_score === 'number'
+                ? Math.min(99, body.quote.confidence_score)
+                : undefined,
+          explanations: Array.isArray(body.quote?.explanations) ? body.quote.explanations : [],
+          follow_up_questions: Array.isArray(body.quote?.follow_up_questions)
+            ? body.quote.follow_up_questions.slice(0, 3)
+            : [],
+          time_estimate: body.quote?.time_estimate ?? null,
         },
       };
     }
@@ -81,7 +106,7 @@ export async function submitJobRequest(
     if (res.status === 202) {
       return {
         status: 'pending_retry',
-        message: "We've received your request and are finishing up your estimate — a Chambé team member will follow up shortly.",
+        message: PENDING_RETRY_COPY,
       };
     }
 
@@ -93,7 +118,7 @@ export async function submitJobRequest(
   } catch {
     return {
       status: 'error',
-      message: 'We could not reach the Chambé request service. Please try again shortly, or email us directly.',
+      message: 'We could not reach the Chambé request service. Please try again in a moment, or email us directly.',
     };
   }
 }
@@ -106,13 +131,12 @@ export interface ReturningClientMatch {
 }
 
 /**
- * Step 1 of /get-a-quote: called when the user submits their phone
- * number, before anything else is shown. Proxies Chambe-mvp's
- * POST /clients/lookup server-side — DEMAND_ENGINE_API_KEY never
- * reaches the browser this way, same reasoning as DEMAND_ENGINE_URL
- * (see lib/config.ts). A direct client-side fetch to that route would
- * need the key exposed via NEXT_PUBLIC_, which would let anyone read
- * it out of the page bundle and query it themselves.
+ * Called from /get-a-quote when the visitor enters a phone number on the
+ * last step. Proxies Chambe-mvp's POST /clients/lookup server-side —
+ * DEMAND_ENGINE_API_KEY never reaches the browser this way, same reasoning
+ * as DEMAND_ENGINE_URL (see lib/config.ts). A direct client-side fetch to
+ * that route would need the key exposed via NEXT_PUBLIC_, which would let
+ * anyone read it out of the page bundle and query it themselves.
  *
  * Deliberately fails soft: a lookup error (bad network, demand-engine
  * down, whatever) just means "treat this like a new client" — it must

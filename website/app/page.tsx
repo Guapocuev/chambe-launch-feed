@@ -1,6 +1,14 @@
 import Link from 'next/link';
 import { GalleryGrid } from '@/components/GalleryGrid';
+import { MapTeaser } from '@/components/MapTeaser';
 import { galleryProjects } from '@/lib/gallery-data';
+import {
+  BUSINESS_HOURS_LABEL,
+  CALLBACK_MINUTES,
+  CALLBACK_WINDOW,
+  CONTRACTOR_ACCEPT_MINUTES,
+  MATCH_WINDOW,
+} from '@/lib/response-time';
 
 const TRUST_SIGNALS = [
   {
@@ -33,8 +41,7 @@ const STEPS = [
   {
     number: '3',
     title: 'Get matched with a vetted pro',
-    description:
-      'We match you with a background-checked, insured contractor in your neighbourhood who is ready to take the job.',
+    description: `We match you with a background-checked, insured contractor in your neighbourhood. ${MATCH_WINDOW} ${CALLBACK_WINDOW}`,
   },
 ];
 
@@ -56,7 +63,7 @@ export default function Home() {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
                 href="/get-a-quote"
-                className="rounded-full bg-accent px-7 py-3.5 text-center text-sm font-semibold text-white transition hover:bg-accent-dark"
+                className="rounded-full bg-accent px-7 py-3.5 text-center text-sm font-semibold text-inverse transition hover:bg-accent-dark"
               >
                 Get a Free Estimate
               </Link>
@@ -107,7 +114,7 @@ export default function Home() {
         <div className="mt-12 grid gap-8 md:grid-cols-3">
           {STEPS.map((step) => (
             <div key={step.number} className="rounded-2xl border border-border p-6">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand text-sm font-bold text-white">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-inverse text-sm font-bold text-inverse-foreground">
                 {step.number}
               </div>
               <h3 className="mt-4 text-lg font-semibold text-foreground">{step.title}</h3>
@@ -140,31 +147,40 @@ export default function Home() {
       </section>
 
       {/* Gallery teaser */}
-      <section className="mx-auto max-w-6xl px-6 py-20">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <h2 className="text-3xl font-bold tracking-tight text-foreground">Real jobs, real results</h2>
-            <p className="mt-2 text-foreground/70">A look at recent work from Chambé contractors.</p>
+      {galleryProjects.length > 0 && (
+        <section className="mx-auto max-w-6xl px-6 py-20">
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <h2 className="text-3xl font-bold tracking-tight text-foreground">Real jobs, real results</h2>
+              <p className="mt-2 text-foreground/70">Completed work from Chambé contractors.</p>
+            </div>
+            <Link href="/gallery" className="hidden shrink-0 text-sm font-semibold text-brand hover:underline sm:block">
+              View full gallery →
+            </Link>
           </div>
-          <Link href="/gallery" className="hidden shrink-0 text-sm font-semibold text-brand hover:underline sm:block">
+          <div className="mt-10">
+            <GalleryGrid projects={galleryProjects.slice(0, 3)} />
+          </div>
+          <Link href="/gallery" className="mt-6 block text-sm font-semibold text-brand hover:underline sm:hidden">
             View full gallery →
           </Link>
-        </div>
-        <div className="mt-10">
-          <GalleryGrid projects={galleryProjects.slice(0, 3)} />
-        </div>
-      </section>
+        </section>
+      )}
+
+      <MapTeaser />
 
       {/* Bottom CTA */}
-      <section className="bg-brand">
+      <section className="bg-inverse">
         <div className="mx-auto max-w-3xl px-6 py-16 text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-white">Ready to get it fixed?</h2>
-          <p className="mt-3 text-brand-dark/90 text-white/80">
-            Get a free, instant estimate — no account, no phone call required.
+          <h2 className="text-3xl font-bold tracking-tight text-inverse-foreground">Ready to get it fixed?</h2>
+          <p className="mt-3 text-inverse-foreground/80">
+            Get a free, instant estimate — no account required. The first contractor has{' '}
+            {CONTRACTOR_ACCEPT_MINUTES} minutes to accept. During {BUSINESS_HOURS_LABEL} we call
+            you back within {CALLBACK_MINUTES} minutes.
           </p>
           <Link
             href="/get-a-quote"
-            className="mt-6 inline-block rounded-full bg-white px-7 py-3.5 text-sm font-semibold text-brand transition hover:bg-white/90"
+            className="mt-6 inline-block rounded-full bg-accent px-7 py-3.5 text-sm font-semibold text-inverse transition hover:bg-accent-dark"
           >
             Get a Free Estimate
           </Link>

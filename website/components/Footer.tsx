@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Logo } from '@/components/Logo';
 
 export function Footer() {
   return (
@@ -6,7 +7,7 @@ export function Footer() {
       <div className="mx-auto max-w-6xl px-6 py-12">
         <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-4">
           <div>
-            <div className="text-lg font-bold text-brand">Chambé</div>
+            <Logo size="md" />
             <p className="mt-2 text-sm text-foreground/70">
               Trusted contractors for the Toronto &amp; GTA, matched by AI, vetted by us.
             </p>
@@ -17,7 +18,7 @@ export function Footer() {
             <ul className="mt-3 space-y-2 text-sm text-foreground/70">
               <li><Link href="/about" className="hover:text-brand">About</Link></li>
               <li><Link href="/how-it-works" className="hover:text-brand">How It Works</Link></li>
-              <li><Link href="/gallery" className="hover:text-brand">Gallery</Link></li>
+              <li><Link href="/gallery" className="hover:text-brand">Past Work</Link></li>
               <li><Link href="/contact" className="hover:text-brand">Contact</Link></li>
             </ul>
           </div>

@@ -1,38 +1,47 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Nav } from "@/components/Nav";
+import { Analytics } from "@/components/Analytics";
 import { Footer } from "@/components/Footer";
+import { JsonLd } from "@/components/JsonLd";
+import { MobileStickyCta } from "@/components/MobileStickyCta";
+import { Nav } from "@/components/Nav";
+import { rootMetadata } from "@/lib/metadata";
+import { GA_MEASUREMENT_ID } from "@/lib/site";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "Chambé — Trusted Toronto Contractors, Without the Hassle",
-    template: "%s | Chambé",
-  },
-  description:
-    "Tell us the job, get an instant AI-powered estimate, and get matched with a vetted local contractor. Serving Toronto and the GTA.",
-};
+export const metadata: Metadata = rootMetadata;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
-      lang="en"
+      lang="en-CA"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <link rel="dns-prefetch" href="https://basemaps.cartocdn.com" />
+        {GA_MEASUREMENT_ID && (
+          <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        )}
+      </head>
       <body className="flex min-h-full flex-col">
+        <JsonLd />
         <Nav />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 pb-24 md:pb-0">{children}</main>
         <Footer />
+        <MobileStickyCta />
+        <Analytics />
       </body>
     </html>
   );

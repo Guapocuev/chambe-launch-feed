@@ -17,3 +17,15 @@ export const DEMAND_ENGINE_URL = process.env.DEMAND_ENGINE_URL ?? 'http://localh
  * vars in this file — both forms will fail outright until it's set.
  */
 export const DEMAND_ENGINE_API_KEY = process.env.DEMAND_ENGINE_API_KEY ?? '';
+
+/**
+ * Server-only. Used by the quote form's speech-to-text (OpenAI
+ * /v1/audio/transcriptions). Never expose via NEXT_PUBLIC_ — the browser
+ * only uploads audio to a Server Action, which holds this key.
+ * Quote-engine already uses the same env name for scope extraction; you
+ * can reuse that key here, but the website does not inherit it automatically.
+ */
+export const OPENAI_API_KEY = process.env.OPENAI_API_KEY ?? '';
+
+/** whisper-1 is the default transcription model (widest key compatibility). */
+export const OPENAI_TRANSCRIBE_MODEL = process.env.OPENAI_TRANSCRIBE_MODEL ?? 'whisper-1';

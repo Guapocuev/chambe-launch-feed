@@ -1,6 +1,7 @@
 'use server';
 
 import { DEMAND_ENGINE_API_KEY, DEMAND_ENGINE_URL } from '@/lib/config';
+import { CONTACT_EMAIL } from '@/lib/site';
 
 /**
  * Submits the contractor application form to the Demand Engine's
@@ -10,12 +11,13 @@ import { DEMAND_ENGINE_API_KEY, DEMAND_ENGINE_URL } from '@/lib/config';
  * ContractorApplicationInput exactly.
  */
 
-const CONTACT_EMAIL = 'hello@chambe.ca';
-
 export interface ApplyFormState {
   status: 'idle' | 'success' | 'error';
   message?: string;
-  contact?: { phone: string; email?: string };
+  contact?: {
+    phone: string;
+    email?: string;
+  };
 }
 
 export const initialApplyFormState: ApplyFormState = { status: 'idle' };
@@ -37,6 +39,7 @@ export async function submitContractorApplication(
   }
 
   const yearsExperienceRaw = String(formData.get('years_experience') ?? '').trim();
+  const notes = buildVettingNotes(formData);
   const email = String(formData.get('email') ?? '').trim() || undefined;
 
   const payload = {
@@ -46,7 +49,7 @@ export async function submitContractorApplication(
     trade: trades,
     service_area: serviceArea,
     years_experience: yearsExperienceRaw ? Number(yearsExperienceRaw) : undefined,
-    notes: String(formData.get('notes') ?? '').trim() || undefined,
+    notes,
   };
 
   try {
@@ -58,7 +61,10 @@ export async function submitContractorApplication(
     });
 
     if (res.status === 201) {
-      return { status: 'success', contact: { phone, email } };
+      return {
+        status: 'success',
+        contact: { phone, email },
+      };
     }
 
     const body = await res.json().catch(() => ({}));
@@ -74,4 +80,29 @@ export async function submitContractorApplication(
       message: `We could not reach the Chambé application service. Please try again shortly, or email ${CONTACT_EMAIL}.`,
     };
   }
+}
+
+function yesNo(value: string): string {
+  if (value === 'yes') return 'Yes';
+  if (value === 'no') return 'No';
+  return 'Not specified';
+}
+
+/** Licence / insurance / WSIB are not first-class API fields — fold into notes. */
+function buildVettingNotes(formData: FormData): string | undefined {
+  const licensed = String(formData.get('licensed') ?? '');
+  const licenceNumber = String(formData.get('licence_number') ?? '').trim();
+  const insured = String(formData.get('insured') ?? '');
+  const wsib = String(formData.get('wsib') ?? '');
+  const wsibNumber = String(formData.get('wsib_number') ?? '').trim();
+
+  const licenceLine =
+    licensed === 'yes' && licenceNumber
+      ? `Licence: Yes (${licenceNumber})`
+      : `Licence: ${yesNo(licensed)}`;
+  const wsibLine =
+    wsib === 'yes' && wsibNumber ? `WSIB: Yes (${wsibNumber})` : `WSIB: ${yesNo(wsib)}`;
+
+  const notes = [licenceLine, `Insurance: ${yesNo(insured)}`, wsibLine].join('\n');
+  return notes.trim() ? notes : undefined;
 }
