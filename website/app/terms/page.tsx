@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
 import { LegalContent, type LegalSectionData } from '@/components/LegalContent';
+import { pageMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: 'Terms of Service',
-  description: 'Terms governing use of the Chambé platform.',
-};
+export const metadata: Metadata = pageMetadata(
+  'Terms of Service',
+  'Terms governing use of the Chambé platform.',
+  '/terms',
+);
 
 const SECTIONS: LegalSectionData[] = [
   {

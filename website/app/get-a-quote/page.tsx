@@ -1,11 +1,13 @@
 import type { Metadata } from 'next';
 import { CALLBACK_WINDOW, MATCH_WINDOW } from '@/lib/response-time';
 import { QuoteForm } from './QuoteForm';
+import { pageMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: 'Get a Free Estimate',
-  description: 'Tell us about your job and get an instant AI-powered price estimate.',
-};
+export const metadata: Metadata = pageMetadata(
+  'Get a Free Estimate',
+  'Tell us about your job and get an instant AI-powered price estimate from a vetted Toronto contractor.',
+  '/get-a-quote',
+);
 
 export default function GetAQuotePage() {
   return (

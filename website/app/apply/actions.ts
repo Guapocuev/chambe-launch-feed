@@ -1,6 +1,7 @@
 'use server';
 
 import { DEMAND_ENGINE_API_KEY, DEMAND_ENGINE_URL } from '@/lib/config';
+import { CONTACT_EMAIL } from '@/lib/site';
 
 /**
  * Submits the contractor application form to the Demand Engine's
@@ -13,6 +14,10 @@ import { DEMAND_ENGINE_API_KEY, DEMAND_ENGINE_URL } from '@/lib/config';
 export interface ApplyFormState {
   status: 'idle' | 'success' | 'error';
   message?: string;
+  contact?: {
+    phone: string;
+    email?: string;
+  };
 }
 
 export const initialApplyFormState: ApplyFormState = { status: 'idle' };
@@ -35,11 +40,12 @@ export async function submitContractorApplication(
 
   const yearsExperienceRaw = String(formData.get('years_experience') ?? '').trim();
   const notes = buildVettingNotes(formData);
+  const email = String(formData.get('email') ?? '').trim() || undefined;
 
   const payload = {
     full_name: fullName,
     phone,
-    email: String(formData.get('email') ?? '').trim() || undefined,
+    email,
     trade: trades,
     service_area: serviceArea,
     years_experience: yearsExperienceRaw ? Number(yearsExperienceRaw) : undefined,
@@ -55,7 +61,10 @@ export async function submitContractorApplication(
     });
 
     if (res.status === 201) {
-      return { status: 'success' };
+      return {
+        status: 'success',
+        contact: { phone, email },
+      };
     }
 
     const body = await res.json().catch(() => ({}));
@@ -68,7 +77,7 @@ export async function submitContractorApplication(
   } catch {
     return {
       status: 'error',
-      message: 'We could not reach the Chambé application service. Please try again in a moment, or email us directly.',
+      message: `We could not reach the Chambé application service. Please try again shortly, or email ${CONTACT_EMAIL}.`,
     };
   }
 }

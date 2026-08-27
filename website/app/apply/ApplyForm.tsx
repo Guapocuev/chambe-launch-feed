@@ -60,6 +60,13 @@ export function ApplyForm() {
       <div className="rounded-2xl border border-brand/30 bg-brand/5 p-8">
         <h2 className="text-xl font-semibold text-foreground">Application received</h2>
         <p className="mt-2 text-sm text-foreground/70">{APPLICANT_CALLBACK_WINDOW}</p>
+        {state.contact?.phone && (
+          <p className="mt-2 text-sm text-foreground/70">
+            {state.contact.email
+              ? `We'll follow up at ${state.contact.phone} and ${state.contact.email}.`
+              : `We'll follow up at ${state.contact.phone}.`}
+          </p>
+        )}
       </div>
     );
   }
