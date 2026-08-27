@@ -1,0 +1,22 @@
+# Next.js App Router app lives in website/, not the repo root.
+# Do not publish website/.next as a static folder — that 404s every
+# route. @netlify/plugin-nextjs is the official Next.js Runtime
+# (OpenNext): SSR, Server Actions, ISR. Do not pin the plugin in
+# package.json; Netlify installs the current adapter at build time.
+#
+# publish is relative to base, so this is website/.next, not
+# <repo>/website/.next doubled. netlify.toml overrides the UI.
+
+[build]
+  base = "website"
+  command = "npm run build"
+  publish = ".next"
+  # Default ignore only watches the base directory, so a change to this
+  # root file would skip the build. Watch both.
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF . ../netlify.toml"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
