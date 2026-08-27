@@ -34,6 +34,7 @@ export async function submitContractorApplication(
   }
 
   const yearsExperienceRaw = String(formData.get('years_experience') ?? '').trim();
+  const notes = buildVettingNotes(formData);
 
   const payload = {
     full_name: fullName,
@@ -42,7 +43,7 @@ export async function submitContractorApplication(
     trade: trades,
     service_area: serviceArea,
     years_experience: yearsExperienceRaw ? Number(yearsExperienceRaw) : undefined,
-    notes: String(formData.get('notes') ?? '').trim() || undefined,
+    notes,
   };
 
   try {
@@ -67,7 +68,32 @@ export async function submitContractorApplication(
   } catch {
     return {
       status: 'error',
-      message: 'We could not reach the Chambé application service. Please try again shortly, or email us directly.',
+      message: 'We could not reach the Chambé application service. Please try again in a moment, or email us directly.',
     };
   }
+}
+
+function yesNo(value: string): string {
+  if (value === 'yes') return 'Yes';
+  if (value === 'no') return 'No';
+  return 'Not specified';
+}
+
+/** Licence / insurance / WSIB are not first-class API fields — fold into notes. */
+function buildVettingNotes(formData: FormData): string | undefined {
+  const licensed = String(formData.get('licensed') ?? '');
+  const licenceNumber = String(formData.get('licence_number') ?? '').trim();
+  const insured = String(formData.get('insured') ?? '');
+  const wsib = String(formData.get('wsib') ?? '');
+  const wsibNumber = String(formData.get('wsib_number') ?? '').trim();
+
+  const licenceLine =
+    licensed === 'yes' && licenceNumber
+      ? `Licence: Yes (${licenceNumber})`
+      : `Licence: ${yesNo(licensed)}`;
+  const wsibLine =
+    wsib === 'yes' && wsibNumber ? `WSIB: Yes (${wsibNumber})` : `WSIB: ${yesNo(wsib)}`;
+
+  const notes = [licenceLine, `Insurance: ${yesNo(insured)}`, wsibLine].join('\n');
+  return notes.trim() ? notes : undefined;
 }

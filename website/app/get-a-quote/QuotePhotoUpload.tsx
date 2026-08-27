@@ -17,7 +17,13 @@ function newUploadId(): string {
   return crypto.randomUUID();
 }
 
-export function QuotePhotoUpload({ onBusyChange }: { onBusyChange: (busy: boolean) => void }) {
+export function QuotePhotoUpload({
+  onBusyChange,
+  onCountChange,
+}: {
+  onBusyChange: (busy: boolean) => void;
+  onCountChange?: (count: number) => void;
+}) {
   const inputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const uploadIdRef = useRef(newUploadId());
@@ -31,6 +37,10 @@ export function QuotePhotoUpload({ onBusyChange }: { onBusyChange: (busy: boolea
   useEffect(() => {
     onBusyChange(busy);
   }, [busy, onBusyChange]);
+
+  useEffect(() => {
+    onCountChange?.(slots.length);
+  }, [slots.length, onCountChange]);
 
   useEffect(() => {
     return () => {
@@ -106,8 +116,8 @@ export function QuotePhotoUpload({ onBusyChange }: { onBusyChange: (busy: boolea
   return (
     <div>
       <p className="block text-sm font-medium text-foreground">Photos (optional)</p>
-      <p className="mt-1 text-xs text-foreground/50">
-        Up to {MAX_PHOTOS} photos. JPEG, PNG, or WebP, 8 MB each. Helps us quote more accurately.
+      <p className="mt-1 text-xs text-foreground/55">
+        2–4 photos from different angles gives the most accurate price. JPEG, PNG, or WebP, 8 MB each.
       </p>
 
       {slots.map((slot) => (

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { APPLICANT_CALLBACK_WINDOW } from '@/lib/response-time';
 
 export const metadata: Metadata = {
   title: 'About',
@@ -20,16 +21,15 @@ export default function AboutPage() {
       <p className="mt-6 text-lg leading-relaxed text-foreground/80">
         We do that two ways. First, transparent pricing: every estimate comes from a deterministic
         pricing engine built on real GTA labor rates and material costs, not a sales rep&apos;s gut
-        feeling. Second, a vetted contractor network: every pro on Chambé is background-checked,
-        insured, and rated on real completed jobs — no unlicensed subcontractor showing up in
-        their place.
+        feeling. Second, a vetted contractor network: every pro on Chambé is background-checked and
+        insured, and the work on this site is from real completed jobs — no unlicensed
+        subcontractor showing up in their place.
       </p>
 
       <p className="mt-6 text-lg leading-relaxed text-foreground/80">
-        We&apos;re a small, Toronto-based team, and we&apos;re just getting started — you&apos;re
-        looking at one of the earliest versions of this site. If something feels rough around the
-        edges, that&apos;s because we&apos;re building this in the open, market by market,
-        contractor by contractor.
+        We&apos;re a Toronto-based team serving homeowners and contractors across the GTA.
+        Contractors are vetted before they take a job, and every estimate is priced from real
+        local labour rates — not a sales call.
       </p>
 
       <div className="mt-14 grid gap-6 sm:grid-cols-2">
@@ -45,7 +45,8 @@ export default function AboutPage() {
         <div className="rounded-2xl border border-border p-6">
           <h2 className="text-lg font-semibold text-foreground">For contractors</h2>
           <p className="mt-2 text-sm text-foreground/70">
-            Steady, qualified job leads in your trade and service area — no cold-calling for work.
+            Steady, qualified job leads in your trade and area. You accept or pass.{' '}
+            {APPLICANT_CALLBACK_WINDOW}
           </p>
           <Link href="/apply" className="mt-4 inline-block text-sm font-semibold text-brand hover:underline">
             Apply as a contractor →

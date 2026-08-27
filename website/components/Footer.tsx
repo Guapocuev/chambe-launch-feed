@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Logo } from '@/components/Logo';
 
 export function Footer() {
   return (
@@ -6,7 +7,7 @@ export function Footer() {
       <div className="mx-auto max-w-6xl px-6 py-12">
         <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-4">
           <div>
-            <div className="text-lg font-bold text-brand">Chambé</div>
+            <Logo size="md" />
             <p className="mt-2 text-sm text-foreground/70">
               Trusted contractors for the Toronto &amp; GTA, matched by AI, vetted by us.
             </p>
