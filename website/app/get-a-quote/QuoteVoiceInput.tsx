@@ -23,6 +23,8 @@ export function QuoteVoiceInput({
 
   useEffect(() => {
     aliveRef.current = true;
+    // MediaRecorder exists only in the browser.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSupported(
       typeof navigator !== 'undefined' &&
         Boolean(navigator.mediaDevices?.getUserMedia) &&

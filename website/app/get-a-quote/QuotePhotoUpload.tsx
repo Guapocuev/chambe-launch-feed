@@ -32,6 +32,8 @@ export function QuotePhotoUpload({
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
+  // Latest slots for unmount cleanup without re-subscribing the effect.
+  // eslint-disable-next-line react-hooks/refs
   slotsRef.current = slots;
 
   useEffect(() => {

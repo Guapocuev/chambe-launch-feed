@@ -49,6 +49,7 @@ export function JobTools({ contractorId, jobId }: { contractorId: string; jobId:
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- load job tools when the route ids change
     void refresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contractorId, jobId]);

@@ -46,6 +46,8 @@ export function ProjectMap({
   const streetsLayerRef = useRef<TileLayer | null>(null);
   const cityLayerRef = useRef<TileLayer | null>(null);
   const onSelectRef = useRef(onProjectSelect);
+  // Keep the latest callback without re-initializing the map.
+  // eslint-disable-next-line react-hooks/refs
   onSelectRef.current = onProjectSelect;
   const [ready, setReady] = useState(false);
   const [basemap, setBasemap] = useState<Basemap>('streets');
