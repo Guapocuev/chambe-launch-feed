@@ -27,11 +27,11 @@ export default function ApplyPage() {
         <ApplyForm />
       </div>
       <p className="mt-8 text-sm text-foreground/50">
-        Already matched on a job?{' '}
-        <Link href="/contractor" className="font-medium text-foreground underline-offset-2 hover:underline">
-          Open job tools
+        Already on the crew?{' '}
+        <Link href="/contractor/login" className="font-medium text-foreground underline-offset-2 hover:underline">
+          Log in
         </Link>{' '}
-        to log hours and materials.
+        with a text code — no password.
       </p>
     </div>
   );

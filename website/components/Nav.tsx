@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { Logo } from '@/components/Logo';
+import { isApprenticeArea, isContractorArea } from '@/lib/contractor-area';
 
 const LINKS = [
   { href: '/how-it-works', label: 'How It Works' },
@@ -18,6 +19,26 @@ const estimateClass =
 export function Nav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+
+  if (isApprenticeArea(pathname)) {
+    return (
+      <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur">
+        <div className="mx-auto flex h-16 max-w-md items-center px-5">
+          <Logo size="md" href="/apprentice" label="Your hours" />
+        </div>
+      </header>
+    );
+  }
+
+  if (isContractorArea(pathname)) {
+    return (
+      <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur">
+        <div className="mx-auto flex h-16 max-w-md items-center px-5">
+          <Logo size="md" href="/contractor" label="Your jobs" />
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur">

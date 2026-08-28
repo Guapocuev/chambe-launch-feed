@@ -4,13 +4,14 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { trackEvent } from '@/lib/analytics';
 import { CONTACT_PHONE, CONTACT_PHONE_TEL } from '@/lib/site';
+import { isAppArea } from '@/lib/contractor-area';
 
 const HIDDEN_ON = new Set(['/get-a-quote', '/apply']);
 
 export function MobileStickyCta() {
   const pathname = usePathname();
 
-  if (HIDDEN_ON.has(pathname)) return null;
+  if (HIDDEN_ON.has(pathname) || isAppArea(pathname)) return null;
 
   return (
     <div

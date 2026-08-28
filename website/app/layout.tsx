@@ -6,6 +6,7 @@ import { Footer } from "@/components/Footer";
 import { JsonLd } from "@/components/JsonLd";
 import { MobileStickyCta } from "@/components/MobileStickyCta";
 import { Nav } from "@/components/Nav";
+import { SiteMain } from "@/components/SiteMain";
 import { rootMetadata } from "@/lib/metadata";
 import { GA_MEASUREMENT_ID } from "@/lib/site";
 
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <head>
         <link rel="dns-prefetch" href="https://basemaps.cartocdn.com" />
+        <link rel="stylesheet" href="/leaflet.css" />
         {GA_MEASUREMENT_ID && (
           <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         )}
@@ -38,7 +40,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="flex min-h-full flex-col">
         <JsonLd />
         <Nav />
-        <main className="flex-1 pb-24 md:pb-0">{children}</main>
+        <SiteMain>{children}</SiteMain>
         <Footer />
         <MobileStickyCta />
         <Analytics />

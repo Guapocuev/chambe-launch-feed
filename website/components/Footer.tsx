@@ -1,7 +1,14 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Logo } from '@/components/Logo';
+import { isAppArea } from '@/lib/contractor-area';
 
 export function Footer() {
+  const pathname = usePathname();
+  if (isAppArea(pathname)) return null;
+
   return (
     <footer className="border-t border-border bg-surface">
       <div className="mx-auto max-w-6xl px-6 py-12">

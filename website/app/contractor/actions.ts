@@ -47,6 +47,29 @@ export interface JobAdminBundle {
 
 export type ActionResult<T> = { ok: true; data: T } | { ok: false; error: string };
 
+export interface ContractorJobSummary {
+  id: string;
+  job_description: string;
+  trade: string | null;
+  job_status: string;
+  created_at: string;
+}
+
+export interface ContractorSession {
+  id: string;
+  full_name: string | null;
+  phone: string;
+  email: string | null;
+  trade: string[];
+  active: boolean;
+  membership_tier: string;
+}
+
+export type ResolveResult =
+  | { ok: true; status: 'ok'; contractor: ContractorSession; jobs: ContractorJobSummary[] }
+  | { ok: true; status: 'not_found' | 'rejected' | 'phone_taken' }
+  | { ok: false; error: string };
+
 async function callEngine<T>(path: string, init?: RequestInit): Promise<ActionResult<T>> {
   try {
     const res = await fetch(`${DEMAND_ENGINE_URL}${path}`, {
@@ -112,4 +135,56 @@ export async function saveAgreedPrice(
     method: 'POST',
     body: JSON.stringify({ agreed_price }),
   });
+}
+
+export async function resolveContractorSession(): Promise<ResolveResult> {
+  const { createServerSupabase } = await import('@/lib/supabase/server');
+  const supabase = await createServerSupabase();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session?.access_token) {
+    return { ok: false, error: 'Sign in to see your jobs.' };
+  }
+
+  try {
+    const res = await fetch(`${DEMAND_ENGINE_URL}/contractors/auth/resolve`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.access_token}`,
+        'X-Api-Key': DEMAND_ENGINE_API_KEY,
+      },
+      signal: AbortSignal.timeout(12_000),
+    });
+    const body = (await res.json().catch(() => ({}))) as {
+      status?: string;
+      contractor?: ContractorSession;
+      jobs?: ContractorJobSummary[];
+      error?: string;
+    };
+    if (res.status === 401) {
+      return { ok: false, error: body.error ?? 'Sign in again to open your jobs.' };
+    }
+    if (!res.ok) {
+      return { ok: false, error: body.error ?? 'Could not load your contractor account.' };
+    }
+    if (body.status === 'ok' && body.contractor) {
+      return { ok: true, status: 'ok', contractor: body.contractor, jobs: body.jobs ?? [] };
+    }
+    if (body.status === 'not_found' || body.status === 'rejected' || body.status === 'phone_taken') {
+      return { ok: true, status: body.status };
+    }
+    return { ok: false, error: body.error ?? 'Could not load your contractor account.' };
+  } catch {
+    return { ok: false, error: 'Could not reach Chambé. Try again in a moment.' };
+  }
+}
+
+export async function signOutContractor(): Promise<void> {
+  const { createServerSupabase } = await import('@/lib/supabase/server');
+  const { redirect } = await import('next/navigation');
+  const supabase = await createServerSupabase();
+  await supabase.auth.signOut();
+  redirect('/contractor/login');
 }

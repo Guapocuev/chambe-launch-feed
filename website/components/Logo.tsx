@@ -11,6 +11,7 @@ interface LogoProps {
   size?: LogoSize;
   className?: string;
   href?: string;
+  label?: string;
 }
 
 const MARK_SIZES = {
@@ -108,6 +109,7 @@ export function Logo({
   size = 'md',
   className = '',
   href = '/',
+  label = 'Chambé home',
 }: LogoProps) {
   const isInverse = variant === 'inverse';
   const isMarkOnly = variant === 'mark';
@@ -129,7 +131,7 @@ export function Logo({
         </span>
       )}
 
-      <span className="sr-only">Chambé home</span>
+      <span className="sr-only">{label}</span>
     </Link>
   );
 }

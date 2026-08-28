@@ -13,7 +13,7 @@ import {
 import { ReceiptUpload } from './ReceiptUpload';
 
 const inputClass =
-  'w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-foreground/40 focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand';
+  'h-14 w-full rounded-2xl border border-border bg-background px-4 text-base text-foreground placeholder:text-foreground/40 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand';
 
 function money(value: number | null | undefined): string {
   if (value == null) return '—';
@@ -114,7 +114,7 @@ export function JobTools({ contractorId, jobId }: { contractorId: string; jobId:
             type="button"
             disabled={busy || Boolean(open_entry)}
             onClick={() => void run(() => clockInJob(contractorId, jobId))}
-            className="rounded-full bg-inverse px-5 py-2 text-sm font-semibold text-inverse-foreground disabled:opacity-50"
+            className="min-h-14 flex-1 rounded-2xl bg-inverse px-5 text-base font-semibold text-inverse-foreground disabled:opacity-50"
           >
             Clock in
           </button>
@@ -122,7 +122,7 @@ export function JobTools({ contractorId, jobId }: { contractorId: string; jobId:
             type="button"
             disabled={busy || !open_entry}
             onClick={() => void run(() => clockOutJob(contractorId, jobId))}
-            className="rounded-full border border-border px-5 py-2 text-sm font-semibold text-foreground disabled:opacity-50"
+            className="min-h-14 flex-1 rounded-2xl border border-border px-5 text-base font-semibold text-foreground disabled:opacity-50"
           >
             Clock out
           </button>
@@ -158,7 +158,7 @@ export function JobTools({ contractorId, jobId }: { contractorId: string; jobId:
                 return result;
               })
             }
-            className="rounded-full border border-border px-5 py-2 text-sm font-semibold text-foreground"
+            className="min-h-14 rounded-2xl border border-border px-5 text-base font-semibold text-foreground"
           >
             Log hours
           </button>
@@ -220,7 +220,7 @@ export function JobTools({ contractorId, jobId }: { contractorId: string; jobId:
                 return result;
               })
             }
-            className="rounded-full bg-accent px-5 py-2 text-sm font-semibold text-inverse"
+            className="min-h-14 w-full rounded-2xl bg-accent px-5 text-base font-semibold text-inverse"
           >
             Add material
           </button>
@@ -276,7 +276,7 @@ export function JobTools({ contractorId, jobId }: { contractorId: string; jobId:
                 step="0.01"
                 value={agreed}
                 onChange={(e) => setAgreed(e.target.value)}
-                className="w-28 rounded-lg border border-border bg-background px-3 py-1.5 text-right text-sm tabular-nums"
+                className="h-14 w-28 rounded-2xl border border-border bg-background px-3 text-right text-base tabular-nums"
               />
               <button
                 type="button"
@@ -286,7 +286,7 @@ export function JobTools({ contractorId, jobId }: { contractorId: string; jobId:
                     saveAgreedPrice(contractorId, jobId, agreed.trim() === '' ? null : parseFloat(agreed)),
                   )
                 }
-                className="rounded-full border border-border px-3 py-1.5 text-xs font-semibold"
+                className="min-h-14 rounded-2xl border border-border px-4 text-base font-semibold"
               >
                 Save
               </button>
