@@ -71,12 +71,22 @@ export type ResolveResult =
   | { ok: false; error: string };
 
 async function callEngine<T>(path: string, init?: RequestInit): Promise<ActionResult<T>> {
+  const { createServerSupabase } = await import('@/lib/supabase/server');
+  const supabase = await createServerSupabase();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session?.access_token) {
+    return { ok: false, error: 'Sign in again.' };
+  }
+
   try {
     const res = await fetch(`${DEMAND_ENGINE_URL}${path}`, {
       ...init,
       headers: {
         'Content-Type': 'application/json',
         'X-Api-Key': DEMAND_ENGINE_API_KEY,
+        Authorization: `Bearer ${session.access_token}`,
         ...(init?.headers ?? {}),
       },
       signal: AbortSignal.timeout(12_000),
