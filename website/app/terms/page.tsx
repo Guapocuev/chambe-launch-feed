@@ -75,7 +75,7 @@ export default function TermsPage() {
 
       <p className="mt-8 text-sm leading-relaxed text-foreground/75">
         These Terms of Service (&quot;Terms&quot;) govern your use of chambe.ca and the Chambé
-        service (the &quot;Service&quot;), operated by Chambé Inc. (&quot;Chambé,&quot;
+        service (the &quot;Service&quot;), operated by Chambé (&quot;Chambé,&quot;
         &quot;we,&quot; &quot;us,&quot; or &quot;our&quot;). By using the Service, you agree to
         these Terms.
       </p>

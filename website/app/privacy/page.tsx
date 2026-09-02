@@ -77,7 +77,7 @@ export default function PrivacyPage() {
       <p className="mt-3 text-sm text-foreground/50">Last updated: August 2026</p>
 
       <p className="mt-8 text-sm leading-relaxed text-foreground/75">
-        Chambé Inc. (&quot;Chambé,&quot; &quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) operates
+        Chambé (&quot;Chambé,&quot; &quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) operates
         chambe.ca and related services (the &quot;Service&quot;), connecting homeowners in Toronto
         and the Greater Toronto Area with independent local contractors. This Privacy Policy
         explains what information we collect, how we use it, and the choices you have.
