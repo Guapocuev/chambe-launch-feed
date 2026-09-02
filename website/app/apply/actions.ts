@@ -1,6 +1,9 @@
 'use server';
 
-import { DEMAND_ENGINE_API_KEY, DEMAND_ENGINE_URL } from '@/lib/config';
+import { DEMAND_ENGINE_URL } from '@/lib/config';
+import { demandEngineHeaders } from '@/lib/engine-request';
+import { honeypotFilled } from '@/lib/honeypot';
+import { allowVisitor, RATE_LIMITED_COPY } from '@/lib/rate-limit';
 import { CONTACT_EMAIL } from '@/lib/site';
 
 /**
@@ -38,6 +41,17 @@ export async function submitContractorApplication(
     };
   }
 
+  if (honeypotFilled(formData)) {
+    return {
+      status: 'success',
+      contact: { phone, email: String(formData.get('email') ?? '').trim() || undefined },
+    };
+  }
+
+  if (!(await allowVisitor('apply', 8))) {
+    return { status: 'error', message: RATE_LIMITED_COPY };
+  }
+
   const yearsExperienceRaw = String(formData.get('years_experience') ?? '').trim();
   const notes = buildVettingNotes(formData);
   const email = String(formData.get('email') ?? '').trim() || undefined;
@@ -55,7 +69,7 @@ export async function submitContractorApplication(
   try {
     const res = await fetch(`${DEMAND_ENGINE_URL}/contractors/apply`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Api-Key': DEMAND_ENGINE_API_KEY },
+      headers: await demandEngineHeaders(),
       body: JSON.stringify(payload),
       signal: AbortSignal.timeout(15_000),
     });
@@ -71,6 +85,10 @@ export async function submitContractorApplication(
 
     if (res.status === 400) {
       return { status: 'error', message: body.error ?? 'Please check your submission and try again.' };
+    }
+
+    if (res.status === 429) {
+      return { status: 'error', message: RATE_LIMITED_COPY };
     }
 
     return { status: 'error', message: 'Something went wrong on our end. Please try again in a moment.' };

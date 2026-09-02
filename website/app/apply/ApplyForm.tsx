@@ -2,6 +2,7 @@
 
 import { useActionState, useState, type ReactNode } from 'react';
 import { SubmitButton } from '@/components/SubmitButton';
+import { HoneypotField } from '@/components/HoneypotField';
 import { APPLICANT_CALLBACK_WINDOW } from '@/lib/response-time';
 import { initialApplyFormState, submitContractorApplication } from './actions';
 
@@ -85,8 +86,9 @@ export function ApplyForm() {
           setStepError('Tell us about licence, insurance, and WSIB so we can follow up.');
         }
       }}
-      className="space-y-5"
+      className="relative space-y-5"
     >
+      <HoneypotField />
       <div>
         <p className="text-sm font-medium text-foreground">Step {step} of 2</p>
         <div className="mt-2 flex gap-1.5" aria-hidden="true">

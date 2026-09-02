@@ -2,6 +2,7 @@
 
 import { useActionState, useMemo, useState, type ReactNode } from 'react';
 import { SubmitButton } from '@/components/SubmitButton';
+import { HoneypotField } from '@/components/HoneypotField';
 import { CALLBACK_WINDOW, MATCH_WINDOW, successFollowUpCopy } from '@/lib/response-time';
 import {
   composeFollowUpNotes,
@@ -182,8 +183,9 @@ export function QuoteForm() {
           setStepError('Add your name and phone number so we can follow up.');
         }
       }}
-      className="space-y-5"
+      className="relative space-y-5"
     >
+      <HoneypotField />
       <div>
         <p className="text-sm font-medium text-foreground">Step {step} of 3</p>
         <div className="mt-2 flex gap-1.5" aria-hidden="true">

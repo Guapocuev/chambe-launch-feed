@@ -1,6 +1,7 @@
 'use server';
 
 import { OPENAI_API_KEY, OPENAI_TRANSCRIBE_MODEL } from '@/lib/config';
+import { allowVisitor, RATE_LIMITED_COPY } from '@/lib/rate-limit';
 
 const MAX_BYTES = 4 * 1024 * 1024;
 const ALLOWED_TYPES = new Set([
@@ -28,6 +29,10 @@ export async function transcribeJobAudio(
   }
   if (file.size > MAX_BYTES) {
     return { error: 'That recording is too long. Keep it under about a minute.' };
+  }
+
+  if (!(await allowVisitor('voice', 10))) {
+    return { error: RATE_LIMITED_COPY };
   }
 
   const type = (file.type || 'audio/webm').split(';')[0];

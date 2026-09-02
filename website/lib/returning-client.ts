@@ -1,4 +1,6 @@
 import { DEMAND_ENGINE_URL } from '@/lib/config';
+import { demandEngineHeaders } from '@/lib/engine-request';
+import { allowVisitor } from '@/lib/rate-limit';
 
 export interface ReturningClientMatch {
   found: true;
@@ -19,10 +21,14 @@ export type ReturningClientLookup =
  * E.164 phone match, never a list of other clients.
  */
 export async function lookupReturningClient(phone: string): Promise<ReturningClientLookup> {
+  if (!(await allowVisitor('lookup', 20))) {
+    return { found: false, error: 'Lookup unavailable' };
+  }
+
   try {
     const res = await fetch(`${DEMAND_ENGINE_URL}/clients/lookup`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: await demandEngineHeaders(),
       body: JSON.stringify({ phone }),
       signal: AbortSignal.timeout(8_000),
     });

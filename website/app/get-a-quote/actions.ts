@@ -1,6 +1,9 @@
 'use server';
 
-import { DEMAND_ENGINE_API_KEY, DEMAND_ENGINE_URL } from '@/lib/config';
+import { DEMAND_ENGINE_URL } from '@/lib/config';
+import { demandEngineHeaders } from '@/lib/engine-request';
+import { honeypotFilled } from '@/lib/honeypot';
+import { allowVisitor, RATE_LIMITED_COPY } from '@/lib/rate-limit';
 import { PENDING_RETRY_COPY } from '@/lib/response-time';
 
 /**
@@ -44,8 +47,16 @@ export async function submitJobRequest(
   // literal "true"/"false" string.
   const rememberClient = formData.get('rememberClient') === 'true';
 
+  if (honeypotFilled(formData)) {
+    return { status: 'pending_retry', message: PENDING_RETRY_COPY };
+  }
+
   if (!fullName || !phone || !address || !description) {
     return { status: 'error', message: 'Please fill in your name, phone number, address, and a description of the job.' };
+  }
+
+  if (!(await allowVisitor('quote', 8))) {
+    return { status: 'error', message: RATE_LIMITED_COPY };
   }
 
   const payload = {
@@ -72,7 +83,7 @@ export async function submitJobRequest(
   try {
     const res = await fetch(`${DEMAND_ENGINE_URL}/webhooks/tally-intake`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Api-Key': DEMAND_ENGINE_API_KEY },
+      headers: await demandEngineHeaders(),
       body: JSON.stringify(payload),
       signal: AbortSignal.timeout(20_000),
     });
@@ -114,6 +125,10 @@ export async function submitJobRequest(
       return { status: 'error', message: body.error ?? 'Please check your submission and try again.' };
     }
 
+    if (res.status === 429) {
+      return { status: 'error', message: RATE_LIMITED_COPY };
+    }
+
     return { status: 'error', message: 'Something went wrong on our end. Please try again in a moment.' };
   } catch {
     return {
@@ -146,10 +161,14 @@ export async function checkReturningClient(phone: string): Promise<ReturningClie
   const trimmed = phone.trim();
   if (!trimmed) return { found: false };
 
+  if (!(await allowVisitor('lookup', 20))) {
+    return { found: false };
+  }
+
   try {
     const res = await fetch(`${DEMAND_ENGINE_URL}/clients/lookup`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Api-Key': DEMAND_ENGINE_API_KEY },
+      headers: await demandEngineHeaders(),
       body: JSON.stringify({ phone: trimmed }),
       signal: AbortSignal.timeout(8_000),
     });

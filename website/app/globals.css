@@ -78,3 +78,12 @@ body {
 .leaflet-zoom-anim .leaflet-zoom-animated {
   transition-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
+
+.chambe-hp {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
