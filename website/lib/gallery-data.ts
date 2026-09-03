@@ -3,7 +3,7 @@
  *
  * Map pins are neighbourhood-accurate and offset from the lot — close
  * enough to show where we work, not enough to identify a house. Never
- * put a street number on the public card. Homepage shows the first three;
+ * put a street number on the public card. Homepage carousels every job;
  * /gallery shows the full list plus the map.
  */
 export type GalleryTrade = 'electrical' | 'plumbing' | 'carpentry';
@@ -167,6 +167,24 @@ export const galleryProjects: GalleryProject[] = [
       '/gallery/east-end-ceiling-light/light-on.png',
       '/gallery/east-end-ceiling-light/light-off.png',
       '/gallery/east-end-ceiling-light/fan-removal.png',
+    ],
+  },
+  {
+    id: 'titan-road-etobicoke',
+    title: 'Warehouse partition wall',
+    trade: 'carpentry',
+    location: 'Etobicoke',
+    mapLabel: 'Etobicoke',
+    description:
+      'Inside a commercial warehouse we framed a full-height industrial partition with metal studs, including a window opening, then insulated, drywalled, taped, and painted the entire wall. A large-scale commercial build — not a house job.',
+    // South Etobicoke industrial (Titan Rd / The Queensway), offset ~400m from the lot.
+    lat: 43.6332,
+    lng: -79.5191,
+    coverImage: '/gallery/titan-road-etobicoke/drywall-in-progress.jpg',
+    photos: [
+      '/gallery/titan-road-etobicoke/drywall-in-progress.jpg',
+      '/gallery/titan-road-etobicoke/metal-stud-framing.jpg',
+      '/gallery/titan-road-etobicoke/lift-at-wall.jpg',
     ],
   },
 ];

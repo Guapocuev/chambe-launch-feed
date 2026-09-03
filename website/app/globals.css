@@ -79,6 +79,23 @@ body {
   transition-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
+.chambe-h-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chambe-h-scroll {
+    scroll-behavior: auto;
+  }
+}
+
+.chambe-h-scroll::-webkit-scrollbar {
+  display: none;
+}
+
 .chambe-hp {
   position: absolute;
   left: -10000px;

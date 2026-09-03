@@ -5,14 +5,25 @@ import Image from 'next/image';
 import type { GalleryProject } from '@/lib/gallery-data';
 import { TRADE_LABELS } from '@/lib/gallery-data';
 
-function ProjectCard({ project, priority }: { project: GalleryProject; priority?: boolean }) {
+export function ProjectCard({
+  project,
+  priority,
+  className = '',
+}: {
+  project: GalleryProject;
+  priority?: boolean;
+  className?: string;
+}) {
   const shots = project.photos.length > 0 ? project.photos : [project.coverImage];
   const [active, setActive] = useState(0);
   const current = shots[active] ?? project.coverImage;
   const hasBeforeAfter = Boolean(project.beforeImage && project.afterImage);
 
   return (
-    <article id={`job-${project.id}`} className="scroll-mt-24 overflow-hidden rounded-2xl border border-border bg-background">
+    <article
+      id={`job-${project.id}`}
+      className={`scroll-mt-24 overflow-hidden rounded-2xl border border-border bg-background ${className}`}
+    >
       {hasBeforeAfter ? (
         <div className="grid grid-cols-2 gap-px bg-border">
           <div className="relative aspect-square">

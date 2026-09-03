@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { GalleryGrid } from '@/components/GalleryGrid';
+import { GalleryCarousel } from '@/components/GalleryCarousel';
 import { MapTeaser } from '@/components/MapTeaser';
 import { galleryProjects } from '@/lib/gallery-data';
 import {
@@ -159,7 +159,7 @@ export default function Home() {
             </Link>
           </div>
           <div className="mt-10">
-            <GalleryGrid projects={galleryProjects.slice(0, 3)} />
+            <GalleryCarousel projects={galleryProjects} />
           </div>
           <Link href="/gallery" className="mt-6 block text-sm font-semibold text-brand hover:underline sm:hidden">
             View full gallery →
