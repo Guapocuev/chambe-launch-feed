@@ -148,22 +148,24 @@ export default function Home() {
 
       {/* Gallery teaser */}
       {galleryProjects.length > 0 && (
-        <section className="mx-auto max-w-6xl px-6 py-20">
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <h2 className="text-3xl font-bold tracking-tight text-foreground">Real jobs, real results</h2>
-              <p className="mt-2 text-foreground/70">Completed work from Chambé contractors.</p>
+        <section className="overflow-hidden border-b border-border">
+          <div className="mx-auto max-w-6xl px-6 py-20">
+            <div className="flex items-end justify-between gap-4">
+              <div>
+                <h2 className="text-3xl font-bold tracking-tight text-foreground">Real jobs, real results</h2>
+                <p className="mt-2 text-foreground/70">Completed work from Chambé contractors.</p>
+              </div>
+              <Link href="/gallery" className="hidden shrink-0 text-sm font-semibold text-brand hover:underline sm:block">
+                View full gallery →
+              </Link>
             </div>
-            <Link href="/gallery" className="hidden shrink-0 text-sm font-semibold text-brand hover:underline sm:block">
+            <div className="mt-10">
+              <GalleryCarousel projects={galleryProjects} />
+            </div>
+            <Link href="/gallery" className="mt-6 block text-sm font-semibold text-brand hover:underline sm:hidden">
               View full gallery →
             </Link>
           </div>
-          <div className="mt-10">
-            <GalleryCarousel projects={galleryProjects} />
-          </div>
-          <Link href="/gallery" className="mt-6 block text-sm font-semibold text-brand hover:underline sm:hidden">
-            View full gallery →
-          </Link>
         </section>
       )}
 
