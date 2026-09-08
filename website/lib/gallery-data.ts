@@ -122,6 +122,30 @@ export const galleryProjects: GalleryProject[] = [
     ],
   },
   {
+    id: 'black-forest-lane-barrie',
+    title: 'Exterior roofline trim',
+    trade: 'carpentry',
+    location: 'Barrie',
+    mapLabel: 'Barrie',
+    description:
+      'Installed white wood trim boards under the second-floor roofline and overhang.',
+    // 9 Black Forest Lane, Oro-Medonte — pin on the lot. Street number stays off the public card.
+    lat: 44.401443,
+    lng: -79.607127,
+    coverImage: '/gallery/black-forest-lane-barrie/finished-roofline-trim.jpg',
+    photos: [
+      '/gallery/black-forest-lane-barrie/finished-roofline-trim.jpg',
+      '/gallery/black-forest-lane-barrie/sanding-trim-boards.jpg',
+      '/gallery/black-forest-lane-barrie/overhang-in-progress.jpg',
+      '/gallery/black-forest-lane-barrie/trim-install-with-ladders.jpg',
+      '/gallery/black-forest-lane-barrie/soffit-boards-install.jpg',
+      '/gallery/black-forest-lane-barrie/finished-soffit-from-patio.jpg',
+      '/gallery/black-forest-lane-barrie/finished-overhang-soffit.jpg',
+      '/gallery/black-forest-lane-barrie/fascia-and-soffit-detail.jpg',
+      '/gallery/black-forest-lane-barrie/overhang-trim-and-glass-rail.jpg',
+    ],
+  },
+  {
     id: 'lippincott-toronto',
     title: 'Full-house framing and envelope',
     trade: 'carpentry',
