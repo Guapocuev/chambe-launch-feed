@@ -194,22 +194,22 @@ export const galleryProjects: GalleryProject[] = [
     ],
   },
   {
-    id: 'east-end-ceiling-light',
-    title: 'Ceiling fan to light',
+    id: 'kenilworth-ceiling-light',
+    title: 'Ceiling fan to pot light',
     trade: 'electrical',
     location: 'East End, Toronto',
     mapLabel: 'East End',
     description:
-      'Swapped an old ceiling fan for a new flush-mount light — disconnected the fan, wired the fixture, and left a clean finish on the ceiling.',
-    // Same East End street as the addition, offset so both pins read as
-    // neighbours at neighbourhood zoom without overlapping into one dot.
-    lat: 43.6852,
-    lng: -79.302,
-    coverImage: '/gallery/east-end-ceiling-light/light-on.png',
+      'Demoed the old ceiling fan, cleared it out, installed a new pot light, and tested that it was working.',
+    // 229 Kenilworth Ave, The Beaches — pin on the lot. Distinct from 241
+    // Kenilworth (kenilworth-east-end). Street number stays off the public card.
+    lat: 43.673252,
+    lng: -79.303286,
+    coverImage: '/gallery/kenilworth-ceiling-light/light-on.jpg',
     photos: [
-      '/gallery/east-end-ceiling-light/light-on.png',
-      '/gallery/east-end-ceiling-light/light-off.png',
-      '/gallery/east-end-ceiling-light/fan-removal.png',
+      '/gallery/kenilworth-ceiling-light/light-on.jpg',
+      '/gallery/kenilworth-ceiling-light/light-off.jpg',
+      '/gallery/kenilworth-ceiling-light/fan-removal.jpg',
     ],
   },
   {
