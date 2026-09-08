@@ -213,6 +213,23 @@ export const galleryProjects: GalleryProject[] = [
     ],
   },
   {
+    id: 'kenilworth-east-end',
+    title: 'Basement bathroom and storage',
+    trade: 'carpentry',
+    location: 'East End, Toronto',
+    mapLabel: 'East End',
+    description:
+      'Added basement storage and a bathroom, plus a gas-dryer setup. We demoed small sections of concrete wall to open the space, ran a new circuit for the bath light, switch, and fan, installed HVAC duct to vent the dryer, then framed, drywalled, and taped the new walls for the cabinet installer.',
+    // 241 Kenilworth Ave, The Beaches — pin on the lot. Street number stays off the public card.
+    lat: 43.673684,
+    lng: -79.303489,
+    coverImage: '/gallery/kenilworth-east-end/bathroom-framing-and-rough-in.jpg',
+    photos: [
+      '/gallery/kenilworth-east-end/bathroom-framing-and-rough-in.jpg',
+      '/gallery/kenilworth-east-end/concrete-wall-drilling.jpg',
+    ],
+  },
+  {
     id: 'titan-road-etobicoke',
     title: 'Warehouse partition wall',
     trade: 'carpentry',
