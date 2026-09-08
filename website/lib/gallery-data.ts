@@ -126,6 +126,12 @@ export const galleryProjects: GalleryProject[] = [
       '/gallery/lippincott-toronto/blueskin-roof.png',
       '/gallery/lippincott-toronto/roof-framing-crew.png',
       '/gallery/lippincott-toronto/blueskin-install.png',
+      '/gallery/lippincott-toronto/full-height-wood-framing.jpg',
+      '/gallery/lippincott-toronto/upper-framing-and-shoring.jpg',
+      '/gallery/lippincott-toronto/rear-addition-framing.jpg',
+      '/gallery/lippincott-toronto/engineered-floor-joists.jpg',
+      '/gallery/lippincott-toronto/subfloor-over-joists.jpg',
+      '/gallery/lippincott-toronto/subfloor-and-foundation.jpg',
     ],
   },
   {
