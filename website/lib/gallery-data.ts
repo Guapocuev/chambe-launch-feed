@@ -50,13 +50,26 @@ export const galleryProjects: GalleryProject[] = [
     mapLabel: 'Etobicoke',
     description:
       'The backyard was just grass. We laid out and dug the footings, poured the concrete, built the whole deck, then sanded and stained the wood.',
-    // Near Edgecroft Rd / Humber Valley, offset ~400m from the lot.
-    lat: 43.6648,
-    lng: -79.5165,
+    // 5 Edgecroft Rd, Stonegate-Queensway — pin on the lot. Street number stays off the public card.
+    lat: 43.629698,
+    lng: -79.506185,
     coverImage: '/gallery/etobicoke-deck/digging-footings.png',
     photos: [
       '/gallery/etobicoke-deck/digging-footings.png',
       '/gallery/etobicoke-deck/crew.png',
+      '/gallery/etobicoke-deck/layout-stakes-and-tape.jpg',
+      '/gallery/etobicoke-deck/layout-with-crew.jpg',
+      '/gallery/etobicoke-deck/landscape-fabric-layout.jpg',
+      '/gallery/etobicoke-deck/ledger-drilling-basement.jpg',
+      '/gallery/etobicoke-deck/post-wrap-woodfiller.jpg',
+      '/gallery/etobicoke-deck/fascia-prep-crew.jpg',
+      '/gallery/etobicoke-deck/primed-fascia-and-wraps.jpg',
+      '/gallery/etobicoke-deck/measuring-deck-board.jpg',
+      '/gallery/etobicoke-deck/finished-deck-from-yard.jpg',
+      '/gallery/etobicoke-deck/finished-stairs-and-glass-rail.jpg',
+      '/gallery/etobicoke-deck/stairs-to-sliding-door.jpg',
+      '/gallery/etobicoke-deck/finished-deck-seating.jpg',
+      '/gallery/etobicoke-deck/finished-deck-and-stone-patio.jpg',
     ],
   },
   {
