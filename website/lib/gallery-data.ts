@@ -1,10 +1,11 @@
 /**
  * Real completed jobs only. Photos live in website/public/gallery/{id}/.
  *
- * Map pins are neighbourhood-accurate and offset from the lot — close
- * enough to show where we work, not enough to identify a house. Never
- * put a street number on the public card. Homepage carousels every job;
- * /gallery shows the full list plus the map.
+ * Pins are lot-accurate lat/lng geocoded at edit time. This module is
+ * imported by client components and ships to the browser — never put a
+ * street number or full street address in fields OR comments (Next keeps
+ * comments in client chunks and source maps). Public copy is neighbourhood
+ * only. Homepage carousels every job; /gallery shows the list plus the map.
  */
 export type GalleryTrade = 'electrical' | 'plumbing' | 'carpentry';
 
@@ -50,7 +51,6 @@ export const galleryProjects: GalleryProject[] = [
     mapLabel: 'Etobicoke',
     description:
       'The backyard was just grass. We laid out and dug the footings, poured the concrete, built the whole deck, then sanded and stained the wood.',
-    // 5 Edgecroft Rd, Stonegate-Queensway — pin on the lot. Street number stays off the public card.
     lat: 43.629698,
     lng: -79.506185,
     coverImage: '/gallery/etobicoke-deck/digging-footings.png',
@@ -80,9 +80,8 @@ export const galleryProjects: GalleryProject[] = [
     mapLabel: 'Downtown',
     description:
       'Top-to-bottom kitchen renovation: demoed the old kitchen, new drywall and taping, two new circuits from the breaker for the microwave, oven, fridge, and dishwasher we installed, new plumbing, a tiled backsplash, and the main floor painted white with new window and door trim, baseboards, and a yellow front door. A Blink video doorbell was also installed.',
-    // Lappin / Wallace Emerson, offset ~400m from the lot.
-    lat: 43.668,
-    lng: -79.4372,
+    lat: 43.66526,
+    lng: -79.44293,
     coverImage: '/gallery/downtown-kitchen/kitchen-finished.png',
     photos: [
       '/gallery/downtown-kitchen/kitchen-finished.png',
@@ -107,9 +106,8 @@ export const galleryProjects: GalleryProject[] = [
     location: 'Barrie',
     description:
       'Finish carpentry at a lakeside home: custom boxes to conceal patio phantom screens, trim finishing, and moving furnishings in and out so the space could be used again.',
-    // East Kempenfelt Bay waterfront outskirts, offset ~400m from the lot.
-    lat: 44.375,
-    lng: -79.641,
+    lat: 44.401443,
+    lng: -79.607127,
     coverImage: '/gallery/rosas-house-barrie/patio-screens.png',
     photos: [
       '/gallery/rosas-house-barrie/patio-screens.png',
@@ -129,7 +127,6 @@ export const galleryProjects: GalleryProject[] = [
     mapLabel: 'Barrie',
     description:
       'Installed white wood trim boards under the second-floor roofline and overhang.',
-    // 9 Black Forest Lane, Oro-Medonte — pin on the lot. Street number stays off the public card.
     lat: 44.401443,
     lng: -79.607127,
     coverImage: '/gallery/black-forest-lane-barrie/finished-roofline-trim.jpg',
@@ -152,9 +149,8 @@ export const galleryProjects: GalleryProject[] = [
     location: 'Toronto',
     description:
       'Demolished the existing house, then framed the new build from the roof down — walls, stairs, all of it. Insulation, sheathing, and Blueskin air and vapour barrier.',
-    // Harbord Village / west Annex, offset ~400m from the Lippincott lot.
-    lat: 43.6624,
-    lng: -79.4031,
+    lat: 43.66415,
+    lng: -79.40942,
     coverImage: '/gallery/lippincott-toronto/exterior-finished.png',
     photos: [
       '/gallery/lippincott-toronto/exterior-finished.png',
@@ -179,9 +175,8 @@ export const galleryProjects: GalleryProject[] = [
     mapLabel: 'East End',
     description:
       'Opened up a tight storage space for a room and bathroom addition. Demo where it was needed, framed the walls around the electrical panel and the new bath, drywall and taping, a new circuit for the fan, light, and outlet, and a gas-dryer vent cut with metal HVAC run outside.',
-    // Woodbine / East Danforth, offset ~400m from the lot.
-    lat: 43.6856,
-    lng: -79.3062,
+    lat: 43.673684,
+    lng: -79.303489,
     coverImage: '/gallery/east-end-addition/drywall-taping.png',
     photos: [
       '/gallery/east-end-addition/drywall-taping.png',
@@ -201,8 +196,6 @@ export const galleryProjects: GalleryProject[] = [
     mapLabel: 'East End',
     description:
       'Demoed the old ceiling fan, cleared it out, installed a new pot light, and tested that it was working.',
-    // 229 Kenilworth Ave, The Beaches — pin on the lot. Distinct from 241
-    // Kenilworth (kenilworth-east-end). Street number stays off the public card.
     lat: 43.673252,
     lng: -79.303286,
     coverImage: '/gallery/kenilworth-ceiling-light/light-on.jpg',
@@ -220,7 +213,6 @@ export const galleryProjects: GalleryProject[] = [
     mapLabel: 'East End',
     description:
       'Added basement storage and a bathroom, plus a gas-dryer setup. We demoed small sections of concrete wall to open the space, ran a new circuit for the bath light, switch, and fan, installed HVAC duct to vent the dryer, then framed, drywalled, and taped the new walls for the cabinet installer.',
-    // 241 Kenilworth Ave, The Beaches — pin on the lot. Street number stays off the public card.
     lat: 43.673684,
     lng: -79.303489,
     coverImage: '/gallery/kenilworth-east-end/bathroom-framing-and-rough-in.jpg',
@@ -237,9 +229,8 @@ export const galleryProjects: GalleryProject[] = [
     mapLabel: 'Etobicoke',
     description:
       'Inside a commercial warehouse we framed a full-height industrial partition with metal studs, including a window opening, then insulated, drywalled, taped, and painted the entire wall. A large-scale commercial build — not a house job.',
-    // South Etobicoke industrial (Titan Rd / The Queensway), offset ~400m from the lot.
-    lat: 43.6332,
-    lng: -79.5191,
+    lat: 43.630519,
+    lng: -79.522998,
     coverImage: '/gallery/titan-road-etobicoke/drywall-in-progress.jpg',
     photos: [
       '/gallery/titan-road-etobicoke/drywall-in-progress.jpg',
