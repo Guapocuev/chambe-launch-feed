@@ -10,7 +10,6 @@ interface LogoProps {
   variant?: LogoVariant;
   size?: LogoSize;
   className?: string;
-  href?: string;
   label?: string;
 }
 
@@ -108,7 +107,6 @@ export function Logo({
   variant = 'default',
   size = 'md',
   className = '',
-  href = '/',
   label = 'Chambé home',
 }: LogoProps) {
   const isInverse = variant === 'inverse';
@@ -116,7 +114,7 @@ export function Logo({
 
   return (
     <Link
-      href={href}
+      href="/"
       className={`group inline-flex shrink-0 items-center gap-3 transition hover:opacity-90 ${className}`}
     >
       <LogoMark inverse={isInverse} className={MARK_SIZES[size]} />

@@ -24,7 +24,7 @@ export function Nav() {
     return (
       <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-md items-center px-5">
-          <Logo size="md" href="/apprentice" label="Your hours" />
+          <Logo size="md" />
         </div>
       </header>
     );
@@ -34,7 +34,7 @@ export function Nav() {
     return (
       <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-md items-center px-5">
-          <Logo size="md" href="/contractor" label="Your jobs" />
+          <Logo size="md" />
         </div>
       </header>
     );
