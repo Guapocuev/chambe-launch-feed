@@ -2,14 +2,34 @@
 
 import { createBrowserSupabase } from '@/lib/supabase/client';
 
+const PKCE_FLOW_ID_PARAM = 'sb_flow_id';
+
+function stripAuthParams(url: URL) {
+  url.searchParams.delete('code');
+  url.searchParams.delete(PKCE_FLOW_ID_PARAM);
+  window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
+}
+
 export async function completeContractorLoginFromUrl(): Promise<{ ok: true } | { ok: false; error: string }> {
   const supabase = createBrowserSupabase();
   const url = new URL(window.location.href);
   const code = url.searchParams.get('code');
 
   if (code) {
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (error) return { ok: false, error: error.message };
+    const flowId = url.searchParams.get(PKCE_FLOW_ID_PARAM);
+    const { error } = await supabase.auth.exchangeCodeForSession(
+      code,
+      flowId ? { flowId } : undefined,
+    );
+    if (error) {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        stripAuthParams(url);
+        return { ok: true };
+      }
+      return { ok: false, error: error.message };
+    }
+    stripAuthParams(url);
     return { ok: true };
   }
 
