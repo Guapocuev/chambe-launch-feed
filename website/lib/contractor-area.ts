@@ -6,6 +6,10 @@ export function isApprenticeArea(pathname: string): boolean {
   return pathname === '/apprentice' || pathname.startsWith('/apprentice/');
 }
 
+export function isVisualizeArea(pathname: string): boolean {
+  return pathname === '/visualize' || pathname.startsWith('/visualize/');
+}
+
 export function isAppArea(pathname: string): boolean {
-  return isContractorArea(pathname) || isApprenticeArea(pathname);
+  return isContractorArea(pathname) || isApprenticeArea(pathname) || isVisualizeArea(pathname);
 }

@@ -76,6 +76,16 @@ export interface FollowUpQuestion {
   prompt: string;
 }
 
+export const AREA_SQFT_QUESTION_ID = 'area_sqft';
+export const AREA_SQFT_SKIPPED = '__skipped__';
+export const AREA_SQFT_QUESTION: FollowUpQuestion = {
+  id: AREA_SQFT_QUESTION_ID,
+  prompt: 'About how many square feet is the space? Skip if you are not sure.',
+};
+
+const AREA_SQFT_IN_TEXT =
+  /\b\d[\d,]*(?:\.\d+)?\s*(?:sq\.?\s*ft|sqft|square\s+feet|square\s+foot|sf)\b/i;
+
 const FOLLOW_UP_BANK: Record<Trade, FollowUpQuestion[]> = {
   electrical: [
     { id: 'elec_gfci', prompt: 'Is this a GFCI / outdoor / kitchen-bath outlet?' },
@@ -106,6 +116,7 @@ const SKIP_KEYWORDS: Record<string, string[]> = {
   carp_where: ['interior', 'exterior', 'indoor', 'outdoor'],
   carp_failure: ['rot', 'rotting', 'broken', 'broke', "won't fit", 'sticking', 'warped'],
   carp_size: ['one piece', 'whole', 'deck', 'fence', 'room'],
+  area_sqft: ['sq ft', 'sqft', 'square feet', 'square foot'],
 };
 
 export function hasStreetNumber(address: string): boolean {
@@ -161,6 +172,37 @@ export function formDisplayScore(input: FormConfidenceInput): number {
   return Math.min(DISPLAY_SCORE_CAP, Math.max(0, score));
 }
 
+export function descriptionHasAreaSqft(description: string): boolean {
+  return AREA_SQFT_IN_TEXT.test(description);
+}
+
+export function parseAreaSqftFromDescription(description: string): number | null {
+  const match = description.match(AREA_SQFT_IN_TEXT);
+  return match ? parseAreaSqftAnswer(match[0]) : null;
+}
+
+/** Client estimate → integer sqft, or null when skipped / unusable. */
+export function parseAreaSqftAnswer(raw: string | number | null | undefined): number | null {
+  if (raw == null) return null;
+  if (typeof raw === 'number') {
+    if (!Number.isFinite(raw) || raw <= 0 || raw > 100_000) return null;
+    return Math.round(raw);
+  }
+  const trimmed = raw.trim();
+  if (!trimmed || trimmed === AREA_SQFT_SKIPPED) return null;
+  const match = trimmed.replace(/,/g, '').match(/(\d+(?:\.\d+)?)/);
+  if (!match) return null;
+  const n = Number(match[1]);
+  if (!Number.isFinite(n) || n <= 0 || n > 100_000) return null;
+  return Math.round(n);
+}
+
+/** Prompt once, on every trade, unless they already wrote a size or skipped. */
+export function shouldPromptAreaSqft(description: string, answer?: string): boolean {
+  if (answer === AREA_SQFT_SKIPPED) return false;
+  return !descriptionHasAreaSqft(description);
+}
+
 export function pickFormFollowUps(description: string, display: number): FollowUpQuestion[] {
   if (display >= FOLLOW_UP_THRESHOLD) return [];
 
@@ -192,13 +234,18 @@ export function composeFollowUpNotes(
     id: 'trade_picker',
     prompt: 'Is this mainly electrical, plumbing, or carpentry?',
   });
+  byId.set(AREA_SQFT_QUESTION.id, AREA_SQFT_QUESTION);
   for (const q of Object.values(FOLLOW_UP_BANK).flat()) byId.set(q.id, q);
   for (const q of questions) byId.set(q.id, q);
 
   const lines = Object.entries(answers)
     .map(([id, raw]) => {
       const answer = raw.trim();
-      if (!answer) return null;
+      if (!answer || answer === AREA_SQFT_SKIPPED) return null;
+      if (id === AREA_SQFT_QUESTION_ID) {
+        const sqft = parseAreaSqftAnswer(answer);
+        return sqft != null ? `Approximate area: ${sqft} sqft` : null;
+      }
       const prompt = byId.get(id)?.prompt;
       if (!prompt) return null;
       return `${prompt} ${answer}`;

@@ -26,6 +26,7 @@ export function ContractorLoginForm({
   emailHint = 'Enter the email on your contractor application.',
   altHref,
   altLabel,
+  initialMode = 'phone',
 }: {
   homePath?: string;
   callbackPath?: string;
@@ -35,9 +36,10 @@ export function ContractorLoginForm({
   emailHint?: string;
   altHref?: string;
   altLabel?: string;
+  initialMode?: Mode;
 } = {}) {
   const router = useRouter();
-  const [mode, setMode] = useState<Mode>('phone');
+  const [mode, setMode] = useState<Mode>(initialMode);
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');

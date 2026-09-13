@@ -24,6 +24,7 @@ export const PLAUSIBLE_DOMAIN = process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN ?? '';
 export const PUBLIC_ROUTES = [
   { path: '/', priority: 1.0, changeFrequency: 'weekly' as const },
   { path: '/get-a-quote', priority: 0.9, changeFrequency: 'monthly' as const },
+  { path: '/visualize', priority: 0.8, changeFrequency: 'monthly' as const },
   { path: '/how-it-works', priority: 0.8, changeFrequency: 'monthly' as const },
   { path: '/gallery', priority: 0.8, changeFrequency: 'weekly' as const },
   { path: '/about', priority: 0.7, changeFrequency: 'monthly' as const },

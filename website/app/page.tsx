@@ -68,10 +68,10 @@ export default function Home() {
                 Get a Free Estimate
               </Link>
               <Link
-                href="/how-it-works"
+                href="/visualize"
                 className="rounded-full border border-border px-7 py-3.5 text-center text-sm font-semibold text-foreground transition hover:border-brand hover:text-brand"
               >
-                See how it works
+                Preview a kitchen
               </Link>
             </div>
           </div>

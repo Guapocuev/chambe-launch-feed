@@ -1,6 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
-import { isApprenticeArea, isAppArea } from '@/lib/contractor-area';
+import { isApprenticeArea, isAppArea, isVisualizeArea } from '@/lib/contractor-area';
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from '@/lib/config';
 
 export async function updateContractorSession(request: NextRequest) {
@@ -38,18 +38,24 @@ export async function updateContractorSession(request: NextRequest) {
     path === '/contractor/login' ||
     path.startsWith('/contractor/auth/') ||
     path === '/apprentice/login' ||
-    path.startsWith('/apprentice/auth/');
+    path.startsWith('/apprentice/auth/') ||
+    path === '/visualize/login' ||
+    path.startsWith('/visualize/auth/');
 
   if (!user && !isPublic) {
     const login = request.nextUrl.clone();
-    login.pathname = isApprenticeArea(path) ? '/apprentice/login' : '/contractor/login';
+    login.pathname = isVisualizeArea(path)
+      ? '/visualize/login'
+      : isApprenticeArea(path)
+        ? '/apprentice/login'
+        : '/contractor/login';
     login.search = '';
     return NextResponse.redirect(login);
   }
 
-  if (user && (path === '/contractor/login' || path === '/apprentice/login')) {
+  if (user && (path === '/contractor/login' || path === '/apprentice/login' || path === '/visualize/login')) {
     const home = request.nextUrl.clone();
-    home.pathname = isApprenticeArea(path) ? '/apprentice' : '/contractor';
+    home.pathname = isVisualizeArea(path) ? '/visualize' : isApprenticeArea(path) ? '/apprentice' : '/contractor';
     home.search = '';
     return NextResponse.redirect(home);
   }

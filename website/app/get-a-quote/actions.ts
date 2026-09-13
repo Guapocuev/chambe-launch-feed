@@ -3,6 +3,7 @@
 import { DEMAND_ENGINE_URL } from '@/lib/config';
 import { demandEngineHeaders } from '@/lib/engine-request';
 import { honeypotFilled } from '@/lib/honeypot';
+import { parseAreaSqftAnswer } from '@/lib/quote-confidence';
 import { allowVisitor, RATE_LIMITED_COPY } from '@/lib/rate-limit';
 import { PENDING_RETRY_COPY } from '@/lib/response-time';
 
@@ -69,6 +70,7 @@ export async function submitJobRequest(
     'Is the issue affecting safety or causing damage?': String(formData.get('Safety') ?? '').trim() || undefined,
     'Job Length': String(formData.get('Job Length') ?? '').trim() || undefined,
     rememberClient,
+    area_sqft: parseAreaSqftAnswer(String(formData.get('area_sqft') ?? '')),
     photo_paths: formData
       .getAll('photo_paths')
       .map((v) => String(v).trim())

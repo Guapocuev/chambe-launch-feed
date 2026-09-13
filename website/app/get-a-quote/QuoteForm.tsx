@@ -5,15 +5,22 @@ import { SubmitButton } from '@/components/SubmitButton';
 import { HoneypotField } from '@/components/HoneypotField';
 import { CALLBACK_WINDOW, MATCH_WINDOW, successFollowUpCopy } from '@/lib/response-time';
 import {
+  AREA_SQFT_QUESTION,
+  AREA_SQFT_QUESTION_ID,
+  AREA_SQFT_SKIPPED,
   composeFollowUpNotes,
   formDisplayScore,
   isPartialAddress,
+  parseAreaSqftAnswer,
+  parseAreaSqftFromDescription,
   pickFormFollowUps,
+  shouldPromptAreaSqft,
   type FollowUpQuestion,
 } from '@/lib/quote-confidence';
 import { checkReturningClient, submitJobRequest, type QuoteFormState } from './actions';
 import { QuoteConfidence } from './QuoteConfidence';
 import { QuotePhotoUpload } from './QuotePhotoUpload';
+import { QuoteSqftReference } from './QuoteSqftReference';
 import { QuoteVoiceInput } from './QuoteVoiceInput';
 
 const initialQuoteFormState: QuoteFormState = { status: 'idle' };
@@ -79,6 +86,10 @@ export function QuoteForm() {
     [description, formScore],
   );
   const followUpNotes = composeFollowUpNotes(followUps, followUpAnswers);
+  const showAreaSqft = shouldPromptAreaSqft(description, followUpAnswers[AREA_SQFT_QUESTION_ID]);
+  const areaSqftValue =
+    parseAreaSqftAnswer(followUpAnswers[AREA_SQFT_QUESTION_ID]) ??
+    parseAreaSqftFromDescription(description);
 
   async function lookupPhone(value: string) {
     const trimmed = value.trim();
@@ -214,6 +225,7 @@ export function QuoteForm() {
       <input type="hidden" name="Job Length" value={jobLength ?? ''} readOnly />
       <input type="hidden" name="Safety" value={safety ?? ''} readOnly />
       <input type="hidden" name="Follow-up Notes" value={followUpNotes} readOnly />
+      <input type="hidden" name="area_sqft" value={areaSqftValue ?? ''} readOnly />
 
       {/* Step 1 stays mounted so in-progress photo uploads are not discarded. */}
       <div className={step === 1 ? 'space-y-5' : 'hidden'}>
@@ -322,6 +334,18 @@ export function QuoteForm() {
             </div>
           </fieldset>
         </div>
+      )}
+
+      {(step === 1 || step === 2) && showAreaSqft && (
+        <AreaSqftField
+          value={followUpAnswers[AREA_SQFT_QUESTION_ID] ?? ''}
+          onChange={(value) =>
+            setFollowUpAnswers((prev) => ({ ...prev, [AREA_SQFT_QUESTION_ID]: value }))
+          }
+          onSkip={() =>
+            setFollowUpAnswers((prev) => ({ ...prev, [AREA_SQFT_QUESTION_ID]: AREA_SQFT_SKIPPED }))
+          }
+        />
       )}
 
       {(step === 1 || step === 2) && followUps.length > 0 && (
@@ -449,6 +473,46 @@ function Chip({
     >
       {children}
     </button>
+  );
+}
+
+function AreaSqftField({
+  value,
+  onChange,
+  onSkip,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  onSkip: () => void;
+}) {
+  return (
+    <div className="space-y-3 rounded-xl border border-border bg-surface px-4 py-4">
+      <div className="flex items-start justify-between gap-3">
+        <label htmlFor="area-sqft" className="block min-w-0">
+          <span className="text-sm font-medium text-foreground">{AREA_SQFT_QUESTION.prompt}</span>
+          <span className="mt-1 block text-xs text-foreground/55">
+            A guess is fine. This is optional and will not block your estimate.
+          </span>
+        </label>
+        <button
+          type="button"
+          onClick={onSkip}
+          className="shrink-0 rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-foreground/80 transition hover:border-brand hover:text-brand"
+        >
+          Skip — I&apos;m not sure
+        </button>
+      </div>
+      <input
+        id="area-sqft"
+        type="text"
+        inputMode="numeric"
+        placeholder="e.g. 150"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className={inputClass}
+      />
+      <QuoteSqftReference />
+    </div>
   );
 }
 
