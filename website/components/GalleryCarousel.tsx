@@ -54,6 +54,9 @@ const FAN_UNIT_PX = 34;
 const FAN_COMMIT_PX = 12;
 const PHOTO_COMMIT_PX = 12;
 const SNAP_MS = '420ms cubic-bezier(0.22, 0.61, 0.36, 1)';
+/** One full job every ~12s — ambient, not a slideshow snap. */
+const AUTO_SLOTS_PER_SEC = 1 / 12;
+const AUTO_RESUME_MS = 1400;
 
 function cardTransform(offset: number, metrics: { deg: number; x: number; z: number }) {
   const abs = Math.abs(offset);
@@ -61,11 +64,12 @@ function cardTransform(offset: number, metrics: { deg: number; x: number; z: num
   const rotateY = -offset * metrics.deg;
   const x = offset * metrics.x;
   const z = isFront ? 48 : -abs * metrics.z;
-  const scale = isFront ? 1 : Math.max(0.88, 1 - abs * 0.04);
+  const scale = Math.max(0.7, 1 - abs * 0.1);
+  const opacity = Math.max(0.2, 1 - abs * 0.26);
   return {
     isFront,
     zIndex: Math.round(80 - abs * 10),
-    opacity: isFront ? '1' : '0.92',
+    opacity: String(opacity),
     transform: `translate3d(-50%, -50%, 0) translate3d(${x}px, 0, ${z}px) rotateY(${rotateY}deg) scale(${scale})`,
   };
 }
@@ -82,13 +86,19 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
   const metricsRef = useRef({ deg: 0, x: 0, z: 0 });
   const dragOffsetRef = useRef(0);
   const paintRafRef = useRef(0);
+  const autoOffsetRef = useRef(0);
+  const autoHoldRef = useRef(false);
+  const autoResumeAtRef = useRef(0);
+  const autoLastTsRef = useRef(0);
+  const autoRafRef = useRef(0);
+  const skipSnapPaintRef = useRef(false);
+  const reducedMotionRef = useRef(false);
   const [active, setActive] = useState(0);
   const [stageWidth, setStageWidth] = useState(720);
   const [photoById, setPhotoById] = useState<Record<string, number>>({});
   const [modalProject, setModalProject] = useState<GalleryProject | null>(null);
   const [mounted, setMounted] = useState(false);
 
-  activeRef.current = active;
   photoByIdRef.current = photoById;
   modalOpenRef.current = Boolean(modalProject);
 
@@ -104,6 +114,7 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
         node.style.transform = painted.transform;
         node.style.zIndex = String(painted.zIndex);
         node.style.opacity = painted.opacity;
+        node.style.filter = 'none';
         node.style.transition = instant ? 'none' : `transform ${SNAP_MS}, opacity ${SNAP_MS}`;
         node.setAttribute('aria-hidden', painted.isFront ? 'false' : 'true');
       });
@@ -129,6 +140,7 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
       const wrapped = ((next % count) + count) % count;
       activeRef.current = wrapped;
       dragOffsetRef.current = 0;
+      autoOffsetRef.current = 0;
       setActive(wrapped);
       const stage = stageRef.current;
       if (stage) stage.style.cursor = '';
@@ -137,11 +149,38 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
     [count, paintFan],
   );
 
+  const holdAuto = useCallback(() => {
+    autoHoldRef.current = true;
+    autoResumeAtRef.current = 0;
+    autoLastTsRef.current = 0;
+    const frac = autoOffsetRef.current;
+    if (frac === 0) return;
+    autoOffsetRef.current = 0;
+    if (count >= 2 && Math.abs(frac) >= 0.5) {
+      const dir = frac > 0 ? 1 : -1;
+      const wrapped = ((activeRef.current + dir) % count + count) % count;
+      skipSnapPaintRef.current = true;
+      activeRef.current = wrapped;
+      setActive(wrapped);
+      paintFan(wrapped, 0, true);
+      return;
+    }
+    paintFan(activeRef.current, 0, true);
+  }, [count, paintFan]);
+
+  const releaseAuto = useCallback(() => {
+    autoHoldRef.current = false;
+    autoResumeAtRef.current = performance.now() + AUTO_RESUME_MS;
+    autoLastTsRef.current = 0;
+  }, []);
+
   const step = useCallback(
     (direction: -1 | 1) => {
+      holdAuto();
       go(activeRef.current + direction);
+      releaseAuto();
     },
-    [go],
+    [go, holdAuto, releaseAuto],
   );
 
   const setPhoto = useCallback((projectId: string, index: number) => {
@@ -176,8 +215,75 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
   }, []);
 
   useLayoutEffect(() => {
-    paintFan(active, 0, false);
+    if (skipSnapPaintRef.current) {
+      skipSnapPaintRef.current = false;
+      paintFan(active, autoOffsetRef.current, true);
+      return;
+    }
+    paintFan(active, autoHoldRef.current ? 0 : autoOffsetRef.current, autoOffsetRef.current !== 0);
   }, [active, paintFan, stageWidth, count]);
+
+  useEffect(() => {
+    if (!modalProject) return;
+    holdAuto();
+    return () => {
+      releaseAuto();
+    };
+  }, [holdAuto, modalProject, releaseAuto]);
+
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const sync = () => {
+      reducedMotionRef.current = media.matches;
+      if (media.matches) {
+        autoOffsetRef.current = 0;
+        autoLastTsRef.current = 0;
+      }
+    };
+    sync();
+    media.addEventListener('change', sync);
+    return () => media.removeEventListener('change', sync);
+  }, []);
+
+  useEffect(() => {
+    if (count < 2) return;
+
+    const tick = (ts: number) => {
+      autoRafRef.current = requestAnimationFrame(tick);
+      if (
+        reducedMotionRef.current ||
+        autoHoldRef.current ||
+        modalOpenRef.current ||
+        dragRef.current ||
+        document.hidden ||
+        ts < autoResumeAtRef.current
+      ) {
+        autoLastTsRef.current = 0;
+        return;
+      }
+      if (!autoLastTsRef.current) {
+        autoLastTsRef.current = ts;
+        return;
+      }
+      const dt = Math.min(0.05, (ts - autoLastTsRef.current) / 1000);
+      autoLastTsRef.current = ts;
+      autoOffsetRef.current += AUTO_SLOTS_PER_SEC * dt;
+      while (autoOffsetRef.current >= 1) {
+        autoOffsetRef.current -= 1;
+        const wrapped = (activeRef.current + 1) % count;
+        skipSnapPaintRef.current = true;
+        activeRef.current = wrapped;
+        setActive(wrapped);
+      }
+      paintFan(activeRef.current, autoOffsetRef.current, true);
+    };
+
+    autoRafRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (autoRafRef.current) cancelAnimationFrame(autoRafRef.current);
+      autoRafRef.current = 0;
+    };
+  }, [count, paintFan]);
 
   useEffect(() => {
     const el = stageRef.current;
@@ -204,6 +310,7 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
       didDragRef.current = false;
       if (modalOpenRef.current) return;
       if (event.pointerType === 'mouse' && event.button !== 0) return;
+      holdAuto();
       const target = event.target as HTMLElement | null;
       if (target?.closest('a, [data-photo-thumb], [data-photo-thumbs]')) return;
       const card = target?.closest('[data-rolodex-card]');
@@ -262,13 +369,18 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
 
     const finish = (event: PointerEvent) => {
       const dragState = dragRef.current;
-      if (!dragState || event.pointerId !== dragState.pointerId) return;
+      if (!dragState) {
+        releaseAuto();
+        return;
+      }
+      if (event.pointerId !== dragState.pointerId) return;
       const deltaX = event.clientX - dragState.startX;
       release(event.pointerId);
       dragRef.current = null;
 
       if (dragState.axis !== 'x') {
         resetDrag();
+        releaseAuto();
         return;
       }
 
@@ -279,12 +391,14 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
           stepPhoto(dragState.projectId, dragState.photoCount, -1);
         }
         el.style.cursor = '';
+        releaseAuto();
         return;
       }
 
       if (deltaX <= -FAN_COMMIT_PX) go(activeRef.current + 1);
       else if (deltaX >= FAN_COMMIT_PX) go(activeRef.current - 1);
       else resetDrag();
+      releaseAuto();
     };
 
     const onCancel = (event: PointerEvent) => {
@@ -292,6 +406,7 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
       if (!dragState || event.pointerId !== dragState.pointerId) return;
       release(event.pointerId);
       resetDrag();
+      releaseAuto();
     };
 
     const suppressClickAfterDrag = (event: Event) => {
@@ -318,10 +433,12 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
       wheel.accum = 0;
       if (Math.abs(accum) < FAN_COMMIT_PX) {
         resetDrag();
+        releaseAuto();
         return;
       }
       const steps = accum > 0 ? 1 : -1;
       go(activeRef.current + steps);
+      releaseAuto();
     };
 
     const onWheel = (event: WheelEvent) => {
@@ -356,6 +473,7 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
       }
 
       event.preventDefault();
+      if (!wheel.accum) holdAuto();
       wheel.accum += dx;
       el.style.cursor = 'grabbing';
       paintFanLive(Math.max(-1.2, Math.min(1.2, wheel.accum / FAN_UNIT_PX)));
@@ -379,7 +497,7 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
       el.removeEventListener('click', suppressClickAfterDrag, true);
       el.removeEventListener('wheel', onWheel);
     };
-  }, [count, go, paintFan, paintFanLive, projects, stepPhoto]);
+  }, [count, go, holdAuto, paintFan, paintFanLive, projects, releaseAuto, stepPhoto]);
 
   if (count === 0) return null;
 
@@ -390,7 +508,7 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
 
   return (
     <>
-      <div className="overflow-clip md:grid md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center md:gap-3">
+      <div className="md:grid md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center md:gap-3">
         <button
           type="button"
           aria-label="Previous jobs"
@@ -417,7 +535,7 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
               step(1);
             }
           }}
-          className="relative z-0 h-[32rem] w-full min-w-0 cursor-grab select-none overflow-clip [perspective:1100px] [perspective-origin:50%_50%] outline-none focus-visible:ring-2 focus-visible:ring-accent sm:h-[34rem]"
+          className="relative z-0 h-[32rem] w-full min-w-0 cursor-grab select-none overflow-visible [perspective:1100px] [perspective-origin:50%_50%] outline-none focus-visible:ring-2 focus-visible:ring-accent sm:h-[34rem]"
           style={{ touchAction: 'pan-y' }}
         >
           <p id={labelId} className="sr-only">
@@ -435,14 +553,12 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
                   key={project.id}
                   data-rolodex-card={project.id}
                   aria-hidden={!painted.isFront}
-                  className="absolute left-1/2 top-1/2 max-h-[calc(100%-1.5rem)] cursor-pointer will-change-transform [backface-visibility:hidden]"
+                  className="absolute left-1/2 top-1/2 cursor-pointer will-change-transform [backface-visibility:hidden]"
                   style={{
                     width: cardWidth,
                     zIndex: painted.zIndex,
-                    transform: painted.transform,
                     transformOrigin: '50% 50%',
-                    opacity: painted.opacity,
-                    transition: `transform ${SNAP_MS}, opacity ${SNAP_MS}`,
+                    filter: 'none',
                   }}
                   onClick={(event) => {
                     if (didDragRef.current) return;
@@ -450,7 +566,7 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
                     openModal(project);
                   }}
                 >
-                  <div className="max-h-[calc(32rem-1.5rem)] overflow-clip rounded-2xl shadow-[0_14px_32px_rgba(0,0,0,0.18)] sm:max-h-[calc(34rem-1.5rem)]">
+                  <div className="rounded-2xl shadow-[0_14px_32px_rgba(0,0,0,0.18)]">
                     <ProjectCard
                       project={project}
                       priority

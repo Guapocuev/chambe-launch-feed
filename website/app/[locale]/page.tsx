@@ -132,7 +132,7 @@ export default async function Home() {
       </section>
 
       {teaserProjects.length > 0 && (
-        <section className="overflow-hidden border-b border-border">
+        <section className="border-b border-border">
           <div className="mx-auto max-w-6xl px-6 py-20">
             <div className="flex items-end justify-between gap-4">
               <div>
