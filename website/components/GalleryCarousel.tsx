@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import type { GalleryProject } from '@/lib/gallery-data';
-import { TRADE_LABELS } from '@/lib/gallery-data';
 import { ProjectCard } from '@/components/GalleryGrid';
 
 /** Shortest signed distance on a ring of `count` slots. */
@@ -503,6 +503,7 @@ function JobModal({
   onPhotoIndexChange: (index: number) => void;
   onClose: () => void;
 }) {
+  const t = useTranslations('Gallery');
   const shots = projectShots(project);
   const index = ((photoIndex % shots.length) + shots.length) % shots.length;
   const current = shots[index] ?? project.coverImage;
@@ -638,7 +639,7 @@ function JobModal({
 
         <div className="px-5 py-5 pb-10 sm:pb-6">
           <div className="text-xs font-semibold uppercase tracking-wide text-accent">
-            {TRADE_LABELS[project.trade]}
+            {t(project.trade)}
           </div>
           <h2 id={`job-modal-${project.id}`} className="mt-1 text-2xl font-bold text-foreground">
             {project.title}

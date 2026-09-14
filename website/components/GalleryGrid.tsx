@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import type { GalleryProject } from '@/lib/gallery-data';
-import { TRADE_LABELS } from '@/lib/gallery-data';
 
 const AXIS_LOCK_PX = 2;
 const STRIP_COMMIT_PX = 12;
@@ -239,6 +239,7 @@ export function ProjectCard({
   /** Keep every shot in the DOM so swapping photos does not remount images. */
   keepShotsMounted?: boolean;
 }) {
+  const t = useTranslations('Gallery');
   const shots = project.photos.length > 0 ? project.photos : [project.coverImage];
   const [internal, setInternal] = useState(0);
   const active = photoIndex ?? internal;
@@ -357,7 +358,7 @@ export function ProjectCard({
       )}
       <div className="p-5">
         <div className="text-xs font-semibold uppercase tracking-wide text-accent">
-          {TRADE_LABELS[project.trade]}
+          {t(project.trade)}
         </div>
         <h3 className="mt-1 text-lg font-semibold text-foreground">{project.title}</h3>
         <p className="mt-1 text-sm text-foreground/60">{project.location}</p>

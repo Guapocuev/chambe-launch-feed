@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import type { Map as LeafletMap, Marker, TileLayer } from 'leaflet';
 import type { GalleryProject } from '@/lib/gallery-data';
-import { TORONTO_CENTER, TRADE_LABELS } from '@/lib/gallery-data';
+import { TORONTO_CENTER } from '@/lib/gallery-data';
 
 /** Neighbourhood streets — not close enough to pick out a house. */
 const MAX_ZOOM = 15;
@@ -40,6 +41,7 @@ export function ProjectMap({
   scrollWheelZoom = true,
   showBasemapToggle = true,
 }: ProjectMapProps) {
+  const t = useTranslations('Gallery');
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
   const markersRef = useRef<Map<string, Marker>>(new Map());
@@ -174,7 +176,7 @@ export function ProjectMap({
 
         marker.bindPopup(
           `<strong>${escapeHtml(project.title)}</strong><br/>
-           <span style="color:#555">${escapeHtml(project.location)} · ${TRADE_LABELS[project.trade]}</span>`,
+           <span style="color:#555">${escapeHtml(project.location)} · ${escapeHtml(t(project.trade))}</span>`,
         );
         marker.on('click', () => onSelectRef.current?.(project.id));
         markersRef.current.set(project.id, marker);
@@ -196,7 +198,7 @@ export function ProjectMap({
     };
     // Pins are restyled in a separate effect when the selection changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, projects]);
+  }, [ready, projects, t]);
 
   useEffect(() => {
     if (!ready || !mapRef.current) return;

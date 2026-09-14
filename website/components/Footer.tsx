@@ -1,11 +1,12 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { Link, usePathname } from '@/i18n/navigation';
 import { Logo } from '@/components/Logo';
 import { isAppArea } from '@/lib/contractor-area';
 
 export function Footer() {
+  const t = useTranslations('Footer');
   const pathname = usePathname();
   if (isAppArea(pathname)) return null;
 
@@ -15,40 +16,38 @@ export function Footer() {
         <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-4">
           <div>
             <Logo size="md" />
-            <p className="mt-2 text-sm text-foreground/70">
-              Trusted contractors for the Toronto &amp; GTA, matched by AI, vetted by us.
-            </p>
+            <p className="mt-2 text-sm text-foreground/70">{t('tagline')}</p>
           </div>
 
           <div>
-            <div className="text-sm font-semibold text-foreground">Company</div>
+            <div className="text-sm font-semibold text-foreground">{t('company')}</div>
             <ul className="mt-3 space-y-2 text-sm text-foreground/70">
-              <li><Link href="/about" className="hover:text-brand">About</Link></li>
-              <li><Link href="/how-it-works" className="hover:text-brand">How It Works</Link></li>
-              <li><Link href="/gallery" className="hover:text-brand">Past Work</Link></li>
-              <li><Link href="/contact" className="hover:text-brand">Contact</Link></li>
+              <li><Link href="/about" className="hover:text-brand">{t('about')}</Link></li>
+              <li><Link href="/how-it-works" className="hover:text-brand">{t('howItWorks')}</Link></li>
+              <li><Link href="/gallery" className="hover:text-brand">{t('pastWork')}</Link></li>
+              <li><Link href="/contact" className="hover:text-brand">{t('contact')}</Link></li>
             </ul>
           </div>
 
           <div>
-            <div className="text-sm font-semibold text-foreground">Get Started</div>
+            <div className="text-sm font-semibold text-foreground">{t('getStarted')}</div>
             <ul className="mt-3 space-y-2 text-sm text-foreground/70">
-              <li><Link href="/get-a-quote" className="hover:text-brand">Request a Job</Link></li>
-              <li><Link href="/apply" className="hover:text-brand">Become a Contractor</Link></li>
+              <li><Link href="/get-a-quote" className="hover:text-brand">{t('requestJob')}</Link></li>
+              <li><Link href="/apply" className="hover:text-brand">{t('becomeContractor')}</Link></li>
             </ul>
           </div>
 
           <div>
-            <div className="text-sm font-semibold text-foreground">Legal</div>
+            <div className="text-sm font-semibold text-foreground">{t('legal')}</div>
             <ul className="mt-3 space-y-2 text-sm text-foreground/70">
-              <li><Link href="/privacy" className="hover:text-brand">Privacy Policy</Link></li>
-              <li><Link href="/terms" className="hover:text-brand">Terms of Service</Link></li>
+              <li><Link href="/privacy" className="hover:text-brand">{t('privacy')}</Link></li>
+              <li><Link href="/terms" className="hover:text-brand">{t('terms')}</Link></li>
             </ul>
           </div>
         </div>
 
         <div className="mt-10 border-t border-border pt-6 text-xs text-foreground/50">
-          © {new Date().getFullYear()} Chambé. Serving Toronto &amp; the GTA.
+          {t('copyright', { year: new Date().getFullYear() })}
         </div>
       </div>
     </footer>

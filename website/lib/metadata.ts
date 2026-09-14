@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { localeAlternates } from './format-cad';
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from './site';
 
 export const rootMetadata: Metadata = {
@@ -36,9 +37,10 @@ export const rootMetadata: Metadata = {
     follow: true,
     googleBot: { index: true, follow: true },
   },
-  alternates: {
-    canonical: '/',
-  },
+    alternates: {
+      canonical: '/',
+      languages: localeAlternates('/'),
+    },
 };
 
 /** Per-page metadata with canonical URL and matching OG tags. */
@@ -46,7 +48,10 @@ export function pageMetadata(title: string, description: string, path: string): 
   return {
     title,
     description,
-    alternates: { canonical: path },
+    alternates: {
+      canonical: path,
+      languages: localeAlternates(path),
+    },
     openGraph: {
       title: `${title} | ${SITE_NAME}`,
       description,

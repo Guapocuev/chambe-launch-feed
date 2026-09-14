@@ -2,23 +2,28 @@
 
 import { useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { useTranslations } from 'next-intl';
 import type { GalleryProject } from '@/lib/gallery-data';
-import { TRADE_LABELS, neighbourhoodLabel, uniqueNeighbourhoods } from '@/lib/gallery-data';
+import { neighbourhoodLabel, uniqueNeighbourhoods } from '@/lib/gallery-data';
 import { GalleryGrid } from '@/components/GalleryGrid';
 
 const ProjectMap = dynamic(
   () => import('@/components/ProjectMap').then((m) => m.ProjectMap),
   {
     ssr: false,
-    loading: () => (
-      <div className="flex h-[380px] items-center justify-center rounded-2xl border border-border bg-surface text-sm text-foreground/50">
-        Loading map…
-      </div>
-    ),
+    loading: function MapLoading() {
+      const t = useTranslations('Gallery');
+      return (
+        <div className="flex h-[380px] items-center justify-center rounded-2xl border border-border bg-surface text-sm text-foreground/50">
+          {t('loadingMap')}
+        </div>
+      );
+    },
   },
 );
 
 export function PastWorkExplorer({ projects }: { projects: GalleryProject[] }) {
+  const t = useTranslations('Gallery');
   const neighbourhoods = useMemo(() => uniqueNeighbourhoods(projects), [projects]);
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
   const [activeId, setActiveId] = useState<string | null>(projects[0]?.id ?? null);
@@ -90,7 +95,7 @@ export function PastWorkExplorer({ projects }: { projects: GalleryProject[] }) {
                     : 'bg-surface text-foreground/70 hover:bg-border'
                 }`}
               >
-                All
+                {t('all')}
               </button>
               {neighbourhoods.map((label) => (
                 <button
@@ -108,13 +113,13 @@ export function PastWorkExplorer({ projects }: { projects: GalleryProject[] }) {
               ))}
             </div>
             <div className="text-xs font-semibold uppercase tracking-wide text-accent-dark">
-              {TRADE_LABELS[active.trade]}
+              {t(active.trade)}
             </div>
             <h2 className="mt-1 text-xl font-semibold text-foreground">{active.title}</h2>
             <p className="mt-1 text-sm text-foreground/60">{active.location}</p>
             <p className="mt-3 text-sm text-foreground/80">{active.description}</p>
             <p className="mt-3 text-xs text-foreground/45">
-              Pins show the neighbourhood, not the street address.
+              {t('pinsNote')}
             </p>
             <div className="mt-4 flex flex-wrap gap-3">
               <button
@@ -122,14 +127,14 @@ export function PastWorkExplorer({ projects }: { projects: GalleryProject[] }) {
                 onClick={zoomToNeighbourhood}
                 className="text-sm font-semibold text-brand hover:underline"
               >
-                Zoom to neighbourhood
+                {t('zoomNeighbourhood')}
               </button>
               <button
                 type="button"
                 onClick={() => seePhotos(active.id)}
                 className="text-sm font-semibold text-brand hover:underline"
               >
-                See photos →
+                {t('seePhotosArrow')}
               </button>
             </div>
           </div>
@@ -138,7 +143,7 @@ export function PastWorkExplorer({ projects }: { projects: GalleryProject[] }) {
 
       <div className="mt-12">
         {visible.length === 0 ? (
-          <p className="text-sm text-foreground/60">No jobs in this neighbourhood yet.</p>
+          <p className="text-sm text-foreground/60">{t('emptyNeighbourhood')}</p>
         ) : (
           <GalleryGrid projects={visible} />
         )}

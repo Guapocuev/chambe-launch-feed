@@ -3,6 +3,7 @@
 import { createBrowserClient } from '@supabase/ssr';
 import { parse, serialize } from 'cookie';
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from '@/lib/config';
+import { cookieOptionsForOrigin } from '@/lib/supabase/cookie-options';
 
 const PKCE_KEY = 'code-verifier';
 
@@ -48,8 +49,9 @@ export function createBrowserSupabase() {
         return [...byName.values()];
       },
       setAll(cookiesToSet) {
+        const protocol = window.location.protocol;
         for (const { name, value, options } of cookiesToSet) {
-          document.cookie = serialize(name, value, options);
+          document.cookie = serialize(name, value, cookieOptionsForOrigin(options, protocol));
           if (!name.includes(PKCE_KEY)) continue;
           if (!value || options.maxAge === 0) {
             window.localStorage.removeItem(name);
