@@ -342,15 +342,34 @@
     "hurt_safety": "− Tell us if this is affecting safety or causing damage"
   },
   "Visualize": {
-    "kicker": "Kitchen only — Phase 1",
+    "kicker": "Kitchen only",
     "title": "See a renovation of your kitchen",
-    "body": "Upload one photo. After a one-time {price} preview charge we generate a modern light finish on the same room. This is an illustrative AI preview, not a promise of the exact finished look.",
+    "body": "Upload one photo, pick a finish, then pay a one-time {price} preview charge. We generate that look on the same room. This is an illustrative AI preview, not a promise of the exact finished look.",
     "loginKicker": "Homeowners",
     "loginTitle": "Preview your kitchen",
     "loginBody": "Email us a magic link. This login is only for the kitchen preview — it is not a contractor account.",
     "opening": "Opening your preview…",
-    "style": "Style for this phase: {style}. Camera, windows, and room volume stay put.",
-    "styleName": "modern light renovation",
+    "style": "Selected finish: {style}. Camera, windows, and room volume stay put.",
+    "packages": {
+      "choose": "Choose a finish",
+      "hint": "The {price} preview fee is the same for every look. The renovation range next to each finish is the estimate for that package.",
+      "refresh": {
+        "name": "Refresh",
+        "blurb": "Paint, hardware, and lighting. The lightest cosmetic lift."
+      },
+      "modern_light": {
+        "name": "Modern Light",
+        "blurb": "Pale oak or painted cabinets, light stone, simple hardware."
+      },
+      "warm_heritage": {
+        "name": "Warm Heritage",
+        "blurb": "Shaker cabinets, subway tile, brass, traditional pendants."
+      },
+      "signature": {
+        "name": "Signature",
+        "blurb": "Dark slab cabinets, full stone, statement lighting."
+      }
+    },
     "usesSqft": "Estimate uses the {sqft} sqft you already gave us on a quote.",
     "typicalKitchen": "Estimated for a typical kitchen (150 sqft) — final quote may vary.",
     "beforeCaption": "Before — your photo",
@@ -363,10 +382,10 @@
     "retry": "Retry preview",
     "generate": "Generate preview",
     "altToday": "Your kitchen today",
-    "altPreview": "Illustrative modern light kitchen preview",
+    "altPreview": "Illustrative {style} kitchen preview",
     "showcaseKicker": "Real AI-generated examples",
-    "showcaseTitle": "See the modern light look first",
-    "showcaseBody": "Drag to compare. These are illustrative AI previews of the same style you get after the {price} charge — not a promise of the exact finished look.",
+    "showcaseTitle": "See what the preview can do",
+    "showcaseBody": "Drag to compare. These are illustrative AI previews — one finish on the same rooms you can generate after the {price} charge, not a promise of the exact finished look.",
     "showcaseBefore": "Before",
     "showcaseAfter": "After",
     "examples": {

@@ -342,15 +342,34 @@
     "hurt_safety": "− Diga se isto está afetando a segurança ou causando dano"
   },
   "Visualize": {
-    "kicker": "Só cozinha — Fase 1",
+    "kicker": "Só cozinha",
     "title": "Veja uma reforma da sua cozinha",
-    "body": "Envie uma foto. Depois de uma cobrança única de {price} pela prévia geramos um acabamento moderno e claro no mesmo cômodo. É uma prévia ilustrativa com IA, não uma promessa do resultado exato.",
+    "body": "Envie uma foto, escolha um acabamento e pague uma cobrança única de {price} pela prévia. Geramos esse look no mesmo cômodo. É uma prévia ilustrativa com IA, não uma promessa do resultado exato.",
     "loginKicker": "Donos de casa",
     "loginTitle": "Prévia da sua cozinha",
     "loginBody": "Enviamos um link mágico por e-mail. Este login é só para a prévia da cozinha — não é uma conta de contratista.",
     "opening": "Abrindo a sua prévia…",
-    "style": "Estilo desta fase: {style}. Câmera, janelas e volume do cômodo ficam.",
-    "styleName": "reforma moderna e clara",
+    "style": "Acabamento escolhido: {style}. Câmera, janelas e volume do cômodo ficam.",
+    "packages": {
+      "choose": "Escolha um acabamento",
+      "hint": "A taxa de {price} da prévia é a mesma para cada look. A faixa ao lado de cada acabamento é o estimado dessa reforma.",
+      "refresh": {
+        "name": "Refresh",
+        "blurb": "Tinta, puxadores e iluminação. O retoque mais leve."
+      },
+      "modern_light": {
+        "name": "Modern Light",
+        "blurb": "Armários de carvalho claro ou pintados, pedra clara, ferragens simples."
+      },
+      "warm_heritage": {
+        "name": "Warm Heritage",
+        "blurb": "Armários shaker, azulejo subway, latão, pendentes tradicionais."
+      },
+      "signature": {
+        "name": "Signature",
+        "blurb": "Armários escuros em laje, pedra até o teto, iluminação de destaque."
+      }
+    },
     "usesSqft": "O orçamento usa os {sqft} sqft que você já nos deu numa cotação.",
     "typicalKitchen": "Estimado para uma cozinha típica (150 sqft) — o orçamento final pode variar.",
     "beforeCaption": "Antes — sua foto",
@@ -363,10 +382,10 @@
     "retry": "Tentar prévia de novo",
     "generate": "Gerar prévia",
     "altToday": "Sua cozinha hoje",
-    "altPreview": "Prévia ilustrativa de cozinha moderna e clara",
+    "altPreview": "Prévia ilustrativa de cozinha {style}",
     "showcaseKicker": "Exemplos reais gerados com IA",
-    "showcaseTitle": "Veja primeiro o look moderno e claro",
-    "showcaseBody": "Arraste para comparar. São prévias ilustrativas com IA do mesmo estilo que você recebe após a cobrança de {price} — não uma promessa do resultado exato.",
+    "showcaseTitle": "Veja o que a prévia consegue fazer",
+    "showcaseBody": "Arraste para comparar. São prévias ilustrativas com IA — um acabamento nos mesmos cômodos que você pode gerar após a cobrança de {price}, não uma promessa do resultado exato.",
     "showcaseBefore": "Antes",
     "showcaseAfter": "Depois",
     "examples": {

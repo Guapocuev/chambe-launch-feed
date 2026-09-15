@@ -2,10 +2,20 @@
 
 import { DEMAND_ENGINE_API_KEY, DEMAND_ENGINE_URL } from '@/lib/config';
 
+export interface VisualizePackage {
+  id: string;
+  slug: string;
+  estimate_low: number;
+  estimate_high: number;
+}
+
 export interface VisualizeSession {
   id: string;
   status: string;
   style: string;
+  package_id: string | null;
+  package_slug: string | null;
+  generated_package_id: string | null;
   hero_photo_url: string | null;
   generated_photo_url: string | null;
   prompt: string | null;
@@ -17,6 +27,7 @@ export interface VisualizeSession {
   price_cad: number;
   error_message: string | null;
   paid: boolean;
+  packages: VisualizePackage[];
 }
 
 export type ActionResult<T> = { ok: true; data: T } | { ok: false; error: string };
@@ -76,6 +87,16 @@ export async function confirmVisualizeCheckout(
   return callVisualize(`/visualize/sessions/${sessionId}/confirm`, {
     method: 'POST',
     body: JSON.stringify({ checkout_session_id: checkoutSessionId }),
+  });
+}
+
+export async function selectVisualizePackage(
+  sessionId: string,
+  packageId: string,
+): Promise<ActionResult<VisualizeSession>> {
+  return callVisualize(`/visualize/sessions/${sessionId}/package`, {
+    method: 'POST',
+    body: JSON.stringify({ package_id: packageId }),
   });
 }
 

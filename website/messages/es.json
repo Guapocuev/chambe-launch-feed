@@ -342,15 +342,34 @@
     "hurt_safety": "− Dinos si esto afecta la seguridad o está causando daño"
   },
   "Visualize": {
-    "kicker": "Solo cocina — Fase 1",
+    "kicker": "Solo cocina",
     "title": "Mira una renovación de tu cocina",
-    "body": "Sube una foto. Después de un cargo único de {price} por la vista previa generamos un acabado moderno y claro en el mismo cuarto. Es una vista previa ilustrativa con IA, no una promesa del resultado exacto.",
+    "body": "Sube una foto, elige un acabado y paga un cargo único de {price} por la vista previa. Generamos ese look en el mismo cuarto. Es una vista previa ilustrativa con IA, no una promesa del resultado exacto.",
     "loginKicker": "Dueños de casa",
     "loginTitle": "Vista previa de tu cocina",
     "loginBody": "Te enviamos un enlace mágico por correo. Este inicio de sesión es solo para la vista previa de cocina — no es una cuenta de contratista.",
     "opening": "Abriendo tu vista previa…",
-    "style": "Estilo de esta fase: {style}. La cámara, las ventanas y el volumen del cuarto se quedan.",
-    "styleName": "renovación moderna y clara",
+    "style": "Acabado elegido: {style}. La cámara, las ventanas y el volumen del cuarto se quedan.",
+    "packages": {
+      "choose": "Elige un acabado",
+      "hint": "El cargo de {price} por la vista previa es el mismo para cada look. El rango junto a cada acabado es el estimado de esa renovación.",
+      "refresh": {
+        "name": "Refresh",
+        "blurb": "Pintura, herrajes e iluminación. El retoque más ligero."
+      },
+      "modern_light": {
+        "name": "Modern Light",
+        "blurb": "Gabinetes de roble pálido o pintados, piedra clara, herrajes simples."
+      },
+      "warm_heritage": {
+        "name": "Warm Heritage",
+        "blurb": "Gabinetes shaker, azulejo subway, latón, lámparas tradicionales."
+      },
+      "signature": {
+        "name": "Signature",
+        "blurb": "Gabinetes oscuros tipo losa, piedra de piso a techo, iluminación de acento."
+      }
+    },
     "usesSqft": "El estimado usa los {sqft} sqft que ya nos diste en una cotización.",
     "typicalKitchen": "Estimado para una cocina típica (150 sqft) — la cotización final puede variar.",
     "beforeCaption": "Antes — tu foto",
@@ -363,10 +382,10 @@
     "retry": "Reintentar vista previa",
     "generate": "Generar vista previa",
     "altToday": "Tu cocina hoy",
-    "altPreview": "Vista previa ilustrativa de cocina moderna y clara",
+    "altPreview": "Vista previa ilustrativa de cocina {style}",
     "showcaseKicker": "Ejemplos reales generados con IA",
-    "showcaseTitle": "Mira primero el look moderno y claro",
-    "showcaseBody": "Arrastra para comparar. Son vistas previas ilustrativas con IA del mismo estilo que recibes tras el cargo de {price} — no una promesa del resultado exacto.",
+    "showcaseTitle": "Mira lo que puede hacer la vista previa",
+    "showcaseBody": "Arrastra para comparar. Son vistas previas ilustrativas con IA — un acabado en los mismos cuartos que puedes generar tras el cargo de {price}, no una promesa del resultado exacto.",
     "showcaseBefore": "Antes",
     "showcaseAfter": "Después",
     "examples": {

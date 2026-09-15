@@ -10,10 +10,17 @@ import {
   confirmVisualizeCheckout,
   generateVisualizePreview,
   resolveVisualizeSession,
+  selectVisualizePackage,
   startVisualizeCheckout,
   type VisualizeSession,
 } from './actions';
 import { HeroPhotoUpload } from './HeroPhotoUpload';
+
+const PACKAGE_SLUGS = ['refresh', 'modern_light', 'warm_heritage', 'signature'] as const;
+
+function isPackageSlug(value: string | null | undefined): value is (typeof PACKAGE_SLUGS)[number] {
+  return Boolean(value && (PACKAGE_SLUGS as readonly string[]).includes(value));
+}
 
 export function VisualizeApp() {
   const router = useRouter();
@@ -46,6 +53,19 @@ export function VisualizeApp() {
     setBusy(true);
     setError(null);
     const next = await attachVisualizePhoto(session.id, path);
+    setBusy(false);
+    if (!next.ok) {
+      setError(next.error);
+      return;
+    }
+    setSession(next.data);
+  }
+
+  async function onPickPackage(packageId: string) {
+    if (!session || busy) return;
+    setBusy(true);
+    setError(null);
+    const next = await selectVisualizePackage(session.id, packageId);
     setBusy(false);
     if (!next.ok) {
       setError(next.error);
@@ -90,9 +110,10 @@ export function VisualizeApp() {
   }
 
   const failed = session.status === 'failed';
-  const ready = session.status === 'ready' && session.generated_photo_url;
+  const selectedSlug = isPackageSlug(session.package_slug) ? session.package_slug : 'modern_light';
+  const ready = session.status === 'ready' && Boolean(session.generated_photo_url);
   const canPay = Boolean(session.hero_photo_url || session.status === 'photo_ready') && !session.paid;
-  const canGenerate = session.paid && !ready && session.status !== 'generating';
+  const canGenerate = session.paid && session.status !== 'generating' && !ready;
 
   return (
     <div className="space-y-6">
@@ -102,10 +123,41 @@ export function VisualizeApp() {
         </p>
       )}
 
-      <div className="rounded-2xl border border-border bg-surface px-4 py-4 text-sm text-foreground/80">
-        <p>
-          {t('style', { style: t('styleName') })}
+      <div>
+        <p className="text-sm font-medium text-foreground">{t('packages.choose')}</p>
+        <p className="mt-1 text-xs text-foreground/60">
+          {t('packages.hint', { price: formatCad(session.price_cad, locale) })}
         </p>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          {(session.packages ?? []).map((pkg) => {
+            const slug = isPackageSlug(pkg.slug) ? pkg.slug : 'modern_light';
+            const selected = pkg.id === session.package_id || pkg.slug === session.package_slug;
+            return (
+              <button
+                key={pkg.id}
+                type="button"
+                disabled={busy || session.status === 'generating'}
+                onClick={() => void onPickPackage(pkg.id)}
+                aria-pressed={selected}
+                className={`rounded-2xl border px-4 py-3 text-left transition ${
+                  selected
+                    ? 'border-brand bg-brand/5 ring-1 ring-brand'
+                    : 'border-border bg-surface hover:border-brand/60'
+                } disabled:opacity-50`}
+              >
+                <p className="text-sm font-semibold text-foreground">{t(`packages.${slug}.name`)}</p>
+                <p className="mt-1 text-xs leading-relaxed text-foreground/65">{t(`packages.${slug}.blurb`)}</p>
+                <p className="mt-2 text-sm font-semibold tabular-nums text-foreground">
+                  {`${formatCad(pkg.estimate_low, locale)} – ${formatCad(pkg.estimate_high, locale)}`}
+                </p>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-border bg-surface px-4 py-4 text-sm text-foreground/80">
+        <p>{t('style', { style: t(`packages.${selectedSlug}.name`) })}</p>
         <p className="mt-2">
           {session.area_sqft_source === 'job_features'
             ? t('usesSqft', { sqft: session.area_sqft ?? 0 })
@@ -140,7 +192,7 @@ export function VisualizeApp() {
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={session.generated_photo_url}
-                alt={t('altPreview')}
+                alt={t('altPreview', { style: t(`packages.${selectedSlug}.name`) })}
                 className="w-full rounded-xl border border-border object-cover"
               />
             ) : (
