@@ -2,7 +2,7 @@
 
 import { useRouter } from '@/i18n/navigation';
 import { useRef, useState } from 'react';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { transcribeJobAudio } from '@/app/[locale]/get-a-quote/transcribe';
 import { logApprenticeHoursAction, saveApprenticeQuestionAction, signOutApprentice, type ApprenticeDashboard } from './actions';
 import { answerApprenticeQuestion } from './ask';
@@ -43,6 +43,7 @@ type SpeechRec = {
 export function ApprenticeHome({ dashboard }: { dashboard: ApprenticeDashboard }) {
   const router = useRouter();
   const locale = useLocale();
+  const tAuth = useTranslations('Auth');
   const { apprentice, progress } = dashboard;
   const [hours, setHours] = useState('');
   const [notes, setNotes] = useState('');
@@ -238,7 +239,8 @@ export function ApprenticeHome({ dashboard }: { dashboard: ApprenticeDashboard }
 
       <section className="mt-8 rounded-2xl border border-border px-4 py-5">
         <p className="text-sm font-semibold uppercase tracking-wide text-foreground/50">Progress</p>
-        <p className="mt-2 text-2xl font-bold tabular-nums text-foreground">
+        <p className="mt-2 text-base leading-relaxed text-foreground/70">{tAuth('apprenticeHoursNote')}</p>
+        <p className="mt-3 text-2xl font-bold tabular-nums text-foreground">
           {progress.total_hours.toFixed(1)} h
           <span className="ml-2 text-base font-normal text-foreground/55">
             of {progress.target_total.toFixed(0)} placeholder

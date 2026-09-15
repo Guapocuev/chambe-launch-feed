@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { ApplyForm } from './ApplyForm';
+import { ContractorSupport } from '@/components/ContractorSupport';
 import { pageMetadata } from '@/lib/metadata';
 
 export async function generateMetadata() {
@@ -23,7 +24,8 @@ export default async function ApplyPage() {
         <li>{t('bullet2')}</li>
         <li>{t('bullet3', { callback })}</li>
       </ul>
-      <div className="mt-10">
+      <ContractorSupport />
+      <div id="apply" className="mt-10 scroll-mt-24">
         <ApplyForm />
       </div>
       <p className="mt-8 text-sm text-foreground/50">

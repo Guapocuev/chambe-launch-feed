@@ -2,6 +2,7 @@
 
 import { useRouter } from '@/i18n/navigation';
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { formatPhoneInput } from '@/lib/phone';
 import { joinApprenticeAction } from './actions';
 
@@ -18,6 +19,7 @@ const TRADES = [
 
 export function ApprenticeJoinForm() {
   const router = useRouter();
+  const tAuth = useTranslations('Auth');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [phone, setPhone] = useState('');
@@ -45,6 +47,7 @@ export function ApprenticeJoinForm() {
       <p className="mt-3 text-base leading-relaxed text-foreground/70">
         One screen. Then you log hours. Your supervisor can see them if you add their number.
       </p>
+      <p className="mt-3 text-base leading-relaxed text-foreground/70">{tAuth('apprenticeHoursNote')}</p>
       {error && (
         <p className="mt-5 rounded-2xl border border-red-300 bg-red-50 px-4 py-3 text-base text-red-800">{error}</p>
       )}

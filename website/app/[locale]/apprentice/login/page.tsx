@@ -16,6 +16,7 @@ export default async function ApprenticeLoginPage() {
       <p className="text-sm font-semibold uppercase tracking-wide text-foreground/50">{t('apprentices')}</p>
       <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground">{t('loginTitle')}</h1>
       <p className="mt-3 text-base leading-relaxed text-foreground/70">{t('apprenticeLoginBody')}</p>
+      <p className="mt-4 text-base leading-relaxed text-foreground/70">{t('apprenticeHoursNote')}</p>
       <div className="mt-8">
         {isSupabaseConfigured() ? (
           <ContractorLoginForm
