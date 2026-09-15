@@ -54,18 +54,24 @@ export default async function Home() {
               <span className="text-brand">{t('heroAccent')}</span>
             </h1>
             <p className="mt-6 max-w-xl text-lg text-foreground/70">{t('heroBody')}</p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Link
                 href="/get-a-quote"
-                className="rounded-full bg-accent px-7 py-3.5 text-center text-sm font-semibold text-inverse transition hover:bg-accent-dark"
+                className="shrink-0 rounded-full bg-accent px-7 py-3.5 text-center text-sm font-semibold text-inverse transition hover:bg-accent-dark"
               >
                 {t('getEstimate')}
               </Link>
               <Link
                 href="/visualize"
-                className="rounded-full border border-border px-7 py-3.5 text-center text-sm font-semibold text-foreground transition hover:border-brand hover:text-brand"
+                className="shrink-0 rounded-full border border-border px-7 py-3.5 text-center text-sm font-semibold text-foreground transition hover:border-brand hover:text-brand"
               >
                 {t('previewKitchen')}
+              </Link>
+              <Link
+                href="/apply"
+                className="shrink-0 rounded-full border border-border px-7 py-3.5 text-center text-sm font-semibold text-foreground transition hover:border-brand hover:text-brand"
+              >
+                {t('becomeContractor')}
               </Link>
             </div>
           </div>
