@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { pageMetadata } from '@/lib/metadata';
 import { formatCad } from '@/lib/format-cad';
 import { VisualizeApp } from './VisualizeApp';
+import { VisualizeShowcase } from './VisualizeShowcase';
 
 export async function generateMetadata() {
   const t = await getTranslations('Visualize');
@@ -20,6 +21,9 @@ export default async function VisualizePage() {
       <p className="text-sm font-semibold uppercase tracking-wide text-foreground/50">{t('kicker')}</p>
       <h1 className="mt-2 text-4xl font-bold tracking-tight text-foreground">{t('title')}</h1>
       <p className="mt-4 text-lg text-foreground/70">{t('body', { price: formatCad(19, locale) })}</p>
+      <div className="mt-10">
+        <VisualizeShowcase />
+      </div>
       <div className="mt-10">
         <Suspense fallback={<p className="text-sm text-foreground/70">{t('opening')}</p>}>
           <VisualizeApp />

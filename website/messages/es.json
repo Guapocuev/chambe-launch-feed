@@ -327,7 +327,32 @@
     "retry": "Reintentar vista previa",
     "generate": "Generar vista previa",
     "altToday": "Tu cocina hoy",
-    "altPreview": "Vista previa ilustrativa de cocina moderna y clara"
+    "altPreview": "Vista previa ilustrativa de cocina moderna y clara",
+    "showcaseKicker": "Ejemplos reales generados con IA",
+    "showcaseTitle": "Mira primero el look moderno y claro",
+    "showcaseBody": "Arrastra para comparar. Son vistas previas ilustrativas con IA del mismo estilo que recibes tras el cargo de {price} — no una promesa del resultado exacto.",
+    "showcaseBefore": "Antes",
+    "showcaseAfter": "Después",
+    "examples": {
+      "open": {
+        "label": "Cocina abierta",
+        "beforeAlt": "Cocina de roble antigua antes de la renovación",
+        "afterAlt": "Vista previa ilustrativa de cocina moderna y clara",
+        "note": "Parte de una foto real de una cocina en el centro de Toronto."
+      },
+      "galley": {
+        "label": "Cocina en pasillo",
+        "beforeAlt": "Cocina en pasillo antigua antes de la renovación",
+        "afterAlt": "Vista previa ilustrativa de cocina en pasillo moderna y clara",
+        "note": "La misma cocina real, segundo ángulo de cámara."
+      },
+      "condo": {
+        "label": "Cocina en U",
+        "beforeAlt": "Cocina en U típica y antigua",
+        "afterAlt": "Vista previa ilustrativa de cocina en U moderna y clara",
+        "note": "Cocina típica ilustrativa — no es un trabajo de un cliente."
+      }
+    }
   },
   "Auth": {
     "contractors": "Contratistas",

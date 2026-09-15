@@ -17,17 +17,34 @@ function ringDelta(index: number, active: number, count: number) {
 }
 
 /**
- * Coverflow spacing around a vertical axis. Few jobs → wider X gap and
- * more Y-rotation; more jobs → compress so the fan stays in the stage.
+ * Scale and arc spacing so consecutive cards never overlap.
+ * dx/du = cardWidth * scale(u) + gap  ⇒  |x(t+1)-x(t)| = average visual
+ * widths + gap, which is exactly the AABB non-overlap requirement.
  */
-function fanMetrics(count: number, stageWidth: number, cardWidth: number) {
-  if (count <= 1) return { deg: 0, x: 0, z: 0 };
-  const maxOnSide = Math.max(1, Math.ceil((count - 1) / 2));
-  const sideRoom = Math.max(28, (stageWidth - cardWidth) / 2);
-  const x = Math.min(96, Math.max(28, sideRoom / maxOnSide));
-  const deg = Math.min(38, Math.max(14, 78 / (count - 1)));
-  const z = Math.min(90, Math.max(28, 200 / count));
-  return { deg, x, z };
+const SCALE_K = 0.18;
+const SCALE_MIN = 0.62;
+const SLOT_GAP = 24;
+const ARC_Y = 28;
+const VISIBLE_SLOTS = 1.55;
+
+function scaleAt(abs: number) {
+  return Math.max(SCALE_MIN, 1 - abs * SCALE_K);
+}
+
+function arcX(offset: number, cardWidth: number) {
+  const abs = Math.abs(offset);
+  if (abs === 0) return 0;
+  const knee = (1 - SCALE_MIN) / SCALE_K;
+  const throughKnee =
+    cardWidth * (knee - (SCALE_K * knee * knee) / 2) + SLOT_GAP * knee;
+  const integrate = (to: number) => {
+    if (to <= 0) return 0;
+    if (to <= knee) {
+      return cardWidth * (to - (SCALE_K * to * to) / 2) + SLOT_GAP * to;
+    }
+    return throughKnee + (cardWidth * SCALE_MIN + SLOT_GAP) * (to - knee);
+  };
+  return Math.sign(offset) * integrate(abs);
 }
 
 function projectShots(project: GalleryProject) {
@@ -53,24 +70,64 @@ const AXIS_LOCK_PX = 2;
 const FAN_UNIT_PX = 34;
 const FAN_COMMIT_PX = 12;
 const PHOTO_COMMIT_PX = 12;
-const SNAP_MS = '420ms cubic-bezier(0.22, 0.61, 0.36, 1)';
-/** One full job every ~12s — ambient, not a slideshow snap. */
-const AUTO_SLOTS_PER_SEC = 1 / 12;
+const MOTION_EASE = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
+const MOTION_MS = 560;
+const MOTION = `transform ${MOTION_MS}ms ${MOTION_EASE}`;
+/** One full job every ~6s — faster than 12s, still ambient. */
+const AUTO_PERIOD_SEC = 6;
 const AUTO_RESUME_MS = 1400;
+const CENTER_SLOT = 0.4;
 
-function cardTransform(offset: number, metrics: { deg: number; x: number; z: number }) {
+function bezier(t: number, a: number, b: number) {
+  const u = 1 - t;
+  return 3 * u * u * t * a + 3 * u * t * t * b + t * t * t;
+}
+
+function bezierD(t: number, a: number, b: number) {
+  const u = 1 - t;
+  return 3 * u * u * a + 6 * u * t * (b - a) + 3 * t * t * (1 - b);
+}
+
+/** Same curve as MOTION_EASE: cubic-bezier(0.22, 0.61, 0.36, 1). */
+function motionEase(t: number) {
+  let x = t;
+  for (let i = 0; i < 6; i += 1) {
+    const d = bezierD(x, 0.22, 0.36);
+    if (Math.abs(d) < 1e-6) break;
+    x -= (bezier(x, 0.22, 0.36) - t) / d;
+  }
+  return bezier(x, 0.61, 1);
+}
+
+function poseTransform(x: number, y: number, z: number, rotateX: number, scale: number) {
+  return `translate3d(-50%, -50%, 0) translate3d(${x}px, ${y}px, ${z}px) rotateX(${rotateX}deg) scale(${scale})`;
+}
+
+function cardPose(offset: number, cardWidth: number) {
   const abs = Math.abs(offset);
-  const isFront = abs < 0.45;
-  const rotateY = -offset * metrics.deg;
-  const x = offset * metrics.x;
-  const z = isFront ? 48 : -abs * metrics.z;
-  const scale = Math.max(0.7, 1 - abs * 0.1);
-  const opacity = Math.max(0.2, 1 - abs * 0.26);
+  const visible = abs <= VISIBLE_SLOTS;
+  const scale = scaleAt(abs);
+  const x = arcX(offset, cardWidth);
+  const y = ARC_Y * abs * abs;
+  const z = -abs * 36;
   return {
-    isFront,
-    zIndex: Math.round(80 - abs * 10),
-    opacity: String(opacity),
-    transform: `translate3d(-50%, -50%, 0) translate3d(${x}px, 0, ${z}px) rotateY(${rotateY}deg) scale(${scale})`,
+    isFront: abs < CENTER_SLOT,
+    visible,
+    x,
+    y,
+    z,
+    rotateX: 0,
+    scale,
+    zIndex: Math.round(1000 - abs * 200),
+  };
+}
+
+function cardTransform(offset: number, cardWidth: number) {
+  const pose = cardPose(offset, cardWidth);
+  return {
+    ...pose,
+    opacity: '1' as const,
+    transform: poseTransform(pose.x, pose.y, pose.z, pose.rotateX, pose.scale),
   };
 }
 
@@ -83,16 +140,21 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
   const didDragRef = useRef(false);
   const photoByIdRef = useRef<Record<string, number>>({});
   const modalOpenRef = useRef(false);
-  const metricsRef = useRef({ deg: 0, x: 0, z: 0 });
+  const metricsRef = useRef({ cardWidth: 340 });
   const dragOffsetRef = useRef(0);
   const paintRafRef = useRef(0);
   const autoOffsetRef = useRef(0);
   const autoHoldRef = useRef(false);
+  const autoEnabledRef = useRef(true);
+  const expandReadyRef = useRef(false);
   const autoResumeAtRef = useRef(0);
   const autoLastTsRef = useRef(0);
   const autoRafRef = useRef(0);
   const skipSnapPaintRef = useRef(false);
   const reducedMotionRef = useRef(false);
+  const flippingRef = useRef(false);
+  const flipRafRef = useRef(0);
+  const autoAccRef = useRef(0);
   const [active, setActive] = useState(0);
   const [stageWidth, setStageWidth] = useState(720);
   const [photoById, setPhotoById] = useState<Record<string, number>>({});
@@ -110,12 +172,15 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
       projects.forEach((project, index) => {
         const node = stage.querySelector<HTMLElement>(`[data-rolodex-card="${CSS.escape(project.id)}"]`);
         if (!node) return;
-        const painted = cardTransform(ringDelta(index, activeIndex + drag, count), metrics);
+        const painted = cardTransform(ringDelta(index, activeIndex + drag, count), metrics.cardWidth);
         node.style.transform = painted.transform;
+        node.style.transformOrigin = '50% 92%';
         node.style.zIndex = String(painted.zIndex);
-        node.style.opacity = painted.opacity;
+        node.style.opacity = '1';
         node.style.filter = 'none';
-        node.style.transition = instant ? 'none' : `transform ${SNAP_MS}, opacity ${SNAP_MS}`;
+        node.style.visibility = painted.visible ? 'visible' : 'hidden';
+        node.style.pointerEvents = painted.visible ? 'auto' : 'none';
+        node.style.transition = instant ? 'none' : MOTION;
         node.setAttribute('aria-hidden', painted.isFront ? 'false' : 'true');
       });
     },
@@ -130,6 +195,106 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
     [paintFan],
   );
 
+  const paintFlip = useCallback(
+    (from: number, to: number, p: number) => {
+      const stage = stageRef.current;
+      if (!stage || count < 1) return;
+      const cardWidth = metricsRef.current.cardWidth;
+      const fromId = projects[from]?.id;
+      const toId = projects[to]?.id;
+      projects.forEach((project, index) => {
+        const node = stage.querySelector<HTMLElement>(`[data-rolodex-card="${CSS.escape(project.id)}"]`);
+        if (!node) return;
+        const start = cardPose(ringDelta(index, from, count), cardWidth);
+        const end = cardPose(ringDelta(index, to, count), cardWidth);
+        let x = start.x + (end.x - start.x) * p;
+        let y = start.y + (end.y - start.y) * p;
+        let z = start.z + (end.z - start.z) * p;
+        let rotateX = 0;
+        let scale = start.scale + (end.scale - start.scale) * p;
+        let zIndex = Math.round(start.zIndex + (end.zIndex - start.zIndex) * p);
+        let visible = start.visible || end.visible;
+
+        if (project.id === fromId) {
+          // Tip forward/down over the bottom hinge, receding into the stack.
+          rotateX = 86 * p;
+          y = start.y + 96 * p;
+          z = start.z - 210 * p;
+          scale = start.scale * (1 - 0.08 * p);
+          zIndex = Math.round(2600 * (1 - p) + 60);
+          visible = true;
+        } else if (project.id === toId) {
+          // Rise from behind the stack, unfolding to face the viewer.
+          const rise = p;
+          x = end.x + (start.x - end.x) * (1 - rise) * 0.18;
+          y = end.y + 52 * (1 - rise);
+          z = end.z - 260 * (1 - rise);
+          rotateX = -86 * (1 - rise);
+          scale = 0.84 + (end.scale - 0.84) * rise;
+          zIndex = rise < 0.42 ? 380 : 2800;
+          visible = true;
+        }
+
+        node.style.transition = 'none';
+        node.style.transformOrigin = '50% 92%';
+        node.style.transform = poseTransform(x, y, z, rotateX, scale);
+        node.style.zIndex = String(zIndex);
+        node.style.opacity = '1';
+        node.style.filter = 'none';
+        node.style.visibility = visible ? 'visible' : 'hidden';
+        node.style.pointerEvents = visible ? 'auto' : 'none';
+        node.setAttribute('aria-hidden', project.id === toId && p > 0.55 ? 'false' : 'true');
+      });
+    },
+    [count, projects],
+  );
+
+  const startFlip = useCallback(
+    (dir: 1 | -1) => {
+      if (count < 2 || flippingRef.current) return;
+      const from = activeRef.current;
+      const to = (from + dir + count) % count;
+      if (reducedMotionRef.current) {
+        activeRef.current = to;
+        dragOffsetRef.current = 0;
+        autoOffsetRef.current = 0;
+        autoAccRef.current = 0;
+        skipSnapPaintRef.current = true;
+        setActive(to);
+        paintFan(to, 0, true);
+        return;
+      }
+      if (flipRafRef.current) cancelAnimationFrame(flipRafRef.current);
+      flippingRef.current = true;
+      autoHoldRef.current = true;
+      autoOffsetRef.current = 0;
+      const t0 = performance.now();
+      const tick = (now: number) => {
+        const p = Math.min(1, (now - t0) / MOTION_MS);
+        paintFlip(from, to, motionEase(p));
+        if (p < 1) {
+          flipRafRef.current = requestAnimationFrame(tick);
+          return;
+        }
+        flippingRef.current = false;
+        flipRafRef.current = 0;
+        activeRef.current = to;
+        dragOffsetRef.current = 0;
+        autoOffsetRef.current = 0;
+        autoAccRef.current = 0;
+        skipSnapPaintRef.current = true;
+        setActive(to);
+        paintFan(to, 0, true);
+        if (autoEnabledRef.current && !modalOpenRef.current) {
+          autoHoldRef.current = false;
+          autoLastTsRef.current = 0;
+        }
+      };
+      flipRafRef.current = requestAnimationFrame(tick);
+    },
+    [count, paintFan, paintFlip],
+  );
+
   const go = useCallback(
     (next: number) => {
       if (count === 0) return;
@@ -141,6 +306,7 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
       activeRef.current = wrapped;
       dragOffsetRef.current = 0;
       autoOffsetRef.current = 0;
+      autoAccRef.current = 0;
       setActive(wrapped);
       const stage = stageRef.current;
       if (stage) stage.style.cursor = '';
@@ -153,6 +319,16 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
     autoHoldRef.current = true;
     autoResumeAtRef.current = 0;
     autoLastTsRef.current = 0;
+    if (flipRafRef.current) {
+      cancelAnimationFrame(flipRafRef.current);
+      flipRafRef.current = 0;
+    }
+    if (flippingRef.current) {
+      flippingRef.current = false;
+      autoOffsetRef.current = 0;
+      paintFan(activeRef.current, 0, true);
+      return;
+    }
     const frac = autoOffsetRef.current;
     if (frac === 0) return;
     autoOffsetRef.current = 0;
@@ -168,7 +344,18 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
     paintFan(activeRef.current, 0, true);
   }, [count, paintFan]);
 
+  const stopAuto = useCallback(() => {
+    autoEnabledRef.current = false;
+    autoHoldRef.current = true;
+    autoResumeAtRef.current = 0;
+    autoLastTsRef.current = 0;
+  }, []);
+
   const releaseAuto = useCallback(() => {
+    if (!autoEnabledRef.current) {
+      autoHoldRef.current = true;
+      return;
+    }
     autoHoldRef.current = false;
     autoResumeAtRef.current = performance.now() + AUTO_RESUME_MS;
     autoLastTsRef.current = 0;
@@ -176,11 +363,9 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
 
   const step = useCallback(
     (direction: -1 | 1) => {
-      holdAuto();
-      go(activeRef.current + direction);
-      releaseAuto();
+      startFlip(direction);
     },
-    [go, holdAuto, releaseAuto],
+    [startFlip],
   );
 
   const setPhoto = useCallback((projectId: string, index: number) => {
@@ -200,6 +385,25 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
     setModalProject(project);
   }, []);
 
+  const selectCard = useCallback(
+    (project: GalleryProject, index: number) => {
+      if (didDragRef.current) return;
+      const visual = ringDelta(index, activeRef.current + autoOffsetRef.current, count);
+      const centered = Math.abs(visual) < CENTER_SLOT;
+      if (centered && expandReadyRef.current) {
+        openModal(project);
+        return;
+      }
+      stopAuto();
+      expandReadyRef.current = true;
+      autoOffsetRef.current = 0;
+      const delta = ringDelta(index, activeRef.current, count);
+      if (Math.abs(delta) === 1) startFlip(delta > 0 ? 1 : -1);
+      else go(index);
+    },
+    [count, go, openModal, startFlip, stopAuto],
+  );
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -215,6 +419,7 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
   }, []);
 
   useLayoutEffect(() => {
+    if (flippingRef.current) return;
     if (skipSnapPaintRef.current) {
       skipSnapPaintRef.current = false;
       paintFan(active, autoOffsetRef.current, true);
@@ -251,8 +456,10 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
     const tick = (ts: number) => {
       autoRafRef.current = requestAnimationFrame(tick);
       if (
+        !autoEnabledRef.current ||
         reducedMotionRef.current ||
         autoHoldRef.current ||
+        flippingRef.current ||
         modalOpenRef.current ||
         dragRef.current ||
         document.hidden ||
@@ -267,23 +474,21 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
       }
       const dt = Math.min(0.05, (ts - autoLastTsRef.current) / 1000);
       autoLastTsRef.current = ts;
-      autoOffsetRef.current += AUTO_SLOTS_PER_SEC * dt;
-      while (autoOffsetRef.current >= 1) {
-        autoOffsetRef.current -= 1;
-        const wrapped = (activeRef.current + 1) % count;
-        skipSnapPaintRef.current = true;
-        activeRef.current = wrapped;
-        setActive(wrapped);
+      autoAccRef.current += dt;
+      if (autoAccRef.current >= AUTO_PERIOD_SEC) {
+        autoAccRef.current = 0;
+        startFlip(1);
       }
-      paintFan(activeRef.current, autoOffsetRef.current, true);
     };
 
     autoRafRef.current = requestAnimationFrame(tick);
     return () => {
       if (autoRafRef.current) cancelAnimationFrame(autoRafRef.current);
       autoRafRef.current = 0;
+      if (flipRafRef.current) cancelAnimationFrame(flipRafRef.current);
+      flipRafRef.current = 0;
     };
-  }, [count, paintFan]);
+  }, [count, paintFan, startFlip]);
 
   useEffect(() => {
     const el = stageRef.current;
@@ -502,8 +707,8 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
   if (count === 0) return null;
 
   const cardWidth = Math.min(340, Math.max(252, stageWidth * 0.46));
-  const metrics = fanMetrics(count, stageWidth, cardWidth);
-  metricsRef.current = metrics;
+  const cardHeight = Math.round(cardWidth * 1.38);
+  metricsRef.current = { cardWidth };
   const current = projects[active];
 
   return (
@@ -535,17 +740,17 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
               step(1);
             }
           }}
-          className="relative z-0 h-[32rem] w-full min-w-0 cursor-grab select-none overflow-visible [perspective:1100px] [perspective-origin:50%_50%] outline-none focus-visible:ring-2 focus-visible:ring-accent sm:h-[34rem]"
-          style={{ touchAction: 'pan-y' }}
+          className="relative z-0 h-[32rem] w-full min-w-0 cursor-grab select-none overflow-visible outline-none focus-visible:ring-2 focus-visible:ring-accent sm:h-[34rem]"
+          style={{ touchAction: 'pan-y', perspective: '1180px', perspectiveOrigin: '50% 42%' }}
         >
           <p id={labelId} className="sr-only">
             Completed jobs. {current ? `${current.title}, ${current.location}.` : ''} Swipe or use arrow keys to
-            browse. Tap a card for the full job.
+            browse. Tap a card to bring it forward, tap the centered card for the full job.
           </p>
 
           <div className="absolute inset-0 [transform-style:preserve-3d]">
             {projects.map((project, index) => {
-              const painted = cardTransform(ringDelta(index, active, count), metrics);
+              const painted = cardTransform(ringDelta(index, active, count), cardWidth);
               const shots = projectShots(project);
 
               return (
@@ -553,25 +758,36 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
                   key={project.id}
                   data-rolodex-card={project.id}
                   aria-hidden={!painted.isFront}
-                  className="absolute left-1/2 top-1/2 cursor-pointer will-change-transform [backface-visibility:hidden]"
+                  className="absolute left-1/2 top-1/2 cursor-pointer overflow-hidden rounded-2xl bg-background will-change-transform [backface-visibility:hidden] [isolation:isolate] [transform-style:preserve-3d]"
                   style={{
+                    boxSizing: 'border-box',
                     width: cardWidth,
+                    height: cardHeight,
+                    minWidth: cardWidth,
+                    maxWidth: cardWidth,
+                    minHeight: cardHeight,
+                    maxHeight: cardHeight,
+                    contain: 'strict',
+                    overflow: 'hidden',
                     zIndex: painted.zIndex,
-                    transformOrigin: '50% 50%',
+                    opacity: 1,
+                    visibility: painted.visible ? 'visible' : 'hidden',
+                    pointerEvents: painted.visible ? 'auto' : 'none',
+                    transformOrigin: '50% 92%',
                     filter: 'none',
                   }}
                   onClick={(event) => {
-                    if (didDragRef.current) return;
                     if ((event.target as HTMLElement).closest('[data-photo-thumb], [data-photo-thumbs]')) return;
-                    openModal(project);
+                    selectCard(project, index);
                   }}
                 >
-                  <div className="rounded-2xl shadow-[0_14px_32px_rgba(0,0,0,0.18)]">
+                  <div className="h-full max-h-full min-h-0 w-full overflow-hidden rounded-2xl shadow-[0_14px_32px_rgba(0,0,0,0.18)]">
                     <ProjectCard
                       project={project}
                       priority
                       photoZone
                       keepShotsMounted
+                      fixedFrame
                       photoIndex={((photoById[project.id] ?? 0) % shots.length + shots.length) % shots.length}
                       onPhotoIndexChange={(next) => setPhoto(project.id, next)}
                     />

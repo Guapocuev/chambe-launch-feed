@@ -206,7 +206,7 @@ function PhotoThumbStrip({ children, activeIndex }: { children: ReactNode; activ
     <div
       ref={viewportRef}
       data-photo-thumbs=""
-      className="min-w-0 max-w-full overflow-hidden bg-surface"
+      className="h-16 shrink-0 min-w-0 max-w-full overflow-hidden bg-surface"
       style={{ touchAction: 'pan-y' }}
     >
       <div
@@ -228,6 +228,7 @@ export function ProjectCard({
   photoIndex,
   onPhotoIndexChange,
   keepShotsMounted = false,
+  fixedFrame = false,
 }: {
   project: GalleryProject;
   priority?: boolean;
@@ -238,6 +239,8 @@ export function ProjectCard({
   onPhotoIndexChange?: (index: number) => void;
   /** Keep every shot in the DOM so swapping photos does not remount images. */
   keepShotsMounted?: boolean;
+  /** Fill a fixed-size parent; clip extra copy instead of growing the card. */
+  fixedFrame?: boolean;
 }) {
   const t = useTranslations('Gallery');
   const shots = project.photos.length > 0 ? project.photos : [project.coverImage];
@@ -253,14 +256,18 @@ export function ProjectCard({
   return (
     <article
       id={`job-${project.id}`}
-      className={`scroll-mt-24 overflow-clip rounded-2xl border border-border bg-background ${className}`}
+      className={`scroll-mt-24 overflow-hidden rounded-2xl border border-border bg-background ${
+        fixedFrame
+          ? 'flex h-full max-h-full min-h-0 w-full max-w-full flex-col overflow-hidden'
+          : 'overflow-clip'
+      } ${className}`}
     >
       {hasBeforeAfter ? (
         <div
-          className="grid grid-cols-2 gap-px bg-border"
+          className={fixedFrame ? 'grid min-h-0 flex-1 grid-cols-2 gap-px bg-border' : 'grid grid-cols-2 gap-px bg-border'}
           {...(photoZone ? { 'data-photo-zone': '' } : {})}
         >
-          <div className="relative aspect-square">
+          <div className={fixedFrame ? 'relative min-h-0' : 'relative aspect-square'}>
             <Image
               src={project.beforeImage!}
               alt={`${project.title} — before, ${project.location}`}
@@ -274,7 +281,7 @@ export function ProjectCard({
               Before
             </span>
           </div>
-          <div className="relative aspect-square">
+          <div className={fixedFrame ? 'relative min-h-0' : 'relative aspect-square'}>
             <Image
               src={project.afterImage!}
               alt={`${project.title} — after, ${project.location}`}
@@ -290,9 +297,13 @@ export function ProjectCard({
           </div>
         </div>
       ) : (
-        <div>
+        <div className={fixedFrame ? 'flex min-h-0 flex-1 flex-col' : ''}>
           <div
-            className="relative aspect-[3/2] bg-[color-mix(in_srgb,var(--foreground)_10%,var(--background))]"
+            className={
+              fixedFrame
+                ? 'relative min-h-0 flex-1 bg-[color-mix(in_srgb,var(--foreground)_10%,var(--background))]'
+                : 'relative aspect-[3/2] bg-[color-mix(in_srgb,var(--foreground)_10%,var(--background))]'
+            }
             {...(photoZone ? { 'data-photo-zone': '' } : {})}
           >
             {keepShotsMounted
@@ -356,13 +367,17 @@ export function ProjectCard({
           )}
         </div>
       )}
-      <div className="p-5">
+      <div className={fixedFrame ? 'h-36 shrink-0 overflow-hidden p-4' : 'p-5'}>
         <div className="text-xs font-semibold uppercase tracking-wide text-accent">
           {t(project.trade)}
         </div>
-        <h3 className="mt-1 text-lg font-semibold text-foreground">{project.title}</h3>
-        <p className="mt-1 text-sm text-foreground/60">{project.location}</p>
-        <p className="mt-3 text-sm text-foreground/80">{project.description}</p>
+        <h3 className={`mt-1 text-lg font-semibold text-foreground ${fixedFrame ? 'line-clamp-2' : ''}`}>
+          {project.title}
+        </h3>
+        <p className={`mt-1 text-sm text-foreground/60 ${fixedFrame ? 'truncate' : ''}`}>{project.location}</p>
+        <p className={`mt-3 text-sm text-foreground/80 ${fixedFrame ? 'line-clamp-3' : ''}`}>
+          {project.description}
+        </p>
       </div>
     </article>
   );

@@ -327,7 +327,32 @@
     "retry": "Retry preview",
     "generate": "Generate preview",
     "altToday": "Your kitchen today",
-    "altPreview": "Illustrative modern light kitchen preview"
+    "altPreview": "Illustrative modern light kitchen preview",
+    "showcaseKicker": "Real AI-generated examples",
+    "showcaseTitle": "See the modern light look first",
+    "showcaseBody": "Drag to compare. These are illustrative AI previews of the same style you get after the {price} charge — not a promise of the exact finished look.",
+    "showcaseBefore": "Before",
+    "showcaseAfter": "After",
+    "examples": {
+      "open": {
+        "label": "Open kitchen",
+        "beforeAlt": "Dated oak kitchen before renovation",
+        "afterAlt": "Illustrative modern light kitchen preview",
+        "note": "Starts from a real downtown Toronto kitchen photo."
+      },
+      "galley": {
+        "label": "Galley kitchen",
+        "beforeAlt": "Dated galley kitchen before renovation",
+        "afterAlt": "Illustrative modern light galley kitchen preview",
+        "note": "Same real kitchen, second camera angle."
+      },
+      "condo": {
+        "label": "U-shaped kitchen",
+        "beforeAlt": "Typical dated U-shaped kitchen",
+        "afterAlt": "Illustrative modern light U-shaped kitchen preview",
+        "note": "Illustrative typical kitchen — not a client job."
+      }
+    }
   },
   "Auth": {
     "contractors": "Contractors",
