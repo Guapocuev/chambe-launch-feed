@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useId, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { signPhotoUpload } from '../get-a-quote/photo-upload';
 
 const ACCEPT = 'image/jpeg,image/png,image/webp';
@@ -13,6 +14,7 @@ export function HeroPhotoUpload({
   onPath: (path: string) => void;
   disabled?: boolean;
 }) {
+  const t = useTranslations('Visualize');
   const inputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -29,11 +31,11 @@ export function HeroPhotoUpload({
     const file = fileList?.[0];
     if (!file || busy || disabled) return;
     if (!ACCEPT.split(',').includes(file.type)) {
-      setMessage('Use a JPEG, PNG, or WebP photo.');
+      setMessage(t('useJpeg'));
       return;
     }
     if (file.size > MAX_BYTES) {
-      setMessage('Keep the photo under 8 MB.');
+      setMessage(t('photoTooBig'));
       return;
     }
     setBusy(true);
@@ -50,7 +52,7 @@ export function HeroPhotoUpload({
         body: file,
       });
       if (!put.ok) {
-        setMessage('The photo did not upload. Try again.');
+        setMessage(t('uploadFail'));
         return;
       }
       if (preview) URL.revokeObjectURL(preview);
@@ -65,14 +67,12 @@ export function HeroPhotoUpload({
   return (
     <div>
       <label htmlFor={inputId} className="text-sm font-medium text-foreground">
-        Kitchen photo
+        {t('kitchenPhoto')}
       </label>
-      <p className="mt-1 text-xs text-foreground/55">
-        One wide shot of the room. We keep the camera, windows, and layout — only finishes change.
-      </p>
+      <p className="mt-1 text-xs text-foreground/55">{t('kitchenPhotoHelp')}</p>
       {preview ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={preview} alt="Uploaded kitchen" className="mt-3 w-full rounded-xl border border-border object-cover" />
+        <img src={preview} alt={t('uploadedKitchenAlt')} className="mt-3 w-full rounded-xl border border-border object-cover" />
       ) : (
         <button
           type="button"
@@ -80,7 +80,7 @@ export function HeroPhotoUpload({
           onClick={() => inputRef.current?.click()}
           className="mt-3 flex w-full items-center justify-center rounded-xl border border-dashed border-border px-4 py-10 text-sm font-semibold text-foreground/70 hover:border-brand disabled:opacity-50"
         >
-          {busy ? 'Uploading…' : 'Add one kitchen photo'}
+          {busy ? t('uploading') : t('addKitchenPhoto')}
         </button>
       )}
       <input

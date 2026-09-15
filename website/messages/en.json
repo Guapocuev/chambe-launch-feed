@@ -2,7 +2,8 @@
   "LocaleSwitcher": {
     "label": "Language",
     "en": "English",
-    "es": "Español"
+    "es": "Español",
+    "pt": "Português"
   },
   "Nav": {
     "howItWorks": "How It Works",
@@ -215,7 +216,19 @@
     "seePhotos": "See photos",
     "zoomNeighbourhood": "Zoom to neighbourhood",
     "seePhotosArrow": "See photos →",
-    "emptyNeighbourhood": "No jobs in this neighbourhood yet."
+    "emptyNeighbourhood": "No jobs in this neighbourhood yet.",
+    "previousJobs": "Previous jobs",
+    "nextJobs": "Next jobs",
+    "completedJobs": "Completed jobs.",
+    "completedJobsHelp": "Swipe or use arrow keys to browse. Tap a card to bring it forward, tap the centered card for the full job.",
+    "closeJobDetails": "Close job details",
+    "previousPhoto": "Previous photo",
+    "nextPhoto": "Next photo",
+    "photoOf": "Photo {n} of {total}",
+    "streets": "Streets",
+    "satellite": "Satellite",
+    "mapKicker": "Where we've worked",
+    "emptyPinsTitle": "Completed jobs appear as pins across the GTA"
   },
   "Quote": {
     "title": "Get a free estimate",
@@ -288,7 +301,13 @@
     "removePhoto": "Remove photo",
     "matched": "We've matched your job with {count, plural, one {# nearby contractor} other {# nearby contractors}}.",
     "logged": "We've logged your job and are lining up a contractor match.",
-    "pendingRetry": "We've received your request and are finishing your estimate. {callback}"
+    "pendingRetry": "We've received your request and are finishing your estimate. {callback}",
+    "timeAbout": "About",
+    "timeRoughly": "Roughly",
+    "timeLikely": "Likely",
+    "timeHoursOnSite": "{prefix} {low}–{high} hours on site",
+    "timeHoursAfterLook": "{prefix} {low}–{high} hours after a look at the site",
+    "timeConfirmedOnSite": "Time confirmed on site"
   },
   "FollowUps": {
     "area_sqft": "About how many square feet is the space? Skip if you are not sure.",
@@ -317,7 +336,10 @@
     "hurt_no_pricebook": "− This one likely needs a look on site before a tight price",
     "hurt_multi_trade": "− Tell us if this is mainly electrical, plumbing, or carpentry",
     "hurt_condo_panel": "− Panel work in a condo often needs a closer look on site",
-    "hurt_qty": "− Add a count (how many items or how large the job is)"
+    "hurt_qty": "− Add a count (how many items or how large the job is)",
+    "hurt_urgency": "− Tell us how soon you need this",
+    "hurt_size": "− Tell us roughly how long you think it will take",
+    "hurt_safety": "− Tell us if this is affecting safety or causing damage"
   },
   "Visualize": {
     "kicker": "Kitchen only — Phase 1",
@@ -366,7 +388,15 @@
         "afterAlt": "Illustrative modern light U-shaped kitchen preview",
         "note": "Illustrative typical kitchen — not a client job."
       }
-    }
+    },
+    "kitchenPhoto": "Kitchen photo",
+    "kitchenPhotoHelp": "One wide shot of the room. We keep the camera, windows, and layout — only finishes change.",
+    "useJpeg": "Use a JPEG, PNG, or WebP photo.",
+    "photoTooBig": "Keep the photo under 8 MB.",
+    "uploadFail": "The photo did not upload. Try again.",
+    "uploading": "Uploading…",
+    "addKitchenPhoto": "Add one kitchen photo",
+    "uploadedKitchenAlt": "Uploaded kitchen"
   },
   "Auth": {
     "contractors": "Contractors",
@@ -427,6 +457,75 @@
     "phoneTakenBody": "Log in with the original number or email from your application.",
     "tryAgain": "Sign out and try again with the phone or email on your application.",
     "jobFallback": "Job"
+  },
+  "Apprentice": {
+    "tradeElectrical": "Electrical",
+    "tradePlumbing": "Plumbing",
+    "tradeCarpentry": "Carpentry",
+    "role": "{trade} apprentice",
+    "greeting": "Hey {name}",
+    "there": "there",
+    "progress": "Progress",
+    "ofTarget": "of {target} placeholder",
+    "levelNote": "Level {level} · not official Ontario hours yet",
+    "logHours": "Log hours",
+    "hoursToday": "Hours today",
+    "notesPlaceholder": "What did you work on? (optional)",
+    "saveHours": "Save hours",
+    "saving": "Saving…",
+    "noHours": "No hours yet. Log your first day.",
+    "askTitle": "Ask a question",
+    "askBody": "Quick jobsite question. Type or speak. We save the answer to your record.",
+    "questionPlaceholder": "e.g. How do I identify the traveler on a 3-way?",
+    "speak": "Speak",
+    "stop": "Stop",
+    "ask": "Ask",
+    "asking": "Asking…",
+    "hoursInvalid": "Enter hours, like 7.5",
+    "questionTooShort": "Type or speak a short question.",
+    "micNeeded": "Microphone access is needed to speak. You can still type.",
+    "noSpeech": "Didn't catch any speech. Try again a bit closer to the mic.",
+    "tooShort": "That was too short. Hold the mic, ask, then stop.",
+    "supervisor": "Supervisor: {name}",
+    "joinTitle": "Your trade",
+    "joinBody": "One screen. Then you log hours. Your supervisor can see them if you add their number.",
+    "yourName": "Your name",
+    "yourPhone": "Your phone",
+    "trade": "Trade",
+    "supervisorPhoneOptional": "Supervisor phone (optional)",
+    "startTracking": "Start tracking hours"
+  },
+  "JobTools": {
+    "allJobs": "← All jobs",
+    "invalidLink": "That job link is not valid",
+    "backToJobs": "Back to jobs",
+    "loading": "Loading job…",
+    "thatDidntWork": "That didn't work.",
+    "membershipLine": "{trade} · membership {tier}",
+    "intro": "Hours, materials, and a simple invoice. No payments yet — membership tier is stored so we can gate this later.",
+    "hours": "Hours",
+    "clockedIn": "clocked in {when}",
+    "notClockedIn": "not clocked in",
+    "openTotal": "Open: {open} · Total {total}",
+    "clockIn": "Clock in",
+    "clockOut": "Clock out",
+    "hoursPlaceholder": "Hours",
+    "notesPlaceholder": "Notes (optional)",
+    "logHours": "Log hours",
+    "noTime": "No time logged yet.",
+    "inProgress": " — in progress",
+    "materials": "Materials",
+    "boughtPlaceholder": "What did you buy?",
+    "amountPlaceholder": "Amount (CAD)",
+    "addMaterial": "Add material",
+    "noMaterials": "No materials logged yet.",
+    "receiptAttached": " · receipt attached",
+    "invoice": "Invoice",
+    "quotedRange": "Quoted range",
+    "labor": "Labor",
+    "agreedPrice": "Agreed price",
+    "save": "Save",
+    "totalNote": "Total is the agreed price when set; otherwise labor (hours × rate) plus materials. Not a payment request."
   },
   "Errors": {
     "rateLimited": "Too many requests from this network. Please wait a few minutes and try again.",

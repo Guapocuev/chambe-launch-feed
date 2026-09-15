@@ -33,24 +33,46 @@ const inputClass =
 const labelClass = 'block text-sm font-medium text-foreground';
 
 const URGENCY_CHIPS = [
-  { value: 'Not urgent', label: 'Not urgent' },
-  { value: 'Somewhat urgent', label: 'This week' },
-  { value: 'Emergency — needs immediate attention', label: 'Emergency' },
-  { value: 'Not sure', label: 'Not sure' },
+  { value: 'Not urgent', labelKey: 'notUrgent' },
+  { value: 'Somewhat urgent', labelKey: 'thisWeek' },
+  { value: 'Emergency — needs immediate attention', labelKey: 'emergency' },
+  { value: 'Not sure', labelKey: 'notSure' },
 ] as const;
 
 const JOB_LENGTH_CHIPS = [
-  { value: 'Quick job (under 3 hours)', label: 'Under 3 hours' },
-  { value: 'Half a day', label: 'Half a day' },
-  { value: 'A full day or more', label: 'A day or more' },
-  { value: 'Not sure', label: 'Not sure' },
+  { value: 'Quick job (under 3 hours)', labelKey: 'under3h' },
+  { value: 'Half a day', labelKey: 'halfDay' },
+  { value: 'A full day or more', labelKey: 'fullDay' },
+  { value: 'Not sure', labelKey: 'notSure' },
 ] as const;
 
 const SAFETY_CHIPS = [
-  { value: 'No', label: 'No' },
-  { value: 'Yes', label: 'Yes' },
-  { value: 'Not sure', label: 'Not sure' },
+  { value: 'No', labelKey: 'no' },
+  { value: 'Yes', labelKey: 'yes' },
+  { value: 'Not sure', labelKey: 'notSure' },
 ] as const;
+
+function formatHoursPart(value: number): string {
+  return Number.isInteger(value) ? String(value) : value.toFixed(1);
+}
+
+function timeEstimateCopy(
+  t: (key: string, values?: Record<string, string>) => string,
+  estimate: { hours_low: number | null; hours_high: number | null } | null | undefined,
+  score: number | undefined,
+): string {
+  if (!estimate || estimate.hours_low == null || estimate.hours_high == null) {
+    return t('timeConfirmedOnSite');
+  }
+  const scoreValue = score ?? 0;
+  const prefix = scoreValue >= 80 ? t('timeAbout') : scoreValue >= 70 ? t('timeRoughly') : t('timeLikely');
+  const values = {
+    prefix,
+    low: formatHoursPart(estimate.hours_low),
+    high: formatHoursPart(estimate.hours_high),
+  };
+  return scoreValue >= 70 ? t('timeHoursOnSite', values) : t('timeHoursAfterLook', values);
+}
 
 type Step = 1 | 2 | 3;
 
@@ -170,9 +192,9 @@ export function QuoteForm() {
             <p className="text-3xl font-bold text-brand">
               {`${formatCad(state.quote.low, locale)} – ${formatCad(state.quote.high, locale)}`}
             </p>
-            {state.quote.time_estimate?.label && (
-              <p className="mt-1 text-sm text-foreground/70">{state.quote.time_estimate.label}</p>
-            )}
+            <p className="mt-1 text-sm text-foreground/70">
+              {timeEstimateCopy(t, state.quote.time_estimate, shownScore)}
+            </p>
           </div>
         )}
         {typeof shownScore === 'number' && (
@@ -328,13 +350,7 @@ export function QuoteForm() {
                   selected={urgency === chip.value}
                   onSelect={() => setUrgency(chip.value)}
                 >
-                  {chip.value === 'Not urgent'
-                    ? t('notUrgent')
-                    : chip.value === 'Somewhat urgent'
-                      ? t('thisWeek')
-                      : chip.value === 'Emergency — needs immediate attention'
-                        ? t('emergency')
-                        : t('notSure')}
+                  {t(chip.labelKey)}
                 </Chip>
               ))}
             </div>
@@ -348,13 +364,7 @@ export function QuoteForm() {
                   selected={jobLength === chip.value}
                   onSelect={() => setJobLength(chip.value)}
                 >
-                  {chip.value === 'Quick job (under 3 hours)'
-                    ? t('under3h')
-                    : chip.value === 'Half a day'
-                      ? t('halfDay')
-                      : chip.value === 'A full day or more'
-                        ? t('fullDay')
-                        : t('notSure')}
+                  {t(chip.labelKey)}
                 </Chip>
               ))}
             </div>
@@ -368,7 +378,7 @@ export function QuoteForm() {
                   selected={safety === chip.value}
                   onSelect={() => setSafety(chip.value)}
                 >
-                  {chip.value === 'Yes' ? t('yes') : chip.value === 'No' ? t('no') : t('notSure')}
+                  {t(chip.labelKey)}
                 </Chip>
               ))}
             </div>

@@ -45,7 +45,7 @@ export async function generateMetadata({
     description: t("heroBody"),
     openGraph: {
       ...rootMetadata.openGraph,
-      locale: locale === "es" ? "es_CA" : "en_CA",
+      locale: locale === "es" ? "es_CA" : locale === "pt" ? "pt_CA" : "en_CA",
       title: `${t("heroTitle")} ${t("heroAccent")}`,
       description: t("heroBody"),
     },

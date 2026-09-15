@@ -2,16 +2,17 @@
 
 import { useRouter } from '@/i18n/navigation';
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { formatPhoneInput } from '@/lib/phone';
 import { inviteApprenticeAction, type ApprenticeHourEntry, type ApprenticeProfile, type ApprenticeQuestion, type HourProgress } from '@/app/[locale]/apprentice/actions';
 
 const fieldClass =
   'h-14 w-full rounded-2xl border border-border bg-background px-4 text-lg text-foreground placeholder:text-foreground/35 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent';
 
-function tradeLabel(trade: string): string {
-  if (trade === 'electrical') return 'Electrical';
-  if (trade === 'plumbing') return 'Plumbing';
-  if (trade === 'carpentry') return 'Carpentry';
+function tradeLabel(trade: string, t: (key: string) => string): string {
+  if (trade === 'electrical') return t('tradeElectrical');
+  if (trade === 'plumbing') return t('tradePlumbing');
+  if (trade === 'carpentry') return t('tradeCarpentry');
   return trade;
 }
 
@@ -28,6 +29,7 @@ export function SupervisorApprentices({
   pending: Array<{ id: string; full_name: string; phone: string; trade: string }>;
 }) {
   const router = useRouter();
+  const t = useTranslations('Apprentice');
   const [phone, setPhone] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -69,9 +71,9 @@ export function SupervisorApprentices({
           className={fieldClass}
         />
         <select name="trade" required className={fieldClass}>
-          <option value="electrical">Electrical</option>
-          <option value="plumbing">Plumbing</option>
-          <option value="carpentry">Carpentry</option>
+          <option value="electrical">{t('tradeElectrical')}</option>
+          <option value="plumbing">{t('tradePlumbing')}</option>
+          <option value="carpentry">{t('tradeCarpentry')}</option>
         </select>
         <button
           type="submit"
@@ -89,7 +91,7 @@ export function SupervisorApprentices({
           <ul className="mt-3 space-y-2">
             {pending.map((row) => (
               <li key={row.id} className="rounded-2xl border border-dashed border-border px-4 py-3 text-base">
-                {row.full_name} · {tradeLabel(row.trade)}
+                {row.full_name} · {tradeLabel(row.trade, t)}
               </li>
             ))}
           </ul>
@@ -106,7 +108,7 @@ export function SupervisorApprentices({
           <article key={row.apprentice.id} className="rounded-2xl border border-border px-4 py-5">
             <h2 className="text-xl font-bold text-foreground">{row.apprentice.full_name ?? 'Apprentice'}</h2>
             <p className="mt-1 text-base text-foreground/60">
-              {tradeLabel(row.apprentice.trade)} · {row.progress.total_hours.toFixed(1)} h · Level {row.progress.current_level}
+              {tradeLabel(row.apprentice.trade, t)} · {row.progress.total_hours.toFixed(1)} h · Level {row.progress.current_level}
             </p>
             <div className="mt-3 h-3 overflow-hidden rounded-full bg-surface">
               <div

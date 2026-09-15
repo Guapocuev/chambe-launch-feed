@@ -31,6 +31,9 @@ const EXPLANATION_IDS = new Set([
   'hurt_multi_trade',
   'hurt_condo_panel',
   'hurt_qty',
+  'hurt_urgency',
+  'hurt_size',
+  'hurt_safety',
 ]);
 
 export function QuoteConfidence({

@@ -2,7 +2,8 @@
   "LocaleSwitcher": {
     "label": "Idioma",
     "en": "English",
-    "es": "Español"
+    "es": "Español",
+    "pt": "Português"
   },
   "Nav": {
     "howItWorks": "Cómo funciona",
@@ -215,7 +216,19 @@
     "seePhotos": "Ver fotos",
     "zoomNeighbourhood": "Acercar al barrio",
     "seePhotosArrow": "Ver fotos →",
-    "emptyNeighbourhood": "Aún no hay trabajos en este barrio."
+    "emptyNeighbourhood": "Aún no hay trabajos en este barrio.",
+    "previousJobs": "Trabajos anteriores",
+    "nextJobs": "Trabajos siguientes",
+    "completedJobs": "Trabajos terminados.",
+    "completedJobsHelp": "Desliza o usa las flechas para recorrer. Toca una tarjeta para traerla al frente; toca la centrada para ver el trabajo completo.",
+    "closeJobDetails": "Cerrar detalles del trabajo",
+    "previousPhoto": "Foto anterior",
+    "nextPhoto": "Foto siguiente",
+    "photoOf": "Foto {n} de {total}",
+    "streets": "Calles",
+    "satellite": "Satélite",
+    "mapKicker": "Dónde hemos trabajado",
+    "emptyPinsTitle": "Los trabajos terminados aparecen como pines en el GTA"
   },
   "Quote": {
     "title": "Cotización gratis",
@@ -288,7 +301,13 @@
     "removePhoto": "Quitar foto",
     "matched": "Emparejamos tu trabajo con {count, plural, one {# contratista cercano} other {# contratistas cercanos}}.",
     "logged": "Registramos tu trabajo y estamos armando el emparejamiento con un contratista.",
-    "pendingRetry": "Recibimos tu solicitud y estamos terminando tu estimado. {callback}"
+    "pendingRetry": "Recibimos tu solicitud y estamos terminando tu estimado. {callback}",
+    "timeAbout": "Unos",
+    "timeRoughly": "Más o menos",
+    "timeLikely": "Probablemente",
+    "timeHoursOnSite": "{prefix} {low}–{high} horas en el sitio",
+    "timeHoursAfterLook": "{prefix} {low}–{high} horas después de ver el sitio",
+    "timeConfirmedOnSite": "El tiempo se confirma en el sitio"
   },
   "FollowUps": {
     "area_sqft": "¿Más o menos cuántos pies cuadrados tiene el espacio? Si no estás seguro, sáltalo.",
@@ -317,7 +336,10 @@
     "hurt_no_pricebook": "− Este probablemente necesita una visita antes de un precio cerrado",
     "hurt_multi_trade": "− Dinos si esto es sobre todo eléctrico, plomería o carpintería",
     "hurt_condo_panel": "− El trabajo de panel en un condo a menudo necesita una visita",
-    "hurt_qty": "− Agrega una cantidad (cuántos artículos o qué tan grande es el trabajo)"
+    "hurt_qty": "− Agrega una cantidad (cuántos artículos o qué tan grande es el trabajo)",
+    "hurt_urgency": "− Dinos para cuándo lo necesitas",
+    "hurt_size": "− Dinos más o menos cuánto crees que va a tardar",
+    "hurt_safety": "− Dinos si esto afecta la seguridad o está causando daño"
   },
   "Visualize": {
     "kicker": "Solo cocina — Fase 1",
@@ -366,7 +388,15 @@
         "afterAlt": "Vista previa ilustrativa de cocina en U moderna y clara",
         "note": "Cocina típica ilustrativa — no es un trabajo de un cliente."
       }
-    }
+    },
+    "kitchenPhoto": "Foto de la cocina",
+    "kitchenPhotoHelp": "Una toma amplia del cuarto. Dejamos la cámara, las ventanas y la distribución — solo cambian los acabados.",
+    "useJpeg": "Usa una foto JPEG, PNG o WebP.",
+    "photoTooBig": "La foto debe pesar menos de 8 MB.",
+    "uploadFail": "La foto no se subió. Inténtalo de nuevo.",
+    "uploading": "Subiendo…",
+    "addKitchenPhoto": "Agregar una foto de la cocina",
+    "uploadedKitchenAlt": "Cocina subida"
   },
   "Auth": {
     "contractors": "Contratistas",
@@ -427,6 +457,75 @@
     "phoneTakenBody": "Inicia sesión con el número o correo original de tu solicitud.",
     "tryAgain": "Cierra sesión e inténtalo de nuevo con el teléfono o correo de tu solicitud.",
     "jobFallback": "Trabajo"
+  },
+  "Apprentice": {
+    "tradeElectrical": "Eléctrico",
+    "tradePlumbing": "Plomería",
+    "tradeCarpentry": "Carpintería",
+    "role": "Aprendiz de {trade}",
+    "greeting": "Hola {name}",
+    "there": "tú",
+    "progress": "Progreso",
+    "ofTarget": "de {target} provisional",
+    "levelNote": "Nivel {level} · aún no son horas oficiales de Ontario",
+    "logHours": "Registrar horas",
+    "hoursToday": "Horas de hoy",
+    "notesPlaceholder": "¿En qué trabajaste? (opcional)",
+    "saveHours": "Guardar horas",
+    "saving": "Guardando…",
+    "noHours": "Aún no hay horas. Registra tu primer día.",
+    "askTitle": "Haz una pregunta",
+    "askBody": "Pregunta rápida de obra. Escribe o habla. Guardamos la respuesta en tu registro.",
+    "questionPlaceholder": "p. ej. ¿Cómo identifico el viajero en un 3-way?",
+    "speak": "Hablar",
+    "stop": "Parar",
+    "ask": "Preguntar",
+    "asking": "Preguntando…",
+    "hoursInvalid": "Ingresa horas, por ejemplo 7.5",
+    "questionTooShort": "Escribe o dicta una pregunta corta.",
+    "micNeeded": "Se necesita acceso al micrófono para hablar. También puedes escribir.",
+    "noSpeech": "No se escuchó nada. Inténtalo un poco más cerca del micrófono.",
+    "tooShort": "Fue demasiado corto. Mantén el micrófono, pregunta y luego para.",
+    "supervisor": "Supervisor: {name}",
+    "joinTitle": "Tu oficio",
+    "joinBody": "Una pantalla. Luego registras horas. Tu supervisor puede verlas si agregas su número.",
+    "yourName": "Tu nombre",
+    "yourPhone": "Tu teléfono",
+    "trade": "Oficio",
+    "supervisorPhoneOptional": "Teléfono del supervisor (opcional)",
+    "startTracking": "Empezar a registrar horas"
+  },
+  "JobTools": {
+    "allJobs": "← Todos los trabajos",
+    "invalidLink": "Ese enlace de trabajo no es válido",
+    "backToJobs": "Volver a trabajos",
+    "loading": "Cargando trabajo…",
+    "thatDidntWork": "Eso no funcionó.",
+    "membershipLine": "{trade} · membresía {tier}",
+    "intro": "Horas, materiales y una factura simple. Aún no hay pagos — el nivel de membresía se guarda para poder limitar esto después.",
+    "hours": "Horas",
+    "clockedIn": "entrada {when}",
+    "notClockedIn": "sin entrada",
+    "openTotal": "Abierto: {open} · Total {total}",
+    "clockIn": "Entrar",
+    "clockOut": "Salir",
+    "hoursPlaceholder": "Horas",
+    "notesPlaceholder": "Notas (opcional)",
+    "logHours": "Registrar horas",
+    "noTime": "Aún no hay tiempo registrado.",
+    "inProgress": " — en curso",
+    "materials": "Materiales",
+    "boughtPlaceholder": "¿Qué compraste?",
+    "amountPlaceholder": "Monto (CAD)",
+    "addMaterial": "Agregar material",
+    "noMaterials": "Aún no hay materiales.",
+    "receiptAttached": " · recibo adjunto",
+    "invoice": "Factura",
+    "quotedRange": "Rango cotizado",
+    "labor": "Mano de obra",
+    "agreedPrice": "Precio acordado",
+    "save": "Guardar",
+    "totalNote": "El total es el precio acordado si lo hay; si no, mano de obra (horas × tarifa) más materiales. No es una solicitud de pago."
   },
   "Errors": {
     "rateLimited": "Demasiadas solicitudes de esta red. Espera unos minutos e inténtalo de nuevo.",

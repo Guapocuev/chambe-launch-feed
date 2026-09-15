@@ -1,7 +1,7 @@
 import { routing } from '@/i18n/routing';
 
 export function formatCad(amount: number, locale: string): string {
-  const tag = locale === 'es' ? 'es-CA' : 'en-CA';
+  const tag = locale === 'es' ? 'es-CA' : locale === 'pt' ? 'pt-CA' : 'en-CA';
   return new Intl.NumberFormat(tag, {
     style: 'currency',
     currency: 'CAD',
@@ -10,7 +10,9 @@ export function formatCad(amount: number, locale: string): string {
 }
 
 export function htmlLocale(locale: string): string {
-  return locale === 'es' ? 'es-CA' : 'en-CA';
+  if (locale === 'es') return 'es-CA';
+  if (locale === 'pt') return 'pt-CA';
+  return 'en-CA';
 }
 
 export function localeAlternates(path: string): Record<string, string> {
@@ -18,6 +20,7 @@ export function localeAlternates(path: string): Record<string, string> {
   return {
     'en-CA': normalized || '/',
     es: `/es${normalized || ''}`,
+    pt: `/pt${normalized || ''}`,
     'x-default': normalized || '/',
   };
 }

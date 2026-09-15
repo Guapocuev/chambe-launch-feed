@@ -12,16 +12,9 @@ const fieldClass =
 const primaryBtn =
   'flex h-14 w-full items-center justify-center rounded-2xl bg-accent text-lg font-semibold text-inverse disabled:opacity-50';
 
-function tradeLabel(trade: string): string {
-  if (trade === 'electrical') return 'Electrical';
-  if (trade === 'plumbing') return 'Plumbing';
-  if (trade === 'carpentry') return 'Carpentry';
-  return trade;
-}
-
-function firstName(fullName: string | null): string {
-  if (!fullName?.trim()) return 'there';
-  return fullName.trim().split(/\s+/)[0] ?? 'there';
+function firstName(fullName: string | null, fallback: string): string {
+  if (!fullName?.trim()) return fallback;
+  return fullName.trim().split(/\s+/)[0] ?? fallback;
 }
 
 type SpeechRec = {
@@ -40,10 +33,18 @@ type SpeechRec = {
   onend: (() => void) | null;
 };
 
+function tradeLabel(trade: string, t: (key: string) => string): string {
+  if (trade === 'electrical') return t('tradeElectrical');
+  if (trade === 'plumbing') return t('tradePlumbing');
+  if (trade === 'carpentry') return t('tradeCarpentry');
+  return trade;
+}
+
 export function ApprenticeHome({ dashboard }: { dashboard: ApprenticeDashboard }) {
   const router = useRouter();
   const locale = useLocale();
   const tAuth = useTranslations('Auth');
+  const t = useTranslations('Apprentice');
   const { apprentice, progress } = dashboard;
   const [hours, setHours] = useState('');
   const [notes, setNotes] = useState('');
@@ -58,7 +59,7 @@ export function ApprenticeHome({ dashboard }: { dashboard: ApprenticeDashboard }
   async function saveHours() {
     const value = parseFloat(hours);
     if (!Number.isFinite(value) || value <= 0) {
-      setError('Enter hours, like 7.5');
+      setError(t('hoursInvalid'));
       return;
     }
     setBusy(true);
@@ -77,7 +78,7 @@ export function ApprenticeHome({ dashboard }: { dashboard: ApprenticeDashboard }
   async function ask() {
     const asked = question.trim();
     if (asked.length < 4) {
-      setError('Type or speak a short question.');
+      setError(t('questionTooShort'));
       return;
     }
     setBusy(true);
@@ -128,7 +129,7 @@ export function ApprenticeHome({ dashboard }: { dashboard: ApprenticeDashboard }
       rec.onerror = (event) => {
         if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
           setListening(false);
-          setError('Microphone access is needed to speak. You can still type.');
+          setError(t('micNeeded'));
         }
       };
       rec.onend = () => {
@@ -136,7 +137,7 @@ export function ApprenticeHome({ dashboard }: { dashboard: ApprenticeDashboard }
         setListening(false);
         const text = spoken.replace(/\s+/g, ' ').trim();
         if (!text) {
-          setError("Didn't catch any speech. Try again a bit closer to the mic.");
+          setError(t('noSpeech'));
           return;
         }
         setQuestion((prev) => (prev.trim() ? `${prev.trim()} ${text}` : text));
@@ -171,12 +172,12 @@ export function ApprenticeHome({ dashboard }: { dashboard: ApprenticeDashboard }
           const blob = new Blob(chunks, { type: recorder.mimeType || 'audio/webm' });
           if (blob.size < 800) {
             setListening(false);
-            setError('That was too short. Hold the mic, ask, then stop.');
+            setError(t('tooShort'));
             return;
           }
           const form = new FormData();
           form.append('audio', blob, 'question.webm');
-          form.append('locale', locale === 'es' ? 'es' : 'en');
+          form.append('locale', locale);
           const result = await transcribeJobAudio(form);
           setListening(false);
           if ('error' in result) {
@@ -197,7 +198,7 @@ export function ApprenticeHome({ dashboard }: { dashboard: ApprenticeDashboard }
       }, 60_000);
     } catch {
       setListening(false);
-      setError('Microphone access is needed to speak. You can still type.');
+      setError(t('micNeeded'));
     }
   }
 
@@ -220,34 +221,34 @@ export function ApprenticeHome({ dashboard }: { dashboard: ApprenticeDashboard }
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-semibold uppercase tracking-wide text-foreground/50">
-            {tradeLabel(apprentice.trade)} apprentice
+            {t('role', { trade: tradeLabel(apprentice.trade, t) })}
           </p>
           <h1 className="mt-1 text-3xl font-bold tracking-tight text-foreground">
-            Hey {firstName(apprentice.full_name)}
+            {t('greeting', { name: firstName(apprentice.full_name, t('there')) })}
           </h1>
         </div>
         <form action={signOutApprentice}>
           <button type="submit" className="h-12 rounded-2xl border border-border px-4 text-base font-semibold">
-            Log out
+            {tAuth('logOut')}
           </button>
         </form>
       </div>
 
       {apprentice.supervisor_name && (
-        <p className="mt-3 text-base text-foreground/65">Supervisor: {apprentice.supervisor_name}</p>
+        <p className="mt-3 text-base text-foreground/65">{t('supervisor', { name: apprentice.supervisor_name })}</p>
       )}
 
       <section className="mt-8 rounded-2xl border border-border px-4 py-5">
-        <p className="text-sm font-semibold uppercase tracking-wide text-foreground/50">Progress</p>
+        <p className="text-sm font-semibold uppercase tracking-wide text-foreground/50">{t('progress')}</p>
         <p className="mt-2 text-base leading-relaxed text-foreground/70">{tAuth('apprenticeHoursNote')}</p>
         <p className="mt-3 text-2xl font-bold tabular-nums text-foreground">
           {progress.total_hours.toFixed(1)} h
           <span className="ml-2 text-base font-normal text-foreground/55">
-            of {progress.target_total.toFixed(0)} placeholder
+            {t('ofTarget', { target: progress.target_total.toFixed(0) })}
           </span>
         </p>
         <p className="mt-1 text-sm text-foreground/55">
-          Level {progress.current_level} · not official Ontario hours yet
+          {t('levelNote', { level: progress.current_level })}
         </p>
         <ul className="mt-4 space-y-3">
           {progress.levels.map((level) => {
@@ -276,30 +277,30 @@ export function ApprenticeHome({ dashboard }: { dashboard: ApprenticeDashboard }
       )}
 
       <section className="mt-8 space-y-3">
-        <h2 className="text-xl font-semibold text-foreground">Log hours</h2>
+        <h2 className="text-xl font-semibold text-foreground">{t('logHours')}</h2>
         <input
           type="number"
           inputMode="decimal"
           min="0.25"
           step="0.25"
-          placeholder="Hours today"
+          placeholder={t('hoursToday')}
           value={hours}
           onChange={(e) => setHours(e.target.value)}
           className={fieldClass}
         />
         <input
           type="text"
-          placeholder="What did you work on? (optional)"
+          placeholder={t('notesPlaceholder')}
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           className={fieldClass}
         />
         <button type="button" disabled={busy} onClick={() => void saveHours()} className={primaryBtn}>
-          {busy ? 'Saving…' : 'Save hours'}
+          {busy ? t('saving') : t('saveHours')}
         </button>
         <ul className="divide-y divide-border rounded-2xl border border-border">
           {dashboard.hours.length === 0 && (
-            <li className="px-4 py-4 text-base text-foreground/55">No hours yet. Log your first day.</li>
+            <li className="px-4 py-4 text-base text-foreground/55">{t('noHours')}</li>
           )}
           {dashboard.hours.slice(0, 8).map((entry) => (
             <li key={entry.id} className="flex justify-between gap-3 px-4 py-3 text-base">
@@ -314,13 +315,13 @@ export function ApprenticeHome({ dashboard }: { dashboard: ApprenticeDashboard }
       </section>
 
       <section className="mt-10 space-y-3">
-        <h2 className="text-xl font-semibold text-foreground">Ask a question</h2>
-        <p className="text-base text-foreground/65">Quick jobsite question. Type or speak. We save the answer to your record.</p>
+        <h2 className="text-xl font-semibold text-foreground">{t('askTitle')}</h2>
+        <p className="text-base text-foreground/65">{t('askBody')}</p>
         <textarea
           rows={4}
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
-          placeholder="e.g. How do I identify the traveler on a 3-way?"
+          placeholder={t('questionPlaceholder')}
           className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-lg text-foreground placeholder:text-foreground/35 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent"
         />
         <div className="grid grid-cols-2 gap-3">
@@ -332,10 +333,10 @@ export function ApprenticeHome({ dashboard }: { dashboard: ApprenticeDashboard }
               listening ? 'border-red-600 bg-red-600 text-white' : 'border-border text-foreground'
             }`}
           >
-            {listening ? 'Stop' : 'Speak'}
+            {listening ? t('stop') : t('speak')}
           </button>
           <button type="button" disabled={busy} onClick={() => void ask()} className={primaryBtn}>
-            {busy ? 'Asking…' : 'Ask'}
+            {busy ? t('asking') : t('ask')}
           </button>
         </div>
         {latestAnswer && (
@@ -349,7 +350,7 @@ export function ApprenticeHome({ dashboard }: { dashboard: ApprenticeDashboard }
               <p className="text-base font-semibold text-foreground">{item.question}</p>
               <p className="mt-2 text-base leading-relaxed text-foreground/75">{item.answer}</p>
               <p className="mt-2 text-xs text-foreground/45">
-                {tradeLabel(item.trade)} · {new Date(item.created_at).toLocaleString()}
+                {tradeLabel(item.trade, t)} · {new Date(item.created_at).toLocaleString()}
               </p>
             </li>
           ))}

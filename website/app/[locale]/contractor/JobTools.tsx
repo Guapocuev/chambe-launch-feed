@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   addJobMaterial,
   clockInJob,
@@ -26,6 +27,8 @@ function hoursLabel(value: number | null | undefined): string {
 }
 
 export function JobTools({ contractorId, jobId }: { contractorId: string; jobId: string }) {
+  const t = useTranslations('JobTools');
+  const tAuth = useTranslations('Auth');
   const [bundle, setBundle] = useState<JobAdminBundle | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -60,7 +63,7 @@ export function JobTools({ contractorId, jobId }: { contractorId: string; jobId:
     try {
       const result = await action();
       if (!result.ok) {
-        setError(result.error ?? "That didn't work.");
+        setError(result.error ?? t('thatDidntWork'));
         return;
       }
       await refresh();
@@ -70,7 +73,7 @@ export function JobTools({ contractorId, jobId }: { contractorId: string; jobId:
   }
 
   if (!bundle && !error) {
-    return <p className="text-sm text-foreground/60">Loading job…</p>;
+    return <p className="text-sm text-foreground/60">{t('loading')}</p>;
   }
 
   if (!bundle) {
@@ -93,21 +96,23 @@ export function JobTools({ contractorId, jobId }: { contractorId: string; jobId:
 
       <header>
         <p className="text-xs font-semibold uppercase tracking-wide text-foreground/50">
-          {invoice.trade ?? 'Job'} · membership {membership_tier}
+          {t('membershipLine', { trade: invoice.trade ?? tAuth('jobFallback'), tier: membership_tier })}
         </p>
         <h1 className="mt-1 text-2xl font-semibold text-foreground">{invoice.job_description}</h1>
         <p className="mt-1 text-sm text-foreground/55">
-          Hours, materials, and a simple invoice. No payments yet — membership tier is stored so we
-          can gate this later.
+          {t('intro')}
         </p>
       </header>
 
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold text-foreground">Hours</h2>
+        <h2 className="text-lg font-semibold text-foreground">{t('hours')}</h2>
         <p className="text-sm text-foreground/70">
-          Open: {open_entry ? `clocked in ${new Date(open_entry.clocked_in_at).toLocaleString()}` : 'not clocked in'}
-          {' · '}
-          Total {hoursLabel(invoice.total_hours)}
+          {t('openTotal', {
+            open: open_entry
+              ? t('clockedIn', { when: new Date(open_entry.clocked_in_at).toLocaleString() })
+              : t('notClockedIn'),
+            total: hoursLabel(invoice.total_hours),
+          })}
         </p>
         <div className="flex flex-wrap gap-2">
           <button
@@ -116,7 +121,7 @@ export function JobTools({ contractorId, jobId }: { contractorId: string; jobId:
             onClick={() => void run(() => clockInJob(contractorId, jobId))}
             className="min-h-14 flex-1 rounded-2xl bg-inverse px-5 text-base font-semibold text-inverse-foreground disabled:opacity-50"
           >
-            Clock in
+            {t('clockIn')}
           </button>
           <button
             type="button"
@@ -124,7 +129,7 @@ export function JobTools({ contractorId, jobId }: { contractorId: string; jobId:
             onClick={() => void run(() => clockOutJob(contractorId, jobId))}
             className="min-h-14 flex-1 rounded-2xl border border-border px-5 text-base font-semibold text-foreground disabled:opacity-50"
           >
-            Clock out
+            {t('clockOut')}
           </button>
         </div>
         <div className="grid gap-3 sm:grid-cols-[8rem_1fr_auto]">
@@ -132,14 +137,14 @@ export function JobTools({ contractorId, jobId }: { contractorId: string; jobId:
             type="number"
             min="0.25"
             step="0.25"
-            placeholder="Hours"
+            placeholder={t('hoursPlaceholder')}
             value={manualHours}
             onChange={(e) => setManualHours(e.target.value)}
             className={inputClass}
           />
           <input
             type="text"
-            placeholder="Notes (optional)"
+            placeholder={t('notesPlaceholder')}
             value={manualNotes}
             onChange={(e) => setManualNotes(e.target.value)}
             className={inputClass}
@@ -160,18 +165,18 @@ export function JobTools({ contractorId, jobId }: { contractorId: string; jobId:
             }
             className="min-h-14 rounded-2xl border border-border px-5 text-base font-semibold text-foreground"
           >
-            Log hours
+            {t('logHours')}
           </button>
         </div>
         <ul className="divide-y divide-border rounded-xl border border-border">
           {time_entries.length === 0 && (
-            <li className="px-4 py-3 text-sm text-foreground/50">No time logged yet.</li>
+            <li className="px-4 py-3 text-sm text-foreground/50">{t('noTime')}</li>
           )}
           {time_entries.map((entry) => (
             <li key={entry.id} className="flex justify-between gap-3 px-4 py-3 text-sm">
               <span>
                 {new Date(entry.clocked_in_at).toLocaleString()}
-                {entry.open ? ' — in progress' : ''}
+                {entry.open ? t('inProgress') : ''}
                 {entry.notes ? ` · ${entry.notes}` : ''}
               </span>
               <span className="tabular-nums text-foreground/70">{hoursLabel(entry.hours)}</span>
@@ -181,11 +186,11 @@ export function JobTools({ contractorId, jobId }: { contractorId: string; jobId:
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold text-foreground">Materials</h2>
+        <h2 className="text-lg font-semibold text-foreground">{t('materials')}</h2>
         <div className="space-y-3 rounded-xl border border-border p-4">
           <input
             type="text"
-            placeholder="What did you buy?"
+            placeholder={t('boughtPlaceholder')}
             value={materialDesc}
             onChange={(e) => setMaterialDesc(e.target.value)}
             className={inputClass}
@@ -194,7 +199,7 @@ export function JobTools({ contractorId, jobId }: { contractorId: string; jobId:
             type="number"
             min="0"
             step="0.01"
-            placeholder="Amount (CAD)"
+            placeholder={t('amountPlaceholder')}
             value={materialAmount}
             onChange={(e) => setMaterialAmount(e.target.value)}
             className={inputClass}
@@ -222,18 +227,18 @@ export function JobTools({ contractorId, jobId }: { contractorId: string; jobId:
             }
             className="min-h-14 w-full rounded-2xl bg-accent px-5 text-base font-semibold text-inverse"
           >
-            Add material
+            {t('addMaterial')}
           </button>
         </div>
         <ul className="divide-y divide-border rounded-xl border border-border">
           {materials.length === 0 && (
-            <li className="px-4 py-3 text-sm text-foreground/50">No materials logged yet.</li>
+            <li className="px-4 py-3 text-sm text-foreground/50">{t('noMaterials')}</li>
           )}
           {materials.map((row) => (
             <li key={row.id} className="flex justify-between gap-3 px-4 py-3 text-sm">
               <span>
                 {row.description}
-                {row.receipt_path ? ' · receipt attached' : ''}
+                {row.receipt_path ? t('receiptAttached') : ''}
               </span>
               <span className="tabular-nums text-foreground/70">{money(row.amount)}</span>
             </li>
@@ -242,10 +247,10 @@ export function JobTools({ contractorId, jobId }: { contractorId: string; jobId:
       </section>
 
       <section className="space-y-4 rounded-2xl border border-brand/30 bg-brand/5 p-6">
-        <h2 className="text-lg font-semibold text-foreground">Invoice</h2>
+        <h2 className="text-lg font-semibold text-foreground">{t('invoice')}</h2>
         <dl className="space-y-2 text-sm">
           <div className="flex justify-between gap-4">
-            <dt className="text-foreground/60">Quoted range</dt>
+            <dt className="text-foreground/60">{t('quotedRange')}</dt>
             <dd className="tabular-nums">
               {invoice.quoted_low != null && invoice.quoted_high != null
                 ? `${money(invoice.quoted_low)} – ${money(invoice.quoted_high)}`
@@ -253,22 +258,22 @@ export function JobTools({ contractorId, jobId }: { contractorId: string; jobId:
             </dd>
           </div>
           <div className="flex justify-between gap-4">
-            <dt className="text-foreground/60">Hours</dt>
+            <dt className="text-foreground/60">{t('hours')}</dt>
             <dd className="tabular-nums">
               {hoursLabel(invoice.total_hours)}
               {invoice.hourly_rate != null ? ` × ${money(invoice.hourly_rate)}` : ''}
             </dd>
           </div>
           <div className="flex justify-between gap-4">
-            <dt className="text-foreground/60">Labor</dt>
+            <dt className="text-foreground/60">{t('labor')}</dt>
             <dd className="tabular-nums">{money(invoice.labor_total)}</dd>
           </div>
           <div className="flex justify-between gap-4">
-            <dt className="text-foreground/60">Materials</dt>
+            <dt className="text-foreground/60">{t('materials')}</dt>
             <dd className="tabular-nums">{money(invoice.materials_total)}</dd>
           </div>
           <div className="flex items-end justify-between gap-4">
-            <dt className="text-foreground/60">Agreed price</dt>
+            <dt className="text-foreground/60">{t('agreedPrice')}</dt>
             <dd className="flex gap-2">
               <input
                 type="number"
@@ -288,7 +293,7 @@ export function JobTools({ contractorId, jobId }: { contractorId: string; jobId:
                 }
                 className="min-h-14 rounded-2xl border border-border px-4 text-base font-semibold"
               >
-                Save
+                {t('save')}
               </button>
             </dd>
           </div>
@@ -298,8 +303,7 @@ export function JobTools({ contractorId, jobId }: { contractorId: string; jobId:
           <span className="text-base font-normal text-foreground/60">CAD</span>
         </p>
         <p className="text-xs text-foreground/50">
-          Total is the agreed price when set; otherwise labor (hours × rate) plus materials. Not a
-          payment request.
+          {t('totalNote')}
         </p>
       </section>
     </div>

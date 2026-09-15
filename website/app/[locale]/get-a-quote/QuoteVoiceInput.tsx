@@ -213,7 +213,7 @@ export function QuoteVoiceInput({
     setStatus('transcribing');
     const formData = new FormData();
     formData.append('audio', blob, filenameForMime(mimeType));
-    formData.append('locale', locale === 'es' ? 'es' : 'en');
+    formData.append('locale', locale);
     const result = await transcribeJobAudio(formData);
     if (!aliveRef.current) return;
     setStatus('idle');

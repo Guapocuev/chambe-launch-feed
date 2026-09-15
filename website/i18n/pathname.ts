@@ -27,14 +27,18 @@ export function withLocalePrefix(pathname: string, locale: string): string {
 }
 
 export function htmlLang(locale: string): string {
-  return locale === 'es' ? 'es' : 'en-CA';
+  if (locale === 'es') return 'es';
+  if (locale === 'pt') return 'pt';
+  return 'en-CA';
 }
 
 export function localeFromDocumentCookie(): AppLocale {
   if (typeof document === 'undefined') return routing.defaultLocale;
   const match = document.cookie.match(/(?:^|; )NEXT_LOCALE=([^;]*)/);
   const value = match?.[1];
-  return value === 'es' || value === 'en' ? value : routing.defaultLocale;
+  return (routing.locales as readonly string[]).includes(value ?? '')
+    ? (value as AppLocale)
+    : routing.defaultLocale;
 }
 
 export function isAuthCallbackPath(pathname: string): boolean {

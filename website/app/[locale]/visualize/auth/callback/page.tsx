@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 import { ContractorAuthCallback } from '@/app/[locale]/contractor/ContractorAuthCallback';
 
 export const metadata: Metadata = {
@@ -8,12 +9,13 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-export default function VisualizeAuthCallbackPage() {
+export default async function VisualizeAuthCallbackPage() {
+  const t = await getTranslations('Visualize');
   return (
     <ContractorAuthCallback
       homePath="/visualize"
       loginPath="/visualize/login"
-      heading="Opening your kitchen preview…"
+      heading={t('opening')}
     />
   );
 }

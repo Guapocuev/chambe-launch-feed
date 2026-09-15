@@ -3,6 +3,8 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from '@/lib/config';
 import { cookieOptionsForOrigin } from '@/lib/supabase/cookie-options';
+import { withLocalePrefix } from '@/i18n/pathname';
+import { isAppLocale } from '@/lib/format-cad';
 
 type EmailOtpType = 'signup' | 'invite' | 'magiclink' | 'recovery' | 'email_change' | 'email';
 
@@ -32,7 +34,8 @@ function safeNextPath(raw: string | null, locale: string | undefined): string {
   if (raw && raw.startsWith('/') && !raw.startsWith('//') && !raw.includes('\\')) {
     return raw;
   }
-  return locale === 'es' ? '/es/contractor' : '/contractor';
+  const code = locale && isAppLocale(locale) ? locale : 'en';
+  return withLocalePrefix('/contractor', code);
 }
 
 function redirectTo(request: Request, path: string) {

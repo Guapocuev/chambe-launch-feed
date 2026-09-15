@@ -18,8 +18,8 @@ function localeFromAnchor(node: EventTarget | null): { code: AppLocale; href: st
   const anchor = node.closest(`a[${SWITCH_ATTR}]`);
   if (!(anchor instanceof HTMLAnchorElement)) return null;
   const code = anchor.getAttribute(SWITCH_ATTR);
-  if (code !== 'en' && code !== 'es') return null;
-  return { code, href: anchor.getAttribute('href') || anchor.href };
+  if (!code || !(routing.locales as readonly string[]).includes(code)) return null;
+  return { code: code as AppLocale, href: anchor.getAttribute('href') || anchor.href };
 }
 
 export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
@@ -77,7 +77,7 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
                 : 'rounded-full px-2.5 py-1 text-xs font-semibold text-foreground/70 transition hover:bg-surface hover:text-foreground'
             }
           >
-            {code === 'en' ? 'EN' : 'ES'}
+            {code.toUpperCase()}
           </a>
         );
       })}

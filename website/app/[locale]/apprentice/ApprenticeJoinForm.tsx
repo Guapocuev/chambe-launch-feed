@@ -12,14 +12,15 @@ const primaryBtn =
   'flex h-14 w-full items-center justify-center rounded-2xl bg-accent text-lg font-semibold text-inverse disabled:opacity-50';
 
 const TRADES = [
-  { id: 'electrical', label: 'Electrical' },
-  { id: 'plumbing', label: 'Plumbing' },
-  { id: 'carpentry', label: 'Carpentry' },
+  { id: 'electrical', labelKey: 'tradeElectrical' },
+  { id: 'plumbing', labelKey: 'tradePlumbing' },
+  { id: 'carpentry', labelKey: 'tradeCarpentry' },
 ] as const;
 
 export function ApprenticeJoinForm() {
   const router = useRouter();
   const tAuth = useTranslations('Auth');
+  const t = useTranslations('Apprentice');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [phone, setPhone] = useState('');
@@ -42,22 +43,20 @@ export function ApprenticeJoinForm() {
 
   return (
     <div className="mx-auto w-full max-w-md px-5 py-10">
-      <p className="text-sm font-semibold uppercase tracking-wide text-foreground/50">Apprentices</p>
-      <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground">Your trade</h1>
-      <p className="mt-3 text-base leading-relaxed text-foreground/70">
-        One screen. Then you log hours. Your supervisor can see them if you add their number.
-      </p>
+      <p className="text-sm font-semibold uppercase tracking-wide text-foreground/50">{tAuth('apprentices')}</p>
+      <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground">{t('joinTitle')}</h1>
+      <p className="mt-3 text-base leading-relaxed text-foreground/70">{t('joinBody')}</p>
       <p className="mt-3 text-base leading-relaxed text-foreground/70">{tAuth('apprenticeHoursNote')}</p>
       {error && (
         <p className="mt-5 rounded-2xl border border-red-300 bg-red-50 px-4 py-3 text-base text-red-800">{error}</p>
       )}
       <form action={(formData) => void onSubmit(formData)} className="mt-8 space-y-4">
         <label className="block text-base font-medium">
-          Your name
+          {t('yourName')}
           <input name="full_name" required minLength={2} autoComplete="name" className={`mt-2 ${fieldClass}`} />
         </label>
         <label className="block text-base font-medium">
-          Your phone
+          {t('yourPhone')}
           <input
             type="tel"
             inputMode="tel"
@@ -70,18 +69,18 @@ export function ApprenticeJoinForm() {
           />
         </label>
         <fieldset>
-          <legend className="text-base font-medium">Trade</legend>
+          <legend className="text-base font-medium">{t('trade')}</legend>
           <div className="mt-2 grid gap-2">
             {TRADES.map((trade) => (
               <label key={trade.id} className="flex min-h-14 items-center gap-3 rounded-2xl border border-border px-4 text-base">
                 <input type="radio" name="trade" value={trade.id} required className="h-5 w-5 accent-black" />
-                {trade.label}
+                {t(trade.labelKey)}
               </label>
             ))}
           </div>
         </fieldset>
         <label className="block text-base font-medium">
-          Supervisor phone (optional)
+          {t('supervisorPhoneOptional')}
           <input
             type="tel"
             inputMode="tel"
@@ -92,7 +91,7 @@ export function ApprenticeJoinForm() {
           />
         </label>
         <button type="submit" disabled={busy} className={primaryBtn}>
-          {busy ? 'Saving…' : 'Start tracking hours'}
+          {busy ? t('saving') : t('startTracking')}
         </button>
       </form>
     </div>

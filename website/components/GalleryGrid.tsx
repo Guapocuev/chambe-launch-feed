@@ -346,7 +346,7 @@ export function ProjectCard({
                     event.stopPropagation();
                     setActive(index);
                   }}
-                  aria-label={`Photo ${index + 1} of ${shots.length}`}
+                  aria-label={t('photoOf', { n: index + 1, total: shots.length })}
                   aria-pressed={index === active}
                   className={`relative z-20 h-14 w-16 shrink-0 overflow-hidden rounded border ${
                     index === active ? 'border-accent' : 'border-border'

@@ -132,6 +132,7 @@ function cardTransform(offset: number, cardWidth: number) {
 }
 
 export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
+  const t = useTranslations('Gallery');
   const count = projects.length;
   const labelId = useId();
   const stageRef = useRef<HTMLDivElement>(null);
@@ -716,7 +717,7 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
       <div className="md:grid md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center md:gap-3">
         <button
           type="button"
-          aria-label="Previous jobs"
+          aria-label={t('previousJobs')}
           disabled={count < 2}
           onClick={() => step(-1)}
           className="relative z-20 mb-3 hidden h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-background text-foreground shadow-sm transition hover:border-brand disabled:cursor-not-allowed disabled:opacity-25 disabled:hover:border-border md:mb-0 md:flex"
@@ -744,8 +745,8 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
           style={{ touchAction: 'pan-y', perspective: '1180px', perspectiveOrigin: '50% 42%' }}
         >
           <p id={labelId} className="sr-only">
-            Completed jobs. {current ? `${current.title}, ${current.location}.` : ''} Swipe or use arrow keys to
-            browse. Tap a card to bring it forward, tap the centered card for the full job.
+            {t('completedJobs')} {current ? `${current.title}, ${current.location}.` : ''}{' '}
+            {t('completedJobsHelp')}
           </p>
 
           <div className="absolute inset-0 [transform-style:preserve-3d]">
@@ -800,7 +801,7 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
 
         <button
           type="button"
-          aria-label="Next jobs"
+          aria-label={t('nextJobs')}
           disabled={count < 2}
           onClick={() => step(1)}
           className="relative z-20 mt-3 hidden h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-background text-foreground shadow-sm transition hover:border-brand disabled:cursor-not-allowed disabled:opacity-25 disabled:hover:border-border md:mt-0 md:flex"
@@ -893,7 +894,7 @@ function JobModal({
         <button
           ref={closeRef}
           type="button"
-          aria-label="Close job details"
+          aria-label={t('closeJobDetails')}
           onClick={onClose}
           className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background/95 text-foreground shadow-sm transition hover:border-brand"
         >
@@ -929,7 +930,7 @@ function JobModal({
             <>
               <button
                 type="button"
-                aria-label="Previous photo"
+                aria-label={t('previousPhoto')}
                 onClick={() => goPhoto(-1)}
                 className="absolute left-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background/90 text-foreground shadow-sm"
               >
@@ -937,7 +938,7 @@ function JobModal({
               </button>
               <button
                 type="button"
-                aria-label="Next photo"
+                aria-label={t('nextPhoto')}
                 onClick={() => goPhoto(1)}
                 className="absolute right-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background/90 text-foreground shadow-sm"
               >
@@ -956,7 +957,7 @@ function JobModal({
               <button
                 key={src}
                 type="button"
-                aria-label={`Photo ${shotIndex + 1} of ${shots.length}`}
+                aria-label={t('photoOf', { n: shotIndex + 1, total: shots.length })}
                 aria-pressed={shotIndex === index}
                 onClick={() => onPhotoIndexChange(shotIndex)}
                 className={`relative h-14 w-16 shrink-0 overflow-hidden rounded border ${

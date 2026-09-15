@@ -31,6 +31,12 @@ const TRADE_KEYWORDS: Record<'electrical' | 'plumbing' | 'carpentry', string[]> 
     'eléctrico',
     'electrico',
     'luz',
+    'tomada',
+    'elétrico',
+    'eletrico',
+    'disjuntor',
+    'fiação',
+    'fiacao',
   ],
   plumbing: [
     'leak',
@@ -58,6 +64,12 @@ const TRADE_KEYWORDS: Record<'electrical' | 'plumbing' | 'carpentry', string[]> 
     'fregadero',
     'plomería',
     'plomeria',
+    'vazamento',
+    'encanamento',
+    'canalização',
+    'canalizacao',
+    'cano',
+    'torneira',
   ],
   carpentry: [
     'door',
@@ -79,6 +91,9 @@ const TRADE_KEYWORDS: Record<'electrical' | 'plumbing' | 'carpentry', string[]> 
     'carpintería',
     'carpinteria',
     'cerca',
+    'porta',
+    'carpintaria',
+    'moldura',
   ],
 };
 
@@ -130,16 +145,16 @@ const FOLLOW_UP_BANK: Record<Trade, FollowUpQuestion[]> = {
 };
 
 const SKIP_KEYWORDS: Record<string, string[]> = {
-  elec_gfci: ['gfci', 'gfi', 'outdoor', 'kitchen', 'bath'],
-  elec_breaker: ['breaker', 'tripping', 'trips', 'dead'],
-  elec_count: ['outlets', 'switches', 'fixtures'],
-  plumb_pipe: ['copper', 'pex', 'galvanized', 'cpvc'],
-  plumb_source: ['from the', 'under the', 'behind the', 'near the', 'at the'],
+  elec_gfci: ['gfci', 'gfi', 'outdoor', 'kitchen', 'bath', 'exterior', 'cozinha', 'banho'],
+  elec_breaker: ['breaker', 'tripping', 'trips', 'dead', 'disjuntor'],
+  elec_count: ['outlets', 'switches', 'fixtures', 'tomadas', 'interruptores'],
+  plumb_pipe: ['copper', 'pex', 'galvanized', 'cpvc', 'cobre'],
+  plumb_source: ['from the', 'under the', 'behind the', 'near the', 'at the', 'debaixo', 'atrás', 'atras'],
   plumb_count: [],
-  plumb_severity: ['drip', 'steady', 'shut-off', 'shut off', 'flooding', 'gushing'],
+  plumb_severity: ['drip', 'steady', 'shut-off', 'shut off', 'flooding', 'gushing', 'goteira', 'vazamento'],
   carp_where: ['interior', 'exterior', 'indoor', 'outdoor'],
-  carp_failure: ['rot', 'rotting', 'broken', 'broke', "won't fit", 'sticking', 'warped'],
-  carp_size: ['one piece', 'whole', 'deck', 'fence', 'room'],
+  carp_failure: ['rot', 'rotting', 'broken', 'broke', "won't fit", 'sticking', 'warped', 'podre', 'apodrecido'],
+  carp_size: ['one piece', 'whole', 'deck', 'fence', 'room', 'cerca', 'cômodo', 'comodo'],
   area_sqft: ['sq ft', 'sqft', 'square feet', 'square foot'],
 };
 

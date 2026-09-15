@@ -45,7 +45,7 @@ export async function transcribeJobAudio(
     return { error: (await getTranslations('Errors'))('voiceFormat') };
   }
 
-  const locale = String(formData.get('locale') ?? 'en').trim() === 'es' ? 'es' : 'en';
+  const locale = transcribeLocale(String(formData.get('locale') ?? 'en'));
   const filename = filenameFor(file.name, type);
   const body = new FormData();
   body.append('file', file, filename);
@@ -82,11 +82,20 @@ export async function transcribeJobAudio(
   }
 }
 
-function transcribeHint(locale: 'en' | 'es'): string {
+function transcribeHint(locale: 'en' | 'es' | 'pt'): string {
   if (locale === 'es') {
     return 'Trabajo de reparación en Toronto: eléctrico, plomería o carpintería. Tomacorrientes, breakers, fugas, tuberías, puertas, molduras.';
   }
+  if (locale === 'pt') {
+    return 'Trabalho de reparo em Toronto: elétrica, encanamento/canalização ou carpintaria. Tomadas, disjuntores, vazamentos, portas, molduras.';
+  }
   return 'Home repair job in Toronto: electrical, plumbing, or carpentry. Outlets, breakers, leaks, pipes, doors, trim.';
+}
+
+function transcribeLocale(raw: string): 'en' | 'es' | 'pt' {
+  const value = raw.trim();
+  if (value === 'es' || value === 'pt') return value;
+  return 'en';
 }
 
 function audioFileFromForm(value: FormDataEntryValue | null): File | null {

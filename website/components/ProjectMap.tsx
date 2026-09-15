@@ -238,7 +238,7 @@ export function ProjectMap({
       className={`relative overflow-hidden rounded-2xl border border-border ${heightClassName} ${className}`}
     >
       <p className="pointer-events-none absolute left-4 top-4 z-[400] rounded bg-background/90 px-2 py-1 text-xs font-semibold uppercase tracking-wide text-foreground/50">
-        Where we&apos;ve worked
+        {t('mapKicker')}
       </p>
 
       {showBasemapToggle && (
@@ -250,7 +250,7 @@ export function ProjectMap({
               basemap === 'streets' ? 'bg-inverse text-inverse-foreground' : 'text-foreground/70 hover:bg-surface'
             }`}
           >
-            Streets
+            {t('streets')}
           </button>
           <button
             type="button"
@@ -259,7 +259,7 @@ export function ProjectMap({
               basemap === 'city' ? 'bg-inverse text-inverse-foreground' : 'text-foreground/70 hover:bg-surface'
             }`}
           >
-            Satellite
+            {t('satellite')}
           </button>
         </div>
       )}
@@ -269,10 +269,10 @@ export function ProjectMap({
       {projects.length === 0 && (
         <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-background/95 via-background/70 to-transparent px-6 pb-6 pt-16">
           <p className="text-sm font-medium text-foreground">
-            Completed jobs appear as pins across the GTA
+            {t('emptyPinsTitle')}
           </p>
           <p className="mt-1 text-xs text-foreground/60">
-            Pins show the neighbourhood, not the street address.
+            {t('pinsNote')}
           </p>
         </div>
       )}
