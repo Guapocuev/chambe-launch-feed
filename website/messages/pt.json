@@ -3,7 +3,9 @@
     "label": "Idioma",
     "en": "English",
     "es": "Español",
-    "pt": "Português"
+    "pt": "Português",
+    "comingSoon": "Em breve",
+    "notAvailableYet": "Ainda não disponível, permanece em {language}"
   },
   "Nav": {
     "howItWorks": "Como funciona",
