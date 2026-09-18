@@ -9,6 +9,43 @@ export interface VisualizePackage {
   estimate_high: number;
 }
 
+export interface FinishOption {
+  id: string;
+  category: 'cabinet_scope' | 'cabinet_finish' | 'countertop' | 'flooring' | 'lighting' | 'backsplash';
+  slug: string;
+  label: string;
+  swatch_hex: string | null;
+  flux_fragment: string;
+  labor_hours_delta: number;
+  material_cost: number;
+  compatible_with: string[] | null;
+  pricing_is_draft: boolean;
+  sort_order: number;
+}
+
+export interface EstimateBreakdownLine {
+  slug: string | null;
+  label: string;
+  hours: number | null;
+  rate: number | null;
+  subtotal: number;
+}
+
+export interface EstimateBreakdown {
+  labor: EstimateBreakdownLine;
+  cabinets: EstimateBreakdownLine;
+  counters: EstimateBreakdownLine;
+  flooring: EstimateBreakdownLine;
+  lighting: EstimateBreakdownLine;
+  backsplash: EstimateBreakdownLine;
+  dispatch: EstimateBreakdownLine;
+  range: { low: number; high: number };
+  area_sqft: number;
+  labor_hours_unscaled: number;
+  material_total: number;
+  pricing_is_draft: boolean;
+}
+
 export interface VisualizeSession {
   id: string;
   status: string;
@@ -19,15 +56,24 @@ export interface VisualizeSession {
   hero_photo_url: string | null;
   generated_photo_url: string | null;
   prompt: string | null;
+  assembled_prompt: string | null;
   model_id: string | null;
   area_sqft: number | null;
-  area_sqft_source: 'job_features' | 'package_default' | null;
+  area_sqft_source: 'job_features' | 'package_default' | 'session_input' | null;
   estimate_low: number | null;
   estimate_high: number | null;
+  estimate_breakdown: EstimateBreakdown | null;
+  selections: Partial<Record<FinishOption['category'], string>>;
+  must_haves: string;
+  selection_hash: string | null;
+  generated_selection_hash: string | null;
+  preview_stale: boolean;
+  selections_complete: boolean;
   price_cad: number;
   error_message: string | null;
   paid: boolean;
   packages: VisualizePackage[];
+  options: FinishOption[];
 }
 
 export type ActionResult<T> = { ok: true; data: T } | { ok: false; error: string };
@@ -97,6 +143,20 @@ export async function selectVisualizePackage(
   return callVisualize(`/visualize/sessions/${sessionId}/package`, {
     method: 'POST',
     body: JSON.stringify({ package_id: packageId }),
+  });
+}
+
+export async function saveVisualizeSelections(
+  sessionId: string,
+  input: {
+    selections?: VisualizeSession['selections'];
+    must_haves?: string;
+    area_sqft?: number;
+  },
+): Promise<ActionResult<VisualizeSession>> {
+  return callVisualize(`/visualize/sessions/${sessionId}/selections`, {
+    method: 'POST',
+    body: JSON.stringify(input),
   });
 }
 

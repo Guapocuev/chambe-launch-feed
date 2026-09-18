@@ -10,17 +10,12 @@ import {
   confirmVisualizeCheckout,
   generateVisualizePreview,
   resolveVisualizeSession,
+  saveVisualizeSelections,
   selectVisualizePackage,
   startVisualizeCheckout,
   type VisualizeSession,
 } from './actions';
-import { HeroPhotoUpload } from './HeroPhotoUpload';
-
-const PACKAGE_SLUGS = ['refresh', 'modern_light', 'warm_heritage', 'signature'] as const;
-
-function isPackageSlug(value: string | null | undefined): value is (typeof PACKAGE_SLUGS)[number] {
-  return Boolean(value && (PACKAGE_SLUGS as readonly string[]).includes(value));
-}
+import { VisualizeIntake } from './VisualizeIntake';
 
 export function VisualizeApp() {
   const router = useRouter();
@@ -61,11 +56,28 @@ export function VisualizeApp() {
     setSession(next.data);
   }
 
-  async function onPickPackage(packageId: string) {
+  async function onPreset(packageId: string) {
     if (!session || busy) return;
     setBusy(true);
     setError(null);
     const next = await selectVisualizePackage(session.id, packageId);
+    setBusy(false);
+    if (!next.ok) {
+      setError(next.error);
+      return;
+    }
+    setSession(next.data);
+  }
+
+  async function onSave(input: {
+    selections?: VisualizeSession['selections'];
+    must_haves?: string;
+    area_sqft?: number;
+  }) {
+    if (!session) return;
+    setBusy(true);
+    setError(null);
+    const next = await saveVisualizeSelections(session.id, input);
     setBusy(false);
     if (!next.ok) {
       setError(next.error);
@@ -110,10 +122,18 @@ export function VisualizeApp() {
   }
 
   const failed = session.status === 'failed';
-  const selectedSlug = isPackageSlug(session.package_slug) ? session.package_slug : 'modern_light';
-  const ready = session.status === 'ready' && Boolean(session.generated_photo_url);
-  const canPay = Boolean(session.hero_photo_url || session.status === 'photo_ready') && !session.paid;
-  const canGenerate = session.paid && session.status !== 'generating' && !ready;
+  const ready = session.status === 'ready' && Boolean(session.generated_photo_url) && !session.preview_stale;
+  const sizeConfirmed = session.area_sqft_source !== 'package_default';
+  const canPay =
+    Boolean(session.hero_photo_url || session.status === 'photo_ready') &&
+    session.selections_complete &&
+    sizeConfirmed &&
+    !session.paid;
+  const canGenerate =
+    session.paid &&
+    session.status !== 'generating' &&
+    session.selections_complete &&
+    (!ready || session.preview_stale || failed);
 
   return (
     <div className="space-y-6">
@@ -123,56 +143,13 @@ export function VisualizeApp() {
         </p>
       )}
 
-      <div>
-        <p className="text-sm font-medium text-foreground">{t('packages.choose')}</p>
-        <p className="mt-1 text-xs text-foreground/60">
-          {t('packages.hint', { price: formatCad(session.price_cad, locale) })}
-        </p>
-        <div className="mt-3 grid gap-3 sm:grid-cols-2">
-          {(session.packages ?? []).map((pkg) => {
-            const slug = isPackageSlug(pkg.slug) ? pkg.slug : 'modern_light';
-            const selected = pkg.id === session.package_id || pkg.slug === session.package_slug;
-            return (
-              <button
-                key={pkg.id}
-                type="button"
-                disabled={busy || session.status === 'generating'}
-                onClick={() => void onPickPackage(pkg.id)}
-                aria-pressed={selected}
-                className={`rounded-2xl border px-4 py-3 text-left transition ${
-                  selected
-                    ? 'border-brand bg-brand/5 ring-1 ring-brand'
-                    : 'border-border bg-surface hover:border-brand/60'
-                } disabled:opacity-50`}
-              >
-                <p className="text-sm font-semibold text-foreground">{t(`packages.${slug}.name`)}</p>
-                <p className="mt-1 text-xs leading-relaxed text-foreground/65">{t(`packages.${slug}.blurb`)}</p>
-                <p className="mt-2 text-sm font-semibold tabular-nums text-foreground">
-                  {`${formatCad(pkg.estimate_low, locale)} – ${formatCad(pkg.estimate_high, locale)}`}
-                </p>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="rounded-2xl border border-border bg-surface px-4 py-4 text-sm text-foreground/80">
-        <p>{t('style', { style: t(`packages.${selectedSlug}.name`) })}</p>
-        <p className="mt-2">
-          {session.area_sqft_source === 'job_features'
-            ? t('usesSqft', { sqft: session.area_sqft ?? 0 })
-            : t('typicalKitchen')}
-        </p>
-        {session.estimate_low != null && session.estimate_high != null && (
-          <p className="mt-2 text-lg font-semibold text-foreground">
-            {`${formatCad(session.estimate_low, locale)} – ${formatCad(session.estimate_high, locale)}`}
-          </p>
-        )}
-      </div>
-
-      {!session.hero_photo_url && session.status !== 'ready' && (
-        <HeroPhotoUpload onPath={(path) => void onPhoto(path)} disabled={busy} />
-      )}
+      <VisualizeIntake
+        session={session}
+        busy={busy}
+        onPhoto={(path) => void onPhoto(path)}
+        onPreset={(packageId) => void onPreset(packageId)}
+        onSave={onSave}
+      />
 
       {(session.hero_photo_url || session.generated_photo_url) && (
         <div className="grid gap-4 md:grid-cols-2">
@@ -192,7 +169,7 @@ export function VisualizeApp() {
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={session.generated_photo_url}
-                alt={t('altPreview', { style: t(`packages.${selectedSlug}.name`) })}
+                alt={t('altPreview')}
                 className="w-full rounded-xl border border-border object-cover"
               />
             ) : (
@@ -201,12 +178,12 @@ export function VisualizeApp() {
                   ? t('previewFailed')
                   : session.status === 'generating'
                     ? t('generating')
-                    : t('afterPlaceholder')}
+                    : session.preview_stale
+                      ? t('wizard.stalePreview')
+                      : t('afterPlaceholder')}
               </div>
             )}
-            <figcaption className="mt-2 text-xs font-medium text-foreground/70">
-              {t('afterCaption')}
-            </figcaption>
+            <figcaption className="mt-2 text-xs font-medium text-foreground/70">{t('afterCaption')}</figcaption>
           </figure>
         </div>
       )}
@@ -233,7 +210,13 @@ export function VisualizeApp() {
             onClick={() => void onGenerate()}
             className="rounded-full bg-accent px-6 py-3 text-sm font-semibold text-inverse disabled:opacity-50"
           >
-            {failed ? t('retry') : busy ? t('generating') : t('generate')}
+            {failed
+              ? t('retry')
+              : busy
+                ? t('generating')
+                : session.preview_stale
+                  ? t('wizard.generateUpdated')
+                  : t('generate')}
           </button>
         )}
       </div>

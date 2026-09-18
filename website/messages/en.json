@@ -351,7 +351,7 @@
   "Visualize": {
     "kicker": "Kitchen only",
     "title": "See a renovation of your kitchen",
-    "body": "Upload one photo, pick a finish, then pay a one-time {price} preview charge. We generate that look on the same room. This is an illustrative AI preview, not a promise of the exact finished look.",
+    "body": "Upload one photo, answer a short set of finish questions, then pay a one-time {price} preview charge. We generate that look on the same room. This is an illustrative AI preview, not a promise of the exact finished look.",
     "loginKicker": "Homeowners",
     "loginTitle": "Preview your kitchen",
     "loginBody": "Email us a magic link. This login is only for the kitchen preview — it is not a contractor account.",
@@ -359,7 +359,7 @@
     "style": "Selected finish: {style}. Camera, windows, and room volume stay put.",
     "packages": {
       "choose": "Choose a finish",
-      "hint": "The {price} preview fee is the same for every look. The renovation range next to each finish is the estimate for that package.",
+      "hint": "Optional shortcut. Each look fills the questions below. You can still change any answer. The {price} preview fee is the same for every look.",
       "refresh": {
         "name": "Refresh",
         "blurb": "Paint, hardware, and lighting. The lightest cosmetic lift."
@@ -389,7 +389,90 @@
     "retry": "Retry preview",
     "generate": "Generate preview",
     "altToday": "Your kitchen today",
-    "altPreview": "Illustrative {style} kitchen preview",
+    "altPreview": "Illustrative kitchen preview",
+    "wizard": {
+      "photoTitle": "Kitchen photo",
+      "sizeTitle": "How big is this kitchen?",
+      "sizeGuess": "We do not have this kitchen’s size yet. 150 sqft is a typical GTA kitchen — change it if yours is different. The quote should not sit on a silently guessed room.",
+      "sizeKnown": "This uses the {sqft} sqft from a quote you already sent. Change it if this room is different.",
+      "sizeLabel": "Kitchen size (sqft)",
+      "sizeContinue": "Use this size",
+      "presetsTitle": "Start from a look (optional)",
+      "presetsHint": "These four looks only pre-fill the questions. They are not the quote.",
+      "skipToQuote": "Skip to quote",
+      "questions": {
+        "cabinet_scope": "What should happen to the cabinets?",
+        "cabinet_finish": "Cabinet color and finish",
+        "countertop": "Countertops",
+        "flooring": "Flooring",
+        "lighting": "Lighting"
+      },
+      "helps": {
+        "cabinet_scope": "This is the biggest labor difference: paint what is there, replace doors, or install new boxes.",
+        "cabinet_finish": "Pick one finish. Paint colors only show if you are painting the existing boxes.",
+        "countertop": "Quartz and laminate are not the same price.",
+        "flooring": "Keep what is there, or choose a new floor.",
+        "lighting": "The preview lighting should match the fixtures you want installed."
+      },
+      "mustHavesTitle": "Any must-haves?",
+      "mustHavesHelp": "This is the only free-text box. It shapes the preview image only — it does not change the price.",
+      "mustHavesPlaceholder": "Example: keep the existing fridge, no open shelves",
+      "remaining": "{count} characters left",
+      "back": "Back",
+      "next": "Continue",
+      "reviewTitle": "Your renovation quote",
+      "breakdownTitle": "Estimated materials and labor",
+      "hours": "{hours} hours",
+      "generateUpdated": "Generate updated preview",
+      "stalePreview": "Your answers changed. Generate again to see this look — the previous image is not shown.",
+      "lines": {
+        "labor": "Labor",
+        "cabinets": "Cabinets",
+        "counters": "Counters",
+        "flooring": "Flooring",
+        "lighting": "Lighting",
+        "backsplash": "Backsplash",
+        "dispatch": "Dispatch"
+      }
+    },
+    "catalog": {
+      "cabinet_scope": {
+        "paint_existing": { "label": "Paint existing boxes", "blurb": "Keep the boxes. Paint and new hardware." },
+        "replace_fronts": { "label": "Replace doors and fronts", "blurb": "New doors and drawer fronts on the existing boxes." },
+        "new_boxes": { "label": "New cabinet boxes", "blurb": "Replace the run with new boxes in the same footprint." }
+      },
+      "cabinet_finish": {
+        "white_paint": { "label": "Painted white", "blurb": "Clean painted white." },
+        "greige_paint": { "label": "Painted greige", "blurb": "Soft greige paint." },
+        "pale_oak": { "label": "Pale oak", "blurb": "Light natural oak." },
+        "cream_shaker": { "label": "Cream shaker", "blurb": "Cream painted shaker doors." },
+        "walnut": { "label": "Walnut", "blurb": "Rich dark walnut." },
+        "charcoal_slab": { "label": "Charcoal slab", "blurb": "Full-overlay charcoal slab." }
+      },
+      "countertop": {
+        "keep_existing_counters": { "label": "Keep existing", "blurb": "Do not replace the counters." },
+        "laminate": { "label": "Laminate", "blurb": "Laminate counters." },
+        "butcher_block": { "label": "Butcher block", "blurb": "Wood butcher-block counters." },
+        "quartz": { "label": "Quartz", "blurb": "Quartz counters." },
+        "marble_look_quartz": { "label": "Marble-look quartz", "blurb": "Thick marble-look quartz." }
+      },
+      "flooring": {
+        "keep_existing_floor": { "label": "Keep existing", "blurb": "Do not replace the floor." },
+        "lvp": { "label": "Luxury vinyl plank", "blurb": "Light oak LVP." },
+        "hardwood": { "label": "Hardwood", "blurb": "Warm hardwood." },
+        "tile": { "label": "Tile", "blurb": "Tile flooring." }
+      },
+      "lighting": {
+        "recessed_led": { "label": "Even recessed LED", "blurb": "Warm even recessed lighting." },
+        "pendants": { "label": "Pendants", "blurb": "Simple modern pendants." },
+        "mixed_heritage": { "label": "Heritage pendants", "blurb": "Traditional pendants, warm ambient light." }
+      },
+      "backsplash": {
+        "keep_existing_backsplash": { "label": "Keep existing", "blurb": "Do not replace the backsplash." },
+        "subway": { "label": "White subway tile", "blurb": "Classic white subway tile." },
+        "full_height_stone": { "label": "Full-height stone", "blurb": "Stone from counter to upper cabinets or ceiling." }
+      }
+    },
     "showcaseKicker": "Real AI-generated examples",
     "showcaseTitle": "See what the preview can do",
     "showcaseBody": "Drag to compare. These are illustrative AI previews — one finish on the same rooms you can generate after the {price} charge, not a promise of the exact finished look.",

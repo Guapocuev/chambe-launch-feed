@@ -351,7 +351,7 @@
   "Visualize": {
     "kicker": "Só cozinha",
     "title": "Veja uma reforma da sua cozinha",
-    "body": "Envie uma foto, escolha um acabamento e pague uma cobrança única de {price} pela prévia. Geramos esse look no mesmo cômodo. É uma prévia ilustrativa com IA, não uma promessa do resultado exato.",
+    "body": "Envie uma foto, responda umas perguntas de acabamento e pague uma cobrança única de {price} pela prévia. Geramos esse look no mesmo cômodo. É uma prévia ilustrativa com IA, não uma promessa do resultado exato.",
     "loginKicker": "Donos de casa",
     "loginTitle": "Prévia da sua cozinha",
     "loginBody": "Enviamos um link mágico por e-mail. Este login é só para a prévia da cozinha — não é uma conta de contratista.",
@@ -359,7 +359,7 @@
     "style": "Acabamento escolhido: {style}. Câmera, janelas e volume do cômodo ficam.",
     "packages": {
       "choose": "Escolha um acabamento",
-      "hint": "A taxa de {price} da prévia é a mesma para cada look. A faixa ao lado de cada acabamento é o estimado dessa reforma.",
+      "hint": "Atalho opcional. Cada look preenche as perguntas abaixo. Você ainda pode mudar qualquer resposta. A taxa de {price} da prévia é a mesma para cada look.",
       "refresh": {
         "name": "Refresh",
         "blurb": "Tinta, puxadores e iluminação. O retoque mais leve."
@@ -389,7 +389,90 @@
     "retry": "Tentar prévia de novo",
     "generate": "Gerar prévia",
     "altToday": "Sua cozinha hoje",
-    "altPreview": "Prévia ilustrativa de cozinha {style}",
+    "altPreview": "Prévia ilustrativa de cozinha",
+    "wizard": {
+      "photoTitle": "Foto da cozinha",
+      "sizeTitle": "Qual o tamanho desta cozinha?",
+      "sizeGuess": "Ainda não temos o tamanho desta cozinha. 150 sqft é uma cozinha típica do GTA — mude se a sua for diferente. O orçamento não deve ficar num tamanho adivinhado em silêncio.",
+      "sizeKnown": "Isto usa os {sqft} sqft de uma cotação que você já enviou. Mude se este cômodo for diferente.",
+      "sizeLabel": "Tamanho da cozinha (sqft)",
+      "sizeContinue": "Usar este tamanho",
+      "presetsTitle": "Começar por um look (opcional)",
+      "presetsHint": "Estes quatro looks só preenchem as perguntas. Não são o orçamento.",
+      "skipToQuote": "Ir para o orçamento",
+      "questions": {
+        "cabinet_scope": "O que acontece com os armários?",
+        "cabinet_finish": "Cor e acabamento dos armários",
+        "countertop": "Bancadas",
+        "flooring": "Piso",
+        "lighting": "Iluminação"
+      },
+      "helps": {
+        "cabinet_scope": "Esta é a maior diferença de mão de obra: pintar o que já existe, trocar portas ou instalar caixas novas.",
+        "cabinet_finish": "Escolha um acabamento. Cores de tinta só aparecem se você for pintar as caixas atuais.",
+        "countertop": "Quartzo e laminado não têm o mesmo preço.",
+        "flooring": "Mantenha o piso atual ou escolha um novo.",
+        "lighting": "A iluminação da prévia deve combinar com as peças que você quer instalar."
+      },
+      "mustHavesTitle": "Algum item indispensável?",
+      "mustHavesHelp": "Esta é a única caixa de texto livre. Ela muda só a imagem da prévia — não muda o preço.",
+      "mustHavesPlaceholder": "Exemplo: manter a geladeira atual, sem prateleiras abertas",
+      "remaining": "Restam {count} caracteres",
+      "back": "Voltar",
+      "next": "Continuar",
+      "reviewTitle": "O seu orçamento de reforma",
+      "breakdownTitle": "Materiais e mão de obra estimados",
+      "hours": "{hours} horas",
+      "generateUpdated": "Gerar prévia atualizada",
+      "stalePreview": "As suas respostas mudaram. Gere de novo para ver este look — a imagem anterior não é mostrada.",
+      "lines": {
+        "labor": "Mão de obra",
+        "cabinets": "Armários",
+        "counters": "Bancadas",
+        "flooring": "Piso",
+        "lighting": "Iluminação",
+        "backsplash": "Backsplash",
+        "dispatch": "Despacho"
+      }
+    },
+    "catalog": {
+      "cabinet_scope": {
+        "paint_existing": { "label": "Pintar as caixas atuais", "blurb": "Manter as caixas. Tinta e puxadores novos." },
+        "replace_fronts": { "label": "Trocar portas e frentes", "blurb": "Portas e frentes novas nas caixas atuais." },
+        "new_boxes": { "label": "Caixas de armário novas", "blurb": "Trocar a linha por caixas novas no mesmo espaço." }
+      },
+      "cabinet_finish": {
+        "white_paint": { "label": "Branco pintado", "blurb": "Branco pintado limpo." },
+        "greige_paint": { "label": "Greige pintado", "blurb": "Tinta greige suave." },
+        "pale_oak": { "label": "Carvalho claro", "blurb": "Carvalho natural claro." },
+        "cream_shaker": { "label": "Shaker creme", "blurb": "Portas shaker pintadas de creme." },
+        "walnut": { "label": "Nogueira", "blurb": "Nogueira escura." },
+        "charcoal_slab": { "label": "Laje carvão", "blurb": "Laje carvão de overlay completo." }
+      },
+      "countertop": {
+        "keep_existing_counters": { "label": "Manter as atuais", "blurb": "Não trocar as bancadas." },
+        "laminate": { "label": "Laminado", "blurb": "Bancadas de laminado." },
+        "butcher_block": { "label": "Tábua de açougueiro", "blurb": "Bancadas de madeira tipo butcher block." },
+        "quartz": { "label": "Quartzo", "blurb": "Bancadas de quartzo." },
+        "marble_look_quartz": { "label": "Quartzo com look de mármore", "blurb": "Quartzo grosso com look de mármore." }
+      },
+      "flooring": {
+        "keep_existing_floor": { "label": "Manter o atual", "blurb": "Não trocar o piso." },
+        "lvp": { "label": "Vinil de luxo", "blurb": "LVP de carvalho claro." },
+        "hardwood": { "label": "Madeira", "blurb": "Madeira quente." },
+        "tile": { "label": "Azulejo", "blurb": "Piso de azulejo." }
+      },
+      "lighting": {
+        "recessed_led": { "label": "LED embutido uniforme", "blurb": "Iluminação embutida quente e uniforme." },
+        "pendants": { "label": "Pendentes", "blurb": "Pendentes modernas e simples." },
+        "mixed_heritage": { "label": "Pendentes clássicos", "blurb": "Pendentes tradicionais, luz ambiente quente." }
+      },
+      "backsplash": {
+        "keep_existing_backsplash": { "label": "Manter o atual", "blurb": "Não trocar o backsplash." },
+        "subway": { "label": "Azulejo subway branco", "blurb": "Azulejo subway branco clássico." },
+        "full_height_stone": { "label": "Pedra até o teto", "blurb": "Pedra da bancada até os armários altos ou o teto." }
+      }
+    },
     "showcaseKicker": "Exemplos reais gerados com IA",
     "showcaseTitle": "Veja o que a prévia consegue fazer",
     "showcaseBody": "Arraste para comparar. São prévias ilustrativas com IA — um acabamento nos mesmos cômodos que você pode gerar após a cobrança de {price}, não uma promessa do resultado exato.",

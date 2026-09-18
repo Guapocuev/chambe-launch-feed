@@ -351,7 +351,7 @@
   "Visualize": {
     "kicker": "Solo cocina",
     "title": "Mira una renovación de tu cocina",
-    "body": "Sube una foto, elige un acabado y paga un cargo único de {price} por la vista previa. Generamos ese look en el mismo cuarto. Es una vista previa ilustrativa con IA, no una promesa del resultado exacto.",
+    "body": "Sube una foto, responde unas preguntas de acabados y paga un cargo único de {price} por la vista previa. Generamos ese look en el mismo cuarto. Es una vista previa ilustrativa con IA, no una promesa del resultado exacto.",
     "loginKicker": "Dueños de casa",
     "loginTitle": "Vista previa de tu cocina",
     "loginBody": "Te enviamos un enlace mágico por correo. Este inicio de sesión es solo para la vista previa de cocina — no es una cuenta de contratista.",
@@ -359,7 +359,7 @@
     "style": "Acabado elegido: {style}. La cámara, las ventanas y el volumen del cuarto se quedan.",
     "packages": {
       "choose": "Elige un acabado",
-      "hint": "El cargo de {price} por la vista previa es el mismo para cada look. El rango junto a cada acabado es el estimado de esa renovación.",
+      "hint": "Atajo opcional. Cada look rellena las preguntas de abajo. Puedes cambiar cualquier respuesta. El cargo de {price} por la vista previa es el mismo para cada look.",
       "refresh": {
         "name": "Refresh",
         "blurb": "Pintura, herrajes e iluminación. El retoque más ligero."
@@ -389,7 +389,90 @@
     "retry": "Reintentar vista previa",
     "generate": "Generar vista previa",
     "altToday": "Tu cocina hoy",
-    "altPreview": "Vista previa ilustrativa de cocina {style}",
+    "altPreview": "Vista previa ilustrativa de cocina",
+    "wizard": {
+      "photoTitle": "Foto de la cocina",
+      "sizeTitle": "¿Qué tan grande es esta cocina?",
+      "sizeGuess": "Todavía no tenemos el tamaño de esta cocina. 150 sqft es una cocina típica del GTA — cámbialo si la tuya es distinta. El estimado no debe basarse en un tamaño adivinado en silencio.",
+      "sizeKnown": "Esto usa los {sqft} sqft de una cotización que ya enviaste. Cámbialo si este cuarto es distinto.",
+      "sizeLabel": "Tamaño de la cocina (sqft)",
+      "sizeContinue": "Usar este tamaño",
+      "presetsTitle": "Empieza con un look (opcional)",
+      "presetsHint": "Estos cuatro looks solo rellenan las preguntas. No son la cotización.",
+      "skipToQuote": "Saltar a la cotización",
+      "questions": {
+        "cabinet_scope": "¿Qué hacemos con los gabinetes?",
+        "cabinet_finish": "Color y acabado de gabinetes",
+        "countertop": "Cubiertas",
+        "flooring": "Piso",
+        "lighting": "Iluminación"
+      },
+      "helps": {
+        "cabinet_scope": "Esta es la mayor diferencia de mano de obra: pintar lo que hay, cambiar puertas o instalar cajas nuevas.",
+        "cabinet_finish": "Elige un acabado. Los colores de pintura solo aparecen si vas a pintar las cajas actuales.",
+        "countertop": "El cuarzo y el laminado no tienen el mismo precio.",
+        "flooring": "Deja el piso actual o elige uno nuevo.",
+        "lighting": "La iluminación de la vista previa debe coincidir con los fixtures que quieres instalar."
+      },
+      "mustHavesTitle": "¿Hay algo imprescindible?",
+      "mustHavesHelp": "Esta es la única caja de texto libre. Solo cambia la imagen de la vista previa — no cambia el precio.",
+      "mustHavesPlaceholder": "Ejemplo: dejar el refrigerador actual, sin estantes abiertos",
+      "remaining": "Quedan {count} caracteres",
+      "back": "Atrás",
+      "next": "Continuar",
+      "reviewTitle": "Tu cotización de renovación",
+      "breakdownTitle": "Materiales y mano de obra estimados",
+      "hours": "{hours} horas",
+      "generateUpdated": "Generar vista previa actualizada",
+      "stalePreview": "Tus respuestas cambiaron. Genera de nuevo para ver este look — no mostramos la imagen anterior.",
+      "lines": {
+        "labor": "Mano de obra",
+        "cabinets": "Gabinetes",
+        "counters": "Cubiertas",
+        "flooring": "Piso",
+        "lighting": "Iluminación",
+        "backsplash": "Salpicadero",
+        "dispatch": "Despacho"
+      }
+    },
+    "catalog": {
+      "cabinet_scope": {
+        "paint_existing": { "label": "Pintar cajas actuales", "blurb": "Dejamos las cajas. Pintura y herrajes nuevos." },
+        "replace_fronts": { "label": "Cambiar puertas y frentes", "blurb": "Puertas y frentes nuevos sobre las cajas actuales." },
+        "new_boxes": { "label": "Cajas de gabinete nuevas", "blurb": "Reemplazar la hilera con cajas nuevas en el mismo espacio." }
+      },
+      "cabinet_finish": {
+        "white_paint": { "label": "Blanco pintado", "blurb": "Blanco pintado limpio." },
+        "greige_paint": { "label": "Greige pintado", "blurb": "Pintura greige suave." },
+        "pale_oak": { "label": "Roble pálido", "blurb": "Roble natural claro." },
+        "cream_shaker": { "label": "Shaker crema", "blurb": "Puertas shaker pintadas en crema." },
+        "walnut": { "label": "Nogal", "blurb": "Nogal oscuro." },
+        "charcoal_slab": { "label": "Losa carbón", "blurb": "Losa carbón de overlay completo." }
+      },
+      "countertop": {
+        "keep_existing_counters": { "label": "Dejar las actuales", "blurb": "No reemplazar las cubiertas." },
+        "laminate": { "label": "Laminado", "blurb": "Cubiertas de laminado." },
+        "butcher_block": { "label": "Tablón de carnicero", "blurb": "Cubiertas de madera tipo butcher block." },
+        "quartz": { "label": "Cuarzo", "blurb": "Cubiertas de cuarzo." },
+        "marble_look_quartz": { "label": "Cuarzo tipo mármol", "blurb": "Cuarzo grueso con look de mármol." }
+      },
+      "flooring": {
+        "keep_existing_floor": { "label": "Dejar el actual", "blurb": "No reemplazar el piso." },
+        "lvp": { "label": "Vinilo de lujo", "blurb": "LVP de roble claro." },
+        "hardwood": { "label": "Madera", "blurb": "Madera cálida." },
+        "tile": { "label": "Azulejo", "blurb": "Piso de azulejo." }
+      },
+      "lighting": {
+        "recessed_led": { "label": "LED empotrado pareja", "blurb": "Iluminación empotrada cálida y pareja." },
+        "pendants": { "label": "Lámparas colgantes", "blurb": "Colgantes modernas y simples." },
+        "mixed_heritage": { "label": "Colgantes clásicas", "blurb": "Colgantes tradicionales, luz ambiental cálida." }
+      },
+      "backsplash": {
+        "keep_existing_backsplash": { "label": "Dejar el actual", "blurb": "No reemplazar el salpicadero." },
+        "subway": { "label": "Azulejo subway blanco", "blurb": "Azulejo subway blanco clásico." },
+        "full_height_stone": { "label": "Piedra de piso a techo", "blurb": "Piedra desde la cubierta hasta los gabinetes altos o el techo." }
+      }
+    },
     "showcaseKicker": "Ejemplos reales generados con IA",
     "showcaseTitle": "Mira lo que puede hacer la vista previa",
     "showcaseBody": "Arrastra para comparar. Son vistas previas ilustrativas con IA — un acabado en los mismos cuartos que puedes generar tras el cargo de {price}, no una promesa del resultado exacto.",
