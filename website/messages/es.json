@@ -11,6 +11,7 @@
     "gallery": "Galería",
     "contact": "Contacto",
     "becomeContractor": "Hazte contratista",
+    "apprentices": "Aprendices",
     "getEstimate": "Cotización gratis",
     "openMenu": "Abrir menú",
     "closeMenu": "Cerrar menú",
@@ -26,6 +27,7 @@
     "getStarted": "Empieza",
     "requestJob": "Pedir un trabajo",
     "becomeContractor": "Hazte contratista",
+    "apprentices": "Únete como aprendiz",
     "legal": "Legal",
     "privacy": "Política de privacidad",
     "terms": "Términos del servicio",
@@ -121,6 +123,13 @@
     "contractorBody": "Leads calificados en tu oficio y zona. Aceptas o pasas. {callback}",
     "contractorCta": "Postúlate como contratista →"
   },
+  "Apprentices": {
+    "title": "¿Eres aprendiz?",
+    "intro": "Horas en el trabajo, sin la papelada. Entra con un código por mensaje — sin contraseña.",
+    "cta": "Únete como aprendiz",
+    "already": "¿Ya registras horas?",
+    "login": "Inicia sesión"
+  },
   "Apply": {
     "title": "Hazte contratista de Chambé",
     "loginLink": "¿Ya estás en la lista? Inicia sesión",
@@ -158,16 +167,12 @@
     "needCompliance": "Cuéntanos sobre licencia, seguro y WSIB para poder contactarte.",
     "supportTitle": "Menos papeleo. Más trabajo.",
     "supportIntro": "Chambé no es solo dónde encuentras trabajo — es respaldo para lo que te come las tardes. Papeleo, dolores de cabeza con la agenda, perseguir clientes por respuestas. Elige el nivel de apoyo que te funciona.",
-    "supportBasicName": "Chambé Basic",
-    "supportBasicBadge": "Incluido, gratis",
+    "supportBasicHeading": "Chambé Basic — incluido, gratis",
     "supportBasicBody": "Emparejamiento de trabajos, cotizaciones instantáneas a tu teléfono, y tu propio panel para seguir trabajos y horas. Todo lo que necesitas para empezar a tomar trabajo por Chambé.",
-    "supportAssistName": "Chambé Assist",
-    "supportAssistBadge": "Paga cuando lo uses",
+    "supportAssistHeading": "Chambé Assist — paga cuando lo uses",
     "supportAssistBody": "¿Necesitas ayuda con un formulario de WSIB, una factura, o un correo difícil de un cliente? Envíalo y te ayudamos a resolverlo. Sin suscripción, sin compromiso — solo respaldo cuando lo necesitas.",
-    "supportConciergeName": "Chambé Concierge",
-    "supportConciergeBadge": "Cupos limitados",
+    "supportConciergeHeading": "Chambé Concierge — cupos limitados",
     "supportConciergeBody": "Para contratistas con volumen real a través de Chambé. Nosotros nos encargamos del papeleo de cumplimiento, mantenemos tu agenda en orden y gestionamos la comunicación con el cliente para que tú te quedes en las herramientas. Solo hay unos cupos abiertos ahora — postúlate para ser considerado.",
-    "supportConciergeNote": "Lo revisamos a mano. No es un alta instantánea.",
     "supportConciergeCta": "Postúlate para ser considerado"
   },
   "Gallery": {

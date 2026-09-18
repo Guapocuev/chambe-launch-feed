@@ -21,6 +21,8 @@ export default async function Home() {
   const t = await getTranslations('Home');
   const tGallery = await getTranslations('Gallery');
   const tTime = await getTranslations('ResponseTime');
+  const tApprentice = await getTranslations('Apprentices');
+  const tAuth = await getTranslations('Auth');
   const teaserProjects = galleryProjects.map((project) => ({
     ...project,
     title: tGallery(`projects.${project.id}.title`),
@@ -133,6 +135,19 @@ export default async function Home() {
           <p className="mt-4 text-foreground/70">{t('missionBody')}</p>
           <Link href="/about" className="mt-6 inline-block text-sm font-semibold text-brand hover:underline">
             {t('moreMission')}
+          </Link>
+        </div>
+      </section>
+
+      <section className="border-b border-border">
+        <div className="mx-auto max-w-3xl px-6 py-20 text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-foreground">{tApprentice('title')}</h2>
+          <p className="mt-4 text-foreground/70">{tAuth('apprenticeHoursNote')}</p>
+          <Link
+            href="/apprentices"
+            className="mt-6 inline-block rounded-full bg-accent px-7 py-3.5 text-sm font-semibold text-inverse transition hover:bg-accent-dark"
+          >
+            {tApprentice('cta')}
           </Link>
         </div>
       </section>

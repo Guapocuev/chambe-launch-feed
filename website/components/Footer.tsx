@@ -34,6 +34,7 @@ export function Footer() {
             <ul className="mt-3 space-y-2 text-sm text-foreground/70">
               <li><Link href="/get-a-quote" className="hover:text-brand">{t('requestJob')}</Link></li>
               <li><Link href="/apply" className="hover:text-brand">{t('becomeContractor')}</Link></li>
+              <li><Link href="/apprentices" className="hover:text-brand">{t('apprentices')}</Link></li>
             </ul>
           </div>
 

@@ -55,6 +55,12 @@ export function Nav() {
         <div className="flex items-center gap-2 sm:gap-3">
           <LanguageSwitcher />
           <Link
+            href="/apprentices"
+            className="hidden text-sm font-medium text-foreground/80 transition hover:text-brand md:inline"
+          >
+            {t('apprentices')}
+          </Link>
+          <Link
             href="/apply"
             className="hidden text-sm font-medium text-foreground/80 transition hover:text-brand md:inline"
           >
@@ -92,6 +98,13 @@ export function Nav() {
               {link.label}
             </Link>
           ))}
+          <Link
+            href="/apprentices"
+            onClick={() => setOpen(false)}
+            className="rounded-md px-2 py-2 text-sm font-medium text-foreground/80 hover:bg-surface"
+          >
+            {t('apprentices')}
+          </Link>
           <Link
             href="/apply"
             onClick={() => setOpen(false)}

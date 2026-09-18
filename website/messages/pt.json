@@ -11,6 +11,7 @@
     "gallery": "Galeria",
     "contact": "Contato",
     "becomeContractor": "Seja um contratista",
+    "apprentices": "Aprendizes",
     "getEstimate": "Orçamento grátis",
     "openMenu": "Abrir menu",
     "closeMenu": "Fechar menu",
@@ -26,6 +27,7 @@
     "getStarted": "Começar",
     "requestJob": "Pedir um trabalho",
     "becomeContractor": "Seja um contratista",
+    "apprentices": "Entre como aprendiz",
     "legal": "Legal",
     "privacy": "Política de privacidade",
     "terms": "Termos de serviço",
@@ -121,6 +123,13 @@
     "contractorBody": "Leads qualificados no seu ofício e na sua área. Você aceita ou recusa. {callback}",
     "contractorCta": "Candidatar-se como contratista →"
   },
+  "Apprentices": {
+    "title": "Você é aprendiz?",
+    "intro": "Horas no trabalho, sem a papelada. Entra com um código por SMS — sem senha.",
+    "cta": "Entre como aprendiz",
+    "already": "Já registra horas?",
+    "login": "Entrar"
+  },
   "Apply": {
     "title": "Seja um contratista Chambé",
     "loginLink": "Já está na lista? Entrar",
@@ -158,16 +167,12 @@
     "needCompliance": "Conte sobre licença, seguro e WSIB para podermos retornar.",
     "supportTitle": "Menos papelada. Mais trabalhos.",
     "supportIntro": "O Chambé não é só onde você encontra trabalho — é apoio no que come as noites. Papelada, dor de cabeça de agenda, correr atrás de cliente. Escolha o nível de apoio que funciona para você.",
-    "supportBasicName": "Chambé Basic",
-    "supportBasicBadge": "Incluído, grátis",
+    "supportBasicHeading": "Chambé Basic — incluído, grátis",
     "supportBasicBody": "Match de trabalhos, orçamentos instantâneos no celular e um painel para acompanhar trabalhos e horas. Tudo para começar a pegar serviço pelo Chambé.",
-    "supportAssistName": "Chambé Assist",
-    "supportAssistBadge": "Pague quando usar",
+    "supportAssistHeading": "Chambé Assist — pague quando usar",
     "supportAssistBody": "Precisa de ajuda com um formulário WSIB, uma fatura ou um e-mail difícil de cliente? Manda que a gente ajuda a resolver. Sem assinatura, sem compromisso — só apoio quando precisar.",
-    "supportConciergeName": "Chambé Concierge",
-    "supportConciergeBadge": "Vagas limitadas",
+    "supportConciergeHeading": "Chambé Concierge — vagas limitadas",
     "supportConciergeBody": "Para contratistas com volume real pelo Chambé. Cuidamos da papelada de compliance, mantemos a agenda em ordem e gerimos a comunicação com o cliente para você ficar na ferramenta. Poucas vagas agora — candidate-se para ser considerado.",
-    "supportConciergeNote": "Revisado à mão. Não é cadastro instantâneo.",
     "supportConciergeCta": "Candidatar-se para ser considerado"
   },
   "Gallery": {

@@ -11,6 +11,7 @@
     "gallery": "Gallery",
     "contact": "Contact",
     "becomeContractor": "Become a Contractor",
+    "apprentices": "Apprentices",
     "getEstimate": "Get a Free Estimate",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
@@ -26,6 +27,7 @@
     "getStarted": "Get Started",
     "requestJob": "Request a Job",
     "becomeContractor": "Become a Contractor",
+    "apprentices": "Join as an apprentice",
     "legal": "Legal",
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
@@ -121,6 +123,13 @@
     "contractorBody": "Qualified leads in your trade and area. You accept or pass. {callback}",
     "contractorCta": "Apply as a contractor →"
   },
+  "Apprentices": {
+    "title": "Are you an apprentice?",
+    "intro": "Hours on the job, without the paperwork. Join with a text code — no password.",
+    "cta": "Join as an apprentice",
+    "already": "Already tracking hours?",
+    "login": "Log in"
+  },
   "Apply": {
     "title": "Become a Chambé contractor",
     "loginLink": "Already on the roster? Log in",
@@ -158,16 +167,12 @@
     "needCompliance": "Tell us about licence, insurance, and WSIB so we can follow up.",
     "supportTitle": "Less paperwork. More jobs.",
     "supportIntro": "Chambé isn't just where you find work — it's backup on the stuff that eats your evenings. Paperwork, scheduling headaches, chasing clients for answers. Pick the level of support that works for you.",
-    "supportBasicName": "Chambé Basic",
-    "supportBasicBadge": "Included, free",
+    "supportBasicHeading": "Chambé Basic — included, free",
     "supportBasicBody": "Job matching, instant quotes sent to your phone, and your own dashboard to track jobs and hours. Everything you need to start taking work through Chambé.",
-    "supportAssistName": "Chambé Assist",
-    "supportAssistBadge": "Pay as you go",
+    "supportAssistHeading": "Chambé Assist — pay as you go",
     "supportAssistBody": "Need help with a WSIB form, an invoice, or a tricky client email? Send it over and we'll help you get it done. No subscription, no commitment — just backup when you need it.",
-    "supportConciergeName": "Chambé Concierge",
-    "supportConciergeBadge": "Limited spots",
+    "supportConciergeHeading": "Chambé Concierge — limited spots",
     "supportConciergeBody": "For contractors doing real volume through Chambé. We handle your compliance paperwork, keep your schedule straight, and manage client communication so you can stay on the tools. Only a few spots open right now — apply to be considered.",
-    "supportConciergeNote": "Reviewed by hand. Not an instant signup.",
     "supportConciergeCta": "Apply to be considered"
   },
   "Gallery": {

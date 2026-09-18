@@ -6,7 +6,7 @@ import { trackEvent } from '@/lib/analytics';
 import { CONTACT_PHONE, CONTACT_PHONE_TEL } from '@/lib/site';
 import { isAppArea } from '@/lib/contractor-area';
 
-const HIDDEN_ON = new Set(['/get-a-quote', '/apply']);
+const HIDDEN_ON = new Set(['/get-a-quote', '/apply', '/apprentices']);
 
 export function MobileStickyCta() {
   const t = useTranslations('Cta');

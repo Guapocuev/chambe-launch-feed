@@ -5,20 +5,16 @@ export async function ContractorSupport() {
 
   const tiers = [
     {
-      name: t('supportBasicName'),
-      badge: t('supportBasicBadge'),
+      heading: t('supportBasicHeading'),
       body: t('supportBasicBody'),
     },
     {
-      name: t('supportAssistName'),
-      badge: t('supportAssistBadge'),
+      heading: t('supportAssistHeading'),
       body: t('supportAssistBody'),
     },
     {
-      name: t('supportConciergeName'),
-      badge: t('supportConciergeBadge'),
+      heading: t('supportConciergeHeading'),
       body: t('supportConciergeBody'),
-      note: t('supportConciergeNote'),
       cta: t('supportConciergeCta'),
     },
   ];
@@ -29,11 +25,9 @@ export async function ContractorSupport() {
       <p className="mt-3 text-base leading-relaxed text-foreground/70">{t('supportIntro')}</p>
       <div className="mt-6 grid gap-4">
         {tiers.map((tier) => (
-          <article key={tier.name} className="rounded-2xl border border-border bg-surface px-5 py-5">
-            <p className="text-xs font-semibold uppercase tracking-wide text-accent">{tier.badge}</p>
-            <h3 className="mt-1 text-lg font-semibold text-foreground">{tier.name}</h3>
+          <article key={tier.heading} className="rounded-2xl border border-border bg-surface px-5 py-5">
+            <h3 className="text-lg font-semibold text-foreground">{tier.heading}</h3>
             <p className="mt-2 text-sm leading-relaxed text-foreground/75">{tier.body}</p>
-            {tier.note ? <p className="mt-2 text-xs text-foreground/55">{tier.note}</p> : null}
             {tier.cta ? (
               <a
                 href="#apply"
