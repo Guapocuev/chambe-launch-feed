@@ -425,6 +425,7 @@
       "hours": "{hours} hours",
       "generateUpdated": "Generate updated preview",
       "stalePreview": "Your answers changed. Generate again to see this look — the previous image is not shown.",
+      "previewLimit": "You've reached the preview limit for this session",
       "lines": {
         "labor": "Labor",
         "cabinets": "Cabinets",

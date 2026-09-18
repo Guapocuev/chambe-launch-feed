@@ -1,2 +1,11 @@
+# Local junk — never commit
+.e2e-visualize/
+guapogres-backup-*.sql
+website/.tmp-photo.b64
+website/.tmp-speech.wav
+website/.tmp-*
+node_modules/
+website/node_modules/
+
 .node/
 website/.node-portable/

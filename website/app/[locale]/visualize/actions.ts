@@ -69,6 +69,9 @@ export interface VisualizeSession {
   generated_selection_hash: string | null;
   preview_stale: boolean;
   selections_complete: boolean;
+  successful_generations: number;
+  generation_limit: number;
+  generation_limit_reached: boolean;
   price_cad: number;
   error_message: string | null;
   paid: boolean;

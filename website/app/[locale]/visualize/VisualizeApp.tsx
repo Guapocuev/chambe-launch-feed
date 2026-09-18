@@ -124,6 +124,7 @@ export function VisualizeApp() {
   const failed = session.status === 'failed';
   const ready = session.status === 'ready' && Boolean(session.generated_photo_url) && !session.preview_stale;
   const sizeConfirmed = session.area_sqft_source !== 'package_default';
+  const generationCapped = session.generation_limit_reached;
   const canPay =
     Boolean(session.hero_photo_url || session.status === 'photo_ready') &&
     session.selections_complete &&
@@ -133,6 +134,7 @@ export function VisualizeApp() {
     session.paid &&
     session.status !== 'generating' &&
     session.selections_complete &&
+    !generationCapped &&
     (!ready || session.preview_stale || failed);
 
   return (
@@ -190,6 +192,12 @@ export function VisualizeApp() {
 
       {failed && session.error_message && (
         <p className="text-sm text-foreground/70">{session.error_message}</p>
+      )}
+
+      {generationCapped && (
+        <p className="rounded-lg border border-border bg-surface px-4 py-3 text-sm text-foreground">
+          {t('wizard.previewLimit')}
+        </p>
       )}
 
       <div className="flex flex-col gap-3 sm:flex-row">

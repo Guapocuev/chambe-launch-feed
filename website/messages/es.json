@@ -425,6 +425,7 @@
       "hours": "{hours} horas",
       "generateUpdated": "Generar vista previa actualizada",
       "stalePreview": "Tus respuestas cambiaron. Genera de nuevo para ver este look — no mostramos la imagen anterior.",
+      "previewLimit": "You've reached the preview limit for this session",
       "lines": {
         "labor": "Mano de obra",
         "cabinets": "Gabinetes",
