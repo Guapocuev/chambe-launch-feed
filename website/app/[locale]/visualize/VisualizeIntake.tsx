@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { formatCad } from '@/lib/format-cad';
 import { HeroPhotoUpload } from './HeroPhotoUpload';
+import { VisualizeLookIdeas } from './VisualizeLookIdeas';
 import type { FinishOption, VisualizeSession } from './actions';
 
 const WIZARD_CATEGORIES = [
@@ -17,20 +18,26 @@ const WIZARD_CATEGORIES = [
 type WizardCategory = (typeof WIZARD_CATEGORIES)[number];
 type Step = 'photo' | 'size' | WizardCategory | 'must_haves' | 'review';
 
-const STEPS: Step[] = ['photo', 'size', ...WIZARD_CATEGORIES, 'must_haves', 'review'];
-
 function optionLabel(t: ReturnType<typeof useTranslations<'Visualize'>>, option: FinishOption): string {
-  return t(`catalog.${option.category}.${option.slug}.label`);
+  const key = `catalog.${option.category}.${option.slug}.label`;
+  return t.has(key) ? t(key) : option.label;
 }
 
 function optionBlurb(t: ReturnType<typeof useTranslations<'Visualize'>>, option: FinishOption): string {
-  return t(`catalog.${option.category}.${option.slug}.blurb`);
+  const key = `catalog.${option.category}.${option.slug}.blurb`;
+  return t.has(key) ? t(key) : '';
+}
+
+function swatchClass(category: FinishOption['category']): string {
+  return category === 'cabinet_finish' || category === 'cabinet_scope'
+    ? 'h-8 w-8 shrink-0 rounded-full border border-border'
+    : 'h-8 w-8 shrink-0 rounded-md border border-border';
 }
 
 function compatibleOptions(session: VisualizeSession, category: WizardCategory): FinishOption[] {
   const scope = session.selections.cabinet_scope;
   return session.options
-    .filter((option) => option.category === category)
+    .filter((option) => option.category === category && !option.pricing_is_draft)
     .filter((option) => {
       if (category !== 'cabinet_finish' || !option.compatible_with?.length) return true;
       if (!scope) return true;
@@ -38,10 +45,18 @@ function compatibleOptions(session: VisualizeSession, category: WizardCategory):
     });
 }
 
+function liveWizardCategories(session: VisualizeSession): WizardCategory[] {
+  return WIZARD_CATEGORIES.filter((category) => compatibleOptions(session, category).length > 0);
+}
+
+function wizardSteps(session: VisualizeSession): Step[] {
+  return ['photo', 'size', ...liveWizardCategories(session), 'must_haves', 'review'];
+}
+
 function firstIncomplete(session: VisualizeSession): Step {
   if (!session.hero_photo_url && session.status !== 'ready') return 'photo';
   if (session.area_sqft_source === 'package_default') return 'size';
-  for (const category of WIZARD_CATEGORIES) {
+  for (const category of liveWizardCategories(session)) {
     if (!session.selections[category]) return category;
   }
   return 'review';
@@ -70,7 +85,10 @@ export function VisualizeIntake({
   const [sqft, setSqft] = useState(String(session.area_sqft ?? 150));
   const [mustHaves, setMustHaves] = useState(session.must_haves ?? '');
 
-  const stepIndex = STEPS.indexOf(step);
+  const liveCategories = liveWizardCategories(session);
+  const steps = wizardSteps(session);
+  const firstLive = liveCategories[0];
+  const stepIndex = steps.indexOf(step);
   const range =
     session.estimate_low != null && session.estimate_high != null
       ? `${formatCad(session.estimate_low, locale)} – ${formatCad(session.estimate_high, locale)}`
@@ -79,7 +97,7 @@ export function VisualizeIntake({
   const sizeKnown = session.area_sqft_source !== 'package_default';
 
   async function goNext() {
-    const next = STEPS[stepIndex + 1];
+    const next = steps[stepIndex + 1];
     if (next) setStep(next);
   }
 
@@ -92,7 +110,7 @@ export function VisualizeIntake({
 
   async function pickOption(category: WizardCategory, slug: string) {
     await onSave({ selections: { [category]: slug } });
-    const next = STEPS[stepIndex + 1];
+    const next = steps[stepIndex + 1];
     if (next) setStep(next);
   }
 
@@ -102,9 +120,13 @@ export function VisualizeIntake({
   }
 
   useEffect(() => {
+    if (WIZARD_CATEGORIES.includes(step as WizardCategory) && !liveCategories.includes(step as WizardCategory)) {
+      setStep(firstIncomplete(session));
+      return;
+    }
     if (step !== 'photo' || !session.hero_photo_url) return;
-    setStep(session.area_sqft_source === 'package_default' ? 'size' : 'cabinet_scope');
-  }, [session.area_sqft_source, session.hero_photo_url, step]);
+    setStep(session.area_sqft_source === 'package_default' ? 'size' : (firstLive ?? 'must_haves'));
+  }, [firstLive, liveCategories, session, session.area_sqft_source, session.hero_photo_url, step]);
 
   const remaining = 200 - mustHaves.length;
 
@@ -130,7 +152,7 @@ export function VisualizeIntake({
             type="button"
             className="text-sm text-foreground/60 hover:text-foreground"
             disabled={busy || stepIndex <= 0}
-            onClick={() => setStep(STEPS[Math.max(0, stepIndex - 1)]!)}
+            onClick={() => setStep(steps[Math.max(0, stepIndex - 1)]!)}
           >
             {t('wizard.back')}
           </button>
@@ -144,6 +166,7 @@ export function VisualizeIntake({
         <section className="space-y-3">
           <h2 className="text-lg font-semibold text-foreground">{t('wizard.photoTitle')}</h2>
           <HeroPhotoUpload onPath={onPhoto} disabled={busy} />
+          <VisualizeLookIdeas session={session} busy={busy} onPreset={onPreset} />
         </section>
       )}
 
@@ -177,31 +200,17 @@ export function VisualizeIntake({
         </section>
       )}
 
-      {WIZARD_CATEGORIES.includes(step as WizardCategory) && (
+      {liveCategories.includes(step as WizardCategory) && (
         <section className="space-y-3">
-          {step === 'cabinet_scope' && (
-            <div className="rounded-2xl border border-border bg-surface px-4 py-3">
-              <p className="text-sm font-medium text-foreground">{t('wizard.presetsTitle')}</p>
-              <p className="mt-1 text-xs text-foreground/60">{t('wizard.presetsHint')}</p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {(session.packages ?? []).map((pkg) => (
-                  <button
-                    key={pkg.id}
-                    type="button"
-                    disabled={busy}
-                    onClick={() => void onPreset(pkg.id)}
-                    className="rounded-full border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:border-brand disabled:opacity-50"
-                  >
-                    {t(`packages.${pkg.slug}.name`)}
-                  </button>
-                ))}
-              </div>
+          {step === firstLive && (
+            <div className="space-y-3">
+              <VisualizeLookIdeas session={session} busy={busy} onPreset={onPreset} />
               {session.selections_complete && (
                 <button
                   type="button"
                   disabled={busy}
                   onClick={() => setStep('review')}
-                  className="mt-3 text-sm font-medium text-brand"
+                  className="text-sm font-medium text-brand"
                 >
                   {t('wizard.skipToQuote')}
                 </button>
@@ -227,13 +236,11 @@ export function VisualizeIntake({
                   } disabled:opacity-50`}
                 >
                   <span className="flex items-center gap-3">
-                    {option.swatch_hex && (
-                      <span
-                        className="h-8 w-8 shrink-0 rounded-full border border-border"
-                        style={{ backgroundColor: option.swatch_hex }}
-                        aria-hidden
-                      />
-                    )}
+                    <span
+                      className={`${swatchClass(option.category)} ${option.swatch_hex ? '' : 'bg-foreground/15'}`}
+                      style={option.swatch_hex ? { backgroundColor: option.swatch_hex } : undefined}
+                      aria-hidden
+                    />
                     <span>
                       <span className="block text-sm font-semibold text-foreground">{optionLabel(t, option)}</span>
                       <span className="mt-1 block text-xs leading-relaxed text-foreground/65">
@@ -279,7 +286,7 @@ export function VisualizeIntake({
             <button
               type="button"
               className="text-sm text-foreground/60 hover:text-foreground"
-              onClick={() => setStep('cabinet_scope')}
+              onClick={() => setStep(firstLive ?? 'photo')}
             >
               {t('wizard.back')}
             </button>

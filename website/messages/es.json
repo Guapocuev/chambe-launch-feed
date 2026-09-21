@@ -399,6 +399,8 @@
       "sizeContinue": "Usar este tamaño",
       "presetsTitle": "Empieza con un look (opcional)",
       "presetsHint": "Estos cuatro looks solo rellenan las preguntas. No son la cotización.",
+      "ideasTitle": "¿No sabes qué quieres? Mira algunas ideas",
+      "ideasHint": "Looks de muestra, no una vista previa de tu cocina. Solo rellenan las preguntas. Sigues pagando {price} para generar tu cuarto.",
       "skipToQuote": "Saltar a la cotización",
       "questions": {
         "cabinet_scope": "¿Qué hacemos con los gabinetes?",
@@ -445,28 +447,48 @@
       "cabinet_finish": {
         "white_paint": { "label": "Blanco pintado", "blurb": "Blanco pintado limpio." },
         "greige_paint": { "label": "Greige pintado", "blurb": "Pintura greige suave." },
+        "navy_paint": { "label": "Azul marino pintado", "blurb": "Azul marino profundo." },
+        "sage_paint": { "label": "Salvia pintada", "blurb": "Pintura salvia suave." },
+        "black_paint": { "label": "Negro pintado", "blurb": "Negro mate." },
+        "dusty_blue_paint": { "label": "Azul polvo pintado", "blurb": "Azul grisáceo polvo." },
         "pale_oak": { "label": "Roble pálido", "blurb": "Roble natural claro." },
         "cream_shaker": { "label": "Shaker crema", "blurb": "Puertas shaker pintadas en crema." },
         "walnut": { "label": "Nogal", "blurb": "Nogal oscuro." },
-        "charcoal_slab": { "label": "Losa carbón", "blurb": "Losa carbón de overlay completo." }
+        "charcoal_slab": { "label": "Losa carbón", "blurb": "Losa carbón de overlay completo." },
+        "white_oak": { "label": "Roble blanco", "blurb": "Roble blanco claro, veta a la vista." },
+        "forest_green": { "label": "Verde bosque", "blurb": "Puertas verde bosque." },
+        "natural_maple": { "label": "Arce natural", "blurb": "Arce miel cálido." }
       },
       "countertop": {
         "keep_existing_counters": { "label": "Dejar las actuales", "blurb": "No reemplazar las cubiertas." },
         "laminate": { "label": "Laminado", "blurb": "Cubiertas de laminado." },
         "butcher_block": { "label": "Tablón de carnicero", "blurb": "Cubiertas de madera tipo butcher block." },
         "quartz": { "label": "Cuarzo", "blurb": "Cubiertas de cuarzo." },
-        "marble_look_quartz": { "label": "Cuarzo tipo mármol", "blurb": "Cuarzo grueso con look de mármol." }
+        "marble_look_quartz": { "label": "Cuarzo tipo mármol", "blurb": "Cuarzo grueso con look de mármol." },
+        "granite": { "label": "Granito", "blurb": "Cubiertas de granito natural." },
+        "porcelain_slab": { "label": "Losa de porcelana", "blurb": "Losa de porcelana de gran formato." },
+        "soapstone": { "label": "Piedra jabón", "blurb": "Soapstone oscura mate." },
+        "honed_concrete": { "label": "Concreto mate", "blurb": "Cubiertas con look de concreto." }
       },
       "flooring": {
         "keep_existing_floor": { "label": "Dejar el actual", "blurb": "No reemplazar el piso." },
         "lvp": { "label": "Vinilo de lujo", "blurb": "LVP de roble claro." },
         "hardwood": { "label": "Madera", "blurb": "Madera cálida." },
-        "tile": { "label": "Azulejo", "blurb": "Piso de azulejo." }
+        "tile": { "label": "Azulejo", "blurb": "Piso de azulejo." },
+        "herringbone_lvp": { "label": "Vinilo espiga", "blurb": "LVP de roble en espiga." },
+        "dark_oak_lvp": { "label": "Vinilo roble oscuro", "blurb": "LVP de roble oscuro." },
+        "porcelain_tile": { "label": "Porcelana de gran formato", "blurb": "Piso de porcelana grande." },
+        "checkerboard_tile": { "label": "Azulejo de damero", "blurb": "Damero blanco y negro." },
+        "engineered_oak": { "label": "Roble ingenieril", "blurb": "Roble ingenieril, no vinilo." }
       },
       "lighting": {
         "recessed_led": { "label": "LED empotrado pareja", "blurb": "Iluminación empotrada cálida y pareja." },
         "pendants": { "label": "Lámparas colgantes", "blurb": "Colgantes modernas y simples." },
-        "mixed_heritage": { "label": "Colgantes clásicas", "blurb": "Colgantes tradicionales, luz ambiental cálida." }
+        "mixed_heritage": { "label": "Colgantes clásicas", "blurb": "Colgantes tradicionales, luz ambiental cálida." },
+        "undercabinet_led": { "label": "LED bajo gabinete", "blurb": "Luz cálida bajo los gabinetes altos." },
+        "linear_pendant": { "label": "Colgante lineal", "blurb": "Un colgante largo sobre el área de trabajo." },
+        "flush_mount": { "label": "Plafón de techo", "blurb": "Plafón simple, luz pareja." },
+        "brass_sconces": { "label": "Apliques de latón", "blurb": "Apliques de latón cálido." }
       },
       "backsplash": {
         "keep_existing_backsplash": { "label": "Dejar el actual", "blurb": "No reemplazar el salpicadero." },

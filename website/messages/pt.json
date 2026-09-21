@@ -399,6 +399,8 @@
       "sizeContinue": "Usar este tamanho",
       "presetsTitle": "Começar por um look (opcional)",
       "presetsHint": "Estes quatro looks só preenchem as perguntas. Não são o orçamento.",
+      "ideasTitle": "Não sabe o que quer? Veja algumas ideias",
+      "ideasHint": "Looks de amostra, não uma prévia da sua cozinha. Só preenchem as perguntas. Continua a pagar {price} para gerar o seu quarto.",
       "skipToQuote": "Ir para o orçamento",
       "questions": {
         "cabinet_scope": "O que acontece com os armários?",
@@ -445,28 +447,48 @@
       "cabinet_finish": {
         "white_paint": { "label": "Branco pintado", "blurb": "Branco pintado limpo." },
         "greige_paint": { "label": "Greige pintado", "blurb": "Tinta greige suave." },
+        "navy_paint": { "label": "Azul-marinho pintado", "blurb": "Azul-marinho profundo." },
+        "sage_paint": { "label": "Sálvia pintada", "blurb": "Tinta sálvia suave." },
+        "black_paint": { "label": "Preto pintado", "blurb": "Preto fosco." },
+        "dusty_blue_paint": { "label": "Azul empoado pintado", "blurb": "Azul-cinza empoado." },
         "pale_oak": { "label": "Carvalho claro", "blurb": "Carvalho natural claro." },
         "cream_shaker": { "label": "Shaker creme", "blurb": "Portas shaker pintadas de creme." },
         "walnut": { "label": "Nogueira", "blurb": "Nogueira escura." },
-        "charcoal_slab": { "label": "Laje carvão", "blurb": "Laje carvão de overlay completo." }
+        "charcoal_slab": { "label": "Laje carvão", "blurb": "Laje carvão de overlay completo." },
+        "white_oak": { "label": "Carvalho branco", "blurb": "Carvalho branco claro, veio visível." },
+        "forest_green": { "label": "Verde floresta", "blurb": "Portas verde floresta." },
+        "natural_maple": { "label": "Bordo natural", "blurb": "Bordo mel quente." }
       },
       "countertop": {
         "keep_existing_counters": { "label": "Manter as atuais", "blurb": "Não trocar as bancadas." },
         "laminate": { "label": "Laminado", "blurb": "Bancadas de laminado." },
         "butcher_block": { "label": "Tábua de açougueiro", "blurb": "Bancadas de madeira tipo butcher block." },
         "quartz": { "label": "Quartzo", "blurb": "Bancadas de quartzo." },
-        "marble_look_quartz": { "label": "Quartzo com look de mármore", "blurb": "Quartzo grosso com look de mármore." }
+        "marble_look_quartz": { "label": "Quartzo com look de mármore", "blurb": "Quartzo grosso com look de mármore." },
+        "granite": { "label": "Granito", "blurb": "Bancadas de granito natural." },
+        "porcelain_slab": { "label": "Chapa de porcelana", "blurb": "Chapa de porcelana de grande formato." },
+        "soapstone": { "label": "Pedra-sabão", "blurb": "Soapstone escura fosca." },
+        "honed_concrete": { "label": "Concreto fosco", "blurb": "Bancadas com look de concreto." }
       },
       "flooring": {
         "keep_existing_floor": { "label": "Manter o atual", "blurb": "Não trocar o piso." },
         "lvp": { "label": "Vinil de luxo", "blurb": "LVP de carvalho claro." },
         "hardwood": { "label": "Madeira", "blurb": "Madeira quente." },
-        "tile": { "label": "Azulejo", "blurb": "Piso de azulejo." }
+        "tile": { "label": "Azulejo", "blurb": "Piso de azulejo." },
+        "herringbone_lvp": { "label": "Vinil em espinha", "blurb": "LVP de carvalho em espinha." },
+        "dark_oak_lvp": { "label": "Vinil carvalho escuro", "blurb": "LVP de carvalho escuro." },
+        "porcelain_tile": { "label": "Porcelana de grande formato", "blurb": "Piso de porcelana grande." },
+        "checkerboard_tile": { "label": "Azulejo xadrez", "blurb": "Xadrez preto e branco." },
+        "engineered_oak": { "label": "Carvalho engenheirado", "blurb": "Carvalho engenheirado, não vinil." }
       },
       "lighting": {
         "recessed_led": { "label": "LED embutido uniforme", "blurb": "Iluminação embutida quente e uniforme." },
         "pendants": { "label": "Pendentes", "blurb": "Pendentes modernas e simples." },
-        "mixed_heritage": { "label": "Pendentes clássicos", "blurb": "Pendentes tradicionais, luz ambiente quente." }
+        "mixed_heritage": { "label": "Pendentes clássicos", "blurb": "Pendentes tradicionais, luz ambiente quente." },
+        "undercabinet_led": { "label": "LED sob o armário", "blurb": "Luz quente sob os armários altos." },
+        "linear_pendant": { "label": "Pendente linear", "blurb": "Um pendente longo sobre a área de trabalho." },
+        "flush_mount": { "label": "Plafon de teto", "blurb": "Plafon simples, luz uniforme." },
+        "brass_sconces": { "label": "Arandelas de latão", "blurb": "Arandelas de latão quente." }
       },
       "backsplash": {
         "keep_existing_backsplash": { "label": "Manter o atual", "blurb": "Não trocar o backsplash." },

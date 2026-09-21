@@ -399,6 +399,8 @@
       "sizeContinue": "Use this size",
       "presetsTitle": "Start from a look (optional)",
       "presetsHint": "These four looks only pre-fill the questions. They are not the quote.",
+      "ideasTitle": "Not sure what you want? See some ideas",
+      "ideasHint": "Stock looks, not a preview of your kitchen. They only fill the questions. You still pay {price} to generate your room.",
       "skipToQuote": "Skip to quote",
       "questions": {
         "cabinet_scope": "What should happen to the cabinets?",
@@ -445,28 +447,48 @@
       "cabinet_finish": {
         "white_paint": { "label": "Painted white", "blurb": "Clean painted white." },
         "greige_paint": { "label": "Painted greige", "blurb": "Soft greige paint." },
+        "navy_paint": { "label": "Painted navy", "blurb": "Deep navy paint." },
+        "sage_paint": { "label": "Painted sage", "blurb": "Muted sage paint." },
+        "black_paint": { "label": "Painted black", "blurb": "Matte black paint." },
+        "dusty_blue_paint": { "label": "Painted dusty blue", "blurb": "Dusty blue-grey paint." },
         "pale_oak": { "label": "Pale oak", "blurb": "Light natural oak." },
         "cream_shaker": { "label": "Cream shaker", "blurb": "Cream painted shaker doors." },
         "walnut": { "label": "Walnut", "blurb": "Rich dark walnut." },
-        "charcoal_slab": { "label": "Charcoal slab", "blurb": "Full-overlay charcoal slab." }
+        "charcoal_slab": { "label": "Charcoal slab", "blurb": "Full-overlay charcoal slab." },
+        "white_oak": { "label": "White oak", "blurb": "Light white oak, grain showing." },
+        "forest_green": { "label": "Forest green", "blurb": "Deep forest green doors." },
+        "natural_maple": { "label": "Natural maple", "blurb": "Warm honey maple." }
       },
       "countertop": {
         "keep_existing_counters": { "label": "Keep existing", "blurb": "Do not replace the counters." },
         "laminate": { "label": "Laminate", "blurb": "Laminate counters." },
         "butcher_block": { "label": "Butcher block", "blurb": "Wood butcher-block counters." },
         "quartz": { "label": "Quartz", "blurb": "Quartz counters." },
-        "marble_look_quartz": { "label": "Marble-look quartz", "blurb": "Thick marble-look quartz." }
+        "marble_look_quartz": { "label": "Marble-look quartz", "blurb": "Thick marble-look quartz." },
+        "granite": { "label": "Granite", "blurb": "Natural granite counters." },
+        "porcelain_slab": { "label": "Porcelain slab", "blurb": "Large-format porcelain slab." },
+        "soapstone": { "label": "Soapstone", "blurb": "Honed dark soapstone." },
+        "honed_concrete": { "label": "Honed concrete", "blurb": "Concrete-look counters." }
       },
       "flooring": {
         "keep_existing_floor": { "label": "Keep existing", "blurb": "Do not replace the floor." },
         "lvp": { "label": "Luxury vinyl plank", "blurb": "Light oak LVP." },
         "hardwood": { "label": "Hardwood", "blurb": "Warm hardwood." },
-        "tile": { "label": "Tile", "blurb": "Tile flooring." }
+        "tile": { "label": "Tile", "blurb": "Tile flooring." },
+        "herringbone_lvp": { "label": "Herringbone vinyl plank", "blurb": "Oak-look LVP in herringbone." },
+        "dark_oak_lvp": { "label": "Dark oak vinyl plank", "blurb": "Dark oak LVP." },
+        "porcelain_tile": { "label": "Large-format porcelain", "blurb": "Large porcelain floor tile." },
+        "checkerboard_tile": { "label": "Checkerboard tile", "blurb": "Black-and-white checkerboard." },
+        "engineered_oak": { "label": "Engineered oak", "blurb": "Engineered white oak, not vinyl." }
       },
       "lighting": {
         "recessed_led": { "label": "Even recessed LED", "blurb": "Warm even recessed lighting." },
         "pendants": { "label": "Pendants", "blurb": "Simple modern pendants." },
-        "mixed_heritage": { "label": "Heritage pendants", "blurb": "Traditional pendants, warm ambient light." }
+        "mixed_heritage": { "label": "Heritage pendants", "blurb": "Traditional pendants, warm ambient light." },
+        "undercabinet_led": { "label": "Undercabinet LED", "blurb": "Warm light under the uppers." },
+        "linear_pendant": { "label": "Linear pendant", "blurb": "One long pendant over the work area." },
+        "flush_mount": { "label": "Flush-mount ceiling", "blurb": "Simple ceiling fixture, even light." },
+        "brass_sconces": { "label": "Brass sconces", "blurb": "Warm brass wall sconces." }
       },
       "backsplash": {
         "keep_existing_backsplash": { "label": "Keep existing", "blurb": "Do not replace the backsplash." },
