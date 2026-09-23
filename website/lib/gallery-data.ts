@@ -83,6 +83,8 @@ export const galleryProjects: GalleryProject[] = [
     lat: 43.66526,
     lng: -79.44293,
     coverImage: '/gallery/downtown-kitchen/kitchen-finished.png',
+    beforeImage: '/gallery/downtown-kitchen/kitchen-before.png',
+    afterImage: '/gallery/downtown-kitchen/kitchen-finished.png',
     photos: [
       '/gallery/downtown-kitchen/kitchen-finished.png',
       '/gallery/downtown-kitchen/kitchen-before.png',

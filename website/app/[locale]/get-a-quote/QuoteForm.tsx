@@ -2,6 +2,7 @@
 
 import { useActionState, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
+import { MARKETING_CTA } from '@/lib/marketing-cta';
 import { SubmitButton } from '@/components/SubmitButton';
 import { HoneypotField } from '@/components/HoneypotField';
 import { CALLBACK_MINUTES, CONTRACTOR_ACCEPT_MINUTES } from '@/lib/response-time';
@@ -258,6 +259,9 @@ export function QuoteForm() {
             />
           ))}
         </div>
+        <div className="mt-2">
+          <QuoteConfidence score={formScore} explanations={[]} followUps={[]} compact />
+        </div>
       </div>
 
       {state.status === 'error' && (
@@ -502,7 +506,7 @@ export function QuoteForm() {
                 true,
               );
             }}
-            className="w-full rounded-full bg-accent px-6 py-3 text-sm font-semibold text-inverse transition hover:bg-accent-dark sm:w-auto"
+            className={`w-full sm:w-auto ${MARKETING_CTA}`}
           >
             {t('continue')}
           </button>

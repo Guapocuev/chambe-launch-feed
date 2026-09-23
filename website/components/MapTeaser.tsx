@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import dynamic from 'next/dynamic';
+import { MARKETING_CTA } from '@/lib/marketing-cta';
 import { galleryProjects } from '@/lib/gallery-data';
 
 function MapLoading() {
@@ -33,10 +34,7 @@ export function MapTeaser() {
               {t('mapTitle')}
             </h2>
             <p className="mt-4 text-foreground/70">{t('mapBody')}</p>
-            <Link
-              href="/gallery"
-              className="mt-6 inline-block rounded-full bg-accent px-6 py-2.5 text-sm font-semibold text-inverse transition hover:bg-accent-dark"
-            >
+            <Link href="/gallery" className={`mt-6 inline-block ${MARKETING_CTA}`}>
               {t('mapCta')}
             </Link>
           </div>

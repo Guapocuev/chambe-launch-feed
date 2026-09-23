@@ -2,6 +2,7 @@
 
 import { useActionState, useState, type ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
+import { MARKETING_CTA } from '@/lib/marketing-cta';
 import { SubmitButton } from '@/components/SubmitButton';
 import { HoneypotField } from '@/components/HoneypotField';
 import { initialApplyFormState, submitContractorApplication } from './actions';
@@ -288,7 +289,7 @@ export function ApplyForm() {
           <button
             type="button"
             onClick={goNext}
-            className="w-full rounded-full bg-accent px-6 py-3 text-sm font-semibold text-inverse transition hover:bg-accent-dark sm:w-auto"
+            className={`w-full sm:w-auto ${MARKETING_CTA}`}
           >
             {t('continue')}
           </button>

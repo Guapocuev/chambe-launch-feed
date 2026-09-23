@@ -193,7 +193,7 @@ export function VisualizeIntake({
             type="button"
             disabled={busy}
             onClick={() => void confirmSize()}
-            className="rounded-full bg-accent px-5 py-2 text-sm font-semibold text-inverse disabled:opacity-50"
+            className="rounded-full bg-accent px-5 py-2 text-sm font-semibold text-inverse transition hover:bg-accent-dark disabled:opacity-50"
           >
             {t('wizard.sizeContinue')}
           </button>
@@ -272,7 +272,7 @@ export function VisualizeIntake({
             type="button"
             disabled={busy}
             onClick={() => void saveMustHaves()}
-            className="rounded-full bg-accent px-5 py-2 text-sm font-semibold text-inverse disabled:opacity-50"
+            className="rounded-full bg-accent px-5 py-2 text-sm font-semibold text-inverse transition hover:bg-accent-dark disabled:opacity-50"
           >
             {t('wizard.next')}
           </button>

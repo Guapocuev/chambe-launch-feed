@@ -40,15 +40,29 @@ export function QuoteConfidence({
   score,
   explanations,
   followUps,
+  compact = false,
 }: {
   score: number;
   explanations: string[];
   followUps: string[];
+  compact?: boolean;
 }) {
   const t = useTranslations('Quote');
   const tFollow = useTranslations('FollowUps');
   const tExplain = useTranslations('Explanations');
   const shown = Math.min(99, Math.max(0, score));
+
+  if (compact) {
+    return (
+      <p className="text-xs text-foreground/55">
+        {t('confidenceTitle')}{' '}
+        <span className="tabular-nums">
+          {shown}
+          <span className="text-foreground/40">/100</span>
+        </span>
+      </p>
+    );
+  }
 
   function copyFor(line: string): string {
     if (FOLLOW_UP_IDS.has(line)) return tFollow(line);

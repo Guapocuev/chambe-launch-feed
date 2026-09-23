@@ -1,6 +1,7 @@
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { ContractorLoginForm } from '@/app/[locale]/contractor/ContractorLoginForm';
 import { isSupabaseConfigured } from '@/lib/config';
+import { formatCad } from '@/lib/format-cad';
 import { VisualizeShowcase } from '../VisualizeShowcase';
 
 export async function generateMetadata() {
@@ -13,11 +14,12 @@ export const dynamic = 'force-dynamic';
 export default async function VisualizeLoginPage() {
   const t = await getTranslations('Visualize');
   const tAuth = await getTranslations('Auth');
+  const locale = await getLocale();
   return (
     <div className="mx-auto w-full max-w-3xl px-5 py-10 sm:py-16">
       <p className="text-sm font-semibold uppercase tracking-wide text-foreground/50">{t('loginKicker')}</p>
       <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground">{t('loginTitle')}</h1>
-      <p className="mt-3 text-base leading-relaxed text-foreground/70">{t('loginBody')}</p>
+      <p className="mt-3 text-base leading-relaxed text-foreground/70">{t('loginBody', { price: formatCad(19, locale) })}</p>
       <div className="mt-8">
         <VisualizeShowcase />
       </div>

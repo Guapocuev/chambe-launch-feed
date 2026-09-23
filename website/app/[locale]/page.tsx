@@ -1,15 +1,19 @@
 import { getLocale, getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
+import { BeforeAfterSlider } from '@/components/BeforeAfterSlider';
 import { GalleryCarousel } from '@/components/GalleryCarousel';
 import { MapTeaser } from '@/components/MapTeaser';
 import { galleryProjects } from '@/lib/gallery-data';
 import { formatCad } from '@/lib/format-cad';
+import { MARKETING_CTA } from '@/lib/marketing-cta';
 import { pageMetadata } from '@/lib/metadata';
 import {
   BUSINESS_HOURS_LABEL,
   CALLBACK_MINUTES,
   CONTRACTOR_ACCEPT_MINUTES,
 } from '@/lib/response-time';
+
+const HOME_FAN_IDS = ['etobicoke-deck', 'downtown-kitchen', 'kenilworth-ceiling-light'] as const;
 
 export async function generateMetadata() {
   const t = await getTranslations('Home');
@@ -23,11 +27,17 @@ export default async function Home() {
   const tTime = await getTranslations('ResponseTime');
   const tApprentice = await getTranslations('Apprentices');
   const tAuth = await getTranslations('Auth');
-  const teaserProjects = galleryProjects.map((project) => ({
-    ...project,
-    title: tGallery(`projects.${project.id}.title`),
-    description: tGallery(`projects.${project.id}.description`),
-  }));
+  const teaserProjects = HOME_FAN_IDS.flatMap((id) => {
+    const project = galleryProjects.find((item) => item.id === id);
+    if (!project) return [];
+    return [
+      {
+        ...project,
+        title: tGallery(`projects.${project.id}.title`),
+        description: tGallery(`projects.${project.id}.description`),
+      },
+    ];
+  });
   const match = tTime('matchWindow', { minutes: CONTRACTOR_ACCEPT_MINUTES });
   const callback = tTime('callbackWindow', {
     hours: tTime('businessHours'),
@@ -57,40 +67,37 @@ export default async function Home() {
             </h1>
             <p className="mt-6 max-w-xl text-lg text-foreground/70">{t('heroBody')}</p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <Link
-                href="/get-a-quote"
-                className="shrink-0 rounded-full bg-accent px-7 py-3.5 text-center text-sm font-semibold text-inverse transition hover:bg-accent-dark"
-              >
+              <Link href="/get-a-quote" className={`shrink-0 ${MARKETING_CTA}`}>
                 {t('getEstimate')}
               </Link>
               <Link
                 href="/visualize"
-                className="shrink-0 rounded-full border border-border px-7 py-3.5 text-center text-sm font-semibold text-foreground transition hover:border-brand hover:text-brand"
+                className="shrink-0 rounded-full border border-border px-6 py-3 text-center text-sm font-semibold text-foreground transition hover:border-brand hover:text-brand"
               >
                 {t('previewKitchen')}
               </Link>
               <Link
                 href="/apply"
-                className="shrink-0 rounded-full border border-border px-7 py-3.5 text-center text-sm font-semibold text-foreground transition hover:border-brand hover:text-brand"
+                className="shrink-0 rounded-full border border-border px-6 py-3 text-center text-sm font-semibold text-foreground transition hover:border-brand hover:text-brand"
               >
                 {t('becomeContractor')}
               </Link>
             </div>
           </div>
-          <div className="hidden justify-self-end rounded-3xl bg-brand/10 p-10 md:block">
-            <div className="rounded-2xl bg-background p-6 shadow-sm">
-              <div className="text-xs font-semibold uppercase tracking-wide text-accent">
-                {t('instantEstimate')}
-              </div>
-              <div className="mt-2 text-2xl font-bold text-foreground">
-                {`${formatCad(270, locale)} – ${formatCad(325, locale)}`}
-              </div>
-              <div className="mt-1 text-sm text-foreground/60">{t('sampleJob')}</div>
-              <div className="mt-4 rounded-lg bg-surface px-3 py-2 text-xs text-foreground/60">
-                {t('sampleMatch')}
-              </div>
-            </div>
-          </div>
+          <figure className="min-w-0">
+            <BeforeAfterSlider
+              beforeSrc="/gallery/downtown-kitchen/kitchen-before.png"
+              afterSrc="/gallery/downtown-kitchen/kitchen-finished.png"
+              beforeAlt={t('heroBeforeAlt')}
+              afterAlt={t('heroAfterAlt')}
+              beforeLabel={t('heroBefore')}
+              afterLabel={t('heroAfter')}
+              priority
+            />
+            <figcaption className="mt-3 text-sm text-foreground/65">
+              {t('heroProofCaption', { range: `${formatCad(270, locale)} – ${formatCad(325, locale)}` })}
+            </figcaption>
+          </figure>
         </div>
       </section>
 
@@ -143,10 +150,7 @@ export default async function Home() {
         <div className="mx-auto max-w-3xl px-6 py-20 text-center">
           <h2 className="text-3xl font-bold tracking-tight text-foreground">{tApprentice('title')}</h2>
           <p className="mt-4 text-foreground/70">{tAuth('apprenticeHoursNote')}</p>
-          <Link
-            href="/apprentices"
-            className="mt-6 inline-block rounded-full bg-accent px-7 py-3.5 text-sm font-semibold text-inverse transition hover:bg-accent-dark"
-          >
+          <Link href="/apprentices" className={`mt-6 inline-block ${MARKETING_CTA}`}>
             {tApprentice('cta')}
           </Link>
         </div>
@@ -186,10 +190,7 @@ export default async function Home() {
               callbackMinutes: CALLBACK_MINUTES,
             })}
           </p>
-          <Link
-            href="/get-a-quote"
-            className="mt-6 inline-block rounded-full bg-accent px-7 py-3.5 text-sm font-semibold text-inverse transition hover:bg-accent-dark"
-          >
+          <Link href="/get-a-quote" className={`mt-6 inline-block ${MARKETING_CTA}`}>
             {t('getEstimate')}
           </Link>
         </div>

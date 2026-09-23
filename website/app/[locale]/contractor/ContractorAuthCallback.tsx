@@ -29,7 +29,9 @@ export function ContractorAuthCallback({
           setError(result.error);
           return;
         }
-        window.location.replace(withLocalePrefix(homePath, localeFromDocumentCookie()));
+        const resume = new URLSearchParams(window.location.search).get('resume');
+        const dest = resume ? `${homePath}?resume=${encodeURIComponent(resume)}` : homePath;
+        window.location.replace(withLocalePrefix(dest, localeFromDocumentCookie()));
       })
       .catch((err) => {
         if (cancelled) return;

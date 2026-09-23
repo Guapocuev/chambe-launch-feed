@@ -79,6 +79,7 @@ async function applyAuthGates(request: NextRequest, response: NextResponse): Pro
     path.startsWith('/contractor/auth/') ||
     path === '/apprentice/login' ||
     path.startsWith('/apprentice/auth/') ||
+    path === '/visualize' ||
     path === '/visualize/login' ||
     path.startsWith('/visualize/auth/');
 

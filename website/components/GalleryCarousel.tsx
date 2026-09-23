@@ -751,7 +751,9 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
 
           <div className="absolute inset-0 [transform-style:preserve-3d]">
             {projects.map((project, index) => {
-              const painted = cardTransform(ringDelta(index, active, count), cardWidth);
+              const offset = ringDelta(index, active, count);
+              if (Math.abs(offset) > VISIBLE_SLOTS + 1) return null;
+              const painted = cardTransform(offset, cardWidth);
               const shots = projectShots(project);
 
               return (
@@ -774,6 +776,7 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
                     opacity: 1,
                     visibility: painted.visible ? 'visible' : 'hidden',
                     pointerEvents: painted.visible ? 'auto' : 'none',
+                    transform: painted.transform,
                     transformOrigin: '50% 92%',
                     filter: 'none',
                   }}
@@ -785,9 +788,9 @@ export function GalleryCarousel({ projects }: { projects: GalleryProject[] }) {
                   <div className="h-full max-h-full min-h-0 w-full overflow-hidden rounded-2xl shadow-[0_14px_32px_rgba(0,0,0,0.18)]">
                     <ProjectCard
                       project={project}
-                      priority
+                      priority={painted.isFront}
                       photoZone
-                      keepShotsMounted
+                      showThumbs={painted.isFront}
                       fixedFrame
                       photoIndex={((photoById[project.id] ?? 0) % shots.length + shots.length) % shots.length}
                       onPhotoIndexChange={(next) => setPhoto(project.id, next)}
@@ -924,7 +927,7 @@ function JobModal({
             priority
             quality={90}
             sizes="(max-width: 768px) 100vw, 768px"
-            className="object-contain"
+            className="object-cover"
           />
           {shots.length > 1 && (
             <>

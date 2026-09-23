@@ -38,7 +38,7 @@ export function MobileStickyCta() {
               params: { location: 'mobile_sticky', label: t('getEstimate'), href: '/get-a-quote' },
             })
           }
-          className="flex-1 rounded-full bg-accent py-3 text-center text-sm font-semibold text-brand transition hover:bg-accent-dark"
+          className="flex-1 rounded-full bg-accent py-3 text-center text-sm font-semibold text-inverse transition hover:bg-accent-dark"
         >
           {t('getEstimate')}
         </Link>

@@ -23,6 +23,7 @@ export function BeforeAfterSlider({
   const sliderId = useId();
   const frameRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState(50);
+  const remote = (src: string) => src.startsWith('http://') || src.startsWith('https://');
 
   function setFromClientX(clientX: number) {
     const frame = frameRef.current;
@@ -52,6 +53,7 @@ export function BeforeAfterSlider({
         fill
         priority={priority}
         quality={90}
+        unoptimized={remote(afterSrc)}
         sizes="(max-width: 768px) 100vw, 768px"
         className="pointer-events-none object-cover"
       />
@@ -62,6 +64,7 @@ export function BeforeAfterSlider({
           fill
           priority={priority}
           quality={90}
+          unoptimized={remote(beforeSrc)}
           sizes="(max-width: 768px) 100vw, 768px"
           className="object-cover"
         />

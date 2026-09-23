@@ -75,19 +75,72 @@ export interface VisualizeSession {
   price_cad: number;
   error_message: string | null;
   paid: boolean;
+  pay_after_auth: boolean;
   packages: VisualizePackage[];
   options: FinishOption[];
 }
 
-export type ActionResult<T> = { ok: true; data: T } | { ok: false; error: string };
+export type ActionResult<T> = { ok: true; data: T } | { ok: false; error: string; needsAuth?: boolean };
 
-async function callVisualize<T>(path: string, init?: RequestInit, timeoutMs = 20_000): Promise<ActionResult<T>> {
+const GUEST_COOKIE = 'visualize_guest';
+const GUEST_MAX_AGE = 60 * 60 * 24 * 30;
+
+async function visualizeAuthHeaders(): Promise<Record<string, string>> {
   const { createServerSupabase } = await import('@/lib/supabase/server');
+  const { cookies } = await import('next/headers');
   const supabase = await createServerSupabase();
   const {
     data: { session },
   } = await supabase.auth.getSession();
-  if (!session?.access_token) {
+  const store = await cookies();
+  const guest = store.get(GUEST_COOKIE)?.value;
+  const auth: Record<string, string> = {};
+  if (session?.access_token) auth.Authorization = `Bearer ${session.access_token}`;
+  if (guest) auth['X-Visualize-Guest-Token'] = guest;
+  return auth;
+}
+
+async function persistGuestToken(token: string | null | undefined) {
+  if (!token) return;
+  const { cookies, headers } = await import('next/headers');
+  const { cookieOptionsForOrigin } = await import('@/lib/supabase/cookie-options');
+  const store = await cookies();
+  if (store.get(GUEST_COOKIE)?.value === token) return;
+  const protocol = (await headers()).get('x-forwarded-proto') === 'https' ? 'https:' : 'http:';
+  store.set(GUEST_COOKIE, token, cookieOptionsForOrigin({
+    httpOnly: true,
+    sameSite: 'lax' as const,
+    path: '/',
+    maxAge: GUEST_MAX_AGE,
+    secure: true,
+  }, protocol));
+}
+
+async function clearGuestToken() {
+  const { cookies, headers } = await import('next/headers');
+  const { cookieOptionsForOrigin } = await import('@/lib/supabase/cookie-options');
+  const store = await cookies();
+  if (!store.get(GUEST_COOKIE)?.value) return;
+  const protocol = (await headers()).get('x-forwarded-proto') === 'https' ? 'https:' : 'http:';
+  store.set(GUEST_COOKIE, '', cookieOptionsForOrigin({
+    httpOnly: true,
+    sameSite: 'lax' as const,
+    path: '/',
+    maxAge: 0,
+    secure: true,
+  }, protocol));
+}
+
+async function callVisualize<T>(
+  path: string,
+  init?: RequestInit,
+  timeoutMs = 20_000,
+): Promise<ActionResult<T>> {
+  const auth = await visualizeAuthHeaders();
+  if (path.endsWith('/generate') && !auth.Authorization) {
+    return { ok: false, error: 'Pay for the preview before generating' };
+  }
+  if (!auth.Authorization && !auth['X-Visualize-Guest-Token'] && path !== '/visualize/auth/resolve') {
     return { ok: false, error: 'Sign in again.' };
   }
 
@@ -97,14 +150,21 @@ async function callVisualize<T>(path: string, init?: RequestInit, timeoutMs = 20
       headers: {
         'Content-Type': 'application/json',
         'X-Api-Key': DEMAND_ENGINE_API_KEY,
-        Authorization: `Bearer ${session.access_token}`,
+        ...auth,
         ...(init?.headers ?? {}),
       },
       signal: AbortSignal.timeout(timeoutMs),
     });
-    const body = (await res.json().catch(() => ({}))) as T & { error?: string };
+    const body = (await res.json().catch(() => ({}))) as T & { error?: string; needs_auth?: boolean; guest_token?: string };
+    if (typeof body.guest_token === 'string' && body.guest_token) {
+      await persistGuestToken(body.guest_token);
+    }
     if (!res.ok) {
-      return { ok: false, error: typeof body.error === 'string' ? body.error : 'Request failed.' };
+      return {
+        ok: false,
+        error: typeof body.error === 'string' ? body.error : 'Request failed.',
+        needsAuth: Boolean(body.needs_auth) || res.status === 401,
+      };
     }
     return { ok: true, data: body as T };
   } catch {
@@ -112,10 +172,27 @@ async function callVisualize<T>(path: string, init?: RequestInit, timeoutMs = 20
   }
 }
 
-export async function resolveVisualizeSession(): Promise<
-  ActionResult<{ homeowner: { id: string; email: string | null }; session: VisualizeSession }>
+export async function resolveVisualizeSession(
+  resumeSessionId?: string | null,
+): Promise<
+  ActionResult<{ homeowner: { id: string | null; email: string | null }; session: VisualizeSession }>
 > {
-  return callVisualize('/visualize/auth/resolve', { method: 'POST', body: '{}' });
+  const result = await callVisualize<{
+    homeowner: { id: string | null; email: string | null };
+    session: VisualizeSession;
+    guest_token?: string | null;
+  }>('/visualize/auth/resolve', {
+    method: 'POST',
+    body: JSON.stringify(resumeSessionId ? { session_id: resumeSessionId } : {}),
+  });
+  if (result.ok && result.data.homeowner.email) {
+    await clearGuestToken();
+  }
+  return result;
+}
+
+export async function intendVisualizePay(sessionId: string): Promise<ActionResult<VisualizeSession>> {
+  return callVisualize(`/visualize/sessions/${sessionId}/intend-pay`, { method: 'POST', body: '{}' });
 }
 
 export async function attachVisualizePhoto(sessionId: string, path: string): Promise<ActionResult<VisualizeSession>> {

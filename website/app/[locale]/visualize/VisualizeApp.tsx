@@ -1,14 +1,17 @@
 'use client';
 
 import { useLocale, useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from '@/i18n/navigation';
+import { BeforeAfterSlider } from '@/components/BeforeAfterSlider';
+import { MARKETING_CTA } from '@/lib/marketing-cta';
 import { formatCad } from '@/lib/format-cad';
 import {
   attachVisualizePhoto,
   confirmVisualizeCheckout,
   generateVisualizePreview,
+  intendVisualizePay,
   resolveVisualizeSession,
   saveVisualizeSelections,
   selectVisualizePackage,
@@ -16,32 +19,69 @@ import {
   type VisualizeSession,
 } from './actions';
 import { VisualizeIntake } from './VisualizeIntake';
+import { VisualizePayAuth } from './VisualizePayAuth';
 
 export function VisualizeApp() {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations('Visualize');
   const search = useSearchParams();
+  const paidReturn = search.get('paid') ?? '';
+  const checkoutId = search.get('checkout') ?? '';
+  const resumeId = search.get('resume') ?? '';
   const [session, setSession] = useState<VisualizeSession | null>(null);
+  const [homeownerEmail, setHomeownerEmail] = useState<string | null>(null);
+  const [needPayAuth, setNeedPayAuth] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const autoPayStarted = useRef(false);
+
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
   useEffect(() => {
     void (async () => {
-      const resolved = await resolveVisualizeSession();
+      const resolved = await resolveVisualizeSession(resumeId || null);
       if (!resolved.ok) {
         setError(resolved.error);
         return;
       }
       let current = resolved.data.session;
-      const checkoutId = search.get('checkout');
-      if (search.get('paid') === '1' && checkoutId) {
+      if (paidReturn === '1' && checkoutId) {
         const confirmed = await confirmVisualizeCheckout(current.id, checkoutId);
         if (confirmed.ok) current = confirmed.data;
       }
+      setHomeownerEmail(resolved.data.homeowner.email);
       setSession(current);
     })();
-  }, [search]);
+  }, [paidReturn, checkoutId, resumeId]);
+
+  async function startPay(current: VisualizeSession) {
+    setBusy(true);
+    setError(null);
+    const started = await startVisualizeCheckout(current.id);
+    setBusy(false);
+    if (!started.ok) {
+      if (started.needsAuth) {
+        setNeedPayAuth(true);
+        const intended = await intendVisualizePay(current.id);
+        if (intended.ok) setSession(intended.data);
+      }
+      setError(started.error);
+      return;
+    }
+    window.location.href = started.data.checkout_url;
+  }
+
+  useEffect(() => {
+    if (!session || !homeownerEmail || autoPayStarted.current) return;
+    if (!session.pay_after_auth || session.paid) return;
+    autoPayStarted.current = true;
+    void startPay(session);
+  }, [session, homeownerEmail]);
 
   async function onPhoto(path: string) {
     if (!session) return;
@@ -88,15 +128,20 @@ export function VisualizeApp() {
 
   async function onPay() {
     if (!session) return;
-    setBusy(true);
-    setError(null);
-    const started = await startVisualizeCheckout(session.id);
-    setBusy(false);
-    if (!started.ok) {
-      setError(started.error);
+    if (!homeownerEmail) {
+      setBusy(true);
+      setError(null);
+      const intended = await intendVisualizePay(session.id);
+      setBusy(false);
+      if (!intended.ok) {
+        setError(intended.error);
+        return;
+      }
+      setSession(intended.data);
+      setNeedPayAuth(true);
       return;
     }
-    window.location.href = started.data.checkout_url;
+    await startPay(session);
   }
 
   async function onGenerate() {
@@ -113,7 +158,7 @@ export function VisualizeApp() {
     router.replace('/visualize');
   }
 
-  if (!session && !error) {
+  if (!hydrated || (!session && !error)) {
     return <p className="text-sm text-foreground/70">{t('opening')}</p>;
   }
 
@@ -131,6 +176,7 @@ export function VisualizeApp() {
     sizeConfirmed &&
     !session.paid;
   const canGenerate =
+    Boolean(homeownerEmail) &&
     session.paid &&
     session.status !== 'generating' &&
     session.selections_complete &&
@@ -153,7 +199,16 @@ export function VisualizeApp() {
         onSave={onSave}
       />
 
-      {(session.hero_photo_url || session.generated_photo_url) && (
+      {ready && session.hero_photo_url && session.generated_photo_url ? (
+        <BeforeAfterSlider
+          beforeSrc={session.hero_photo_url}
+          afterSrc={session.generated_photo_url}
+          beforeAlt={t('altToday')}
+          afterAlt={t('altPreview')}
+          beforeLabel={t('beforeCaption')}
+          afterLabel={t('afterCaption')}
+        />
+      ) : (session.hero_photo_url || session.generated_photo_url) ? (
         <div className="grid gap-4 md:grid-cols-2">
           <figure>
             {session.hero_photo_url ? (
@@ -167,28 +222,19 @@ export function VisualizeApp() {
             <figcaption className="mt-2 text-xs font-medium text-foreground/70">{t('beforeCaption')}</figcaption>
           </figure>
           <figure>
-            {ready && session.generated_photo_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={session.generated_photo_url}
-                alt={t('altPreview')}
-                className="w-full rounded-xl border border-border object-cover"
-              />
-            ) : (
-              <div className="flex min-h-48 items-center justify-center rounded-xl border border-dashed border-border px-4 text-center text-sm text-foreground/55">
-                {failed
-                  ? t('previewFailed')
-                  : session.status === 'generating'
-                    ? t('generating')
-                    : session.preview_stale
-                      ? t('wizard.stalePreview')
-                      : t('afterPlaceholder')}
-              </div>
-            )}
+            <div className="flex min-h-48 items-center justify-center rounded-xl border border-dashed border-border px-4 text-center text-sm text-foreground/55">
+              {failed
+                ? t('previewFailed')
+                : session.status === 'generating'
+                  ? t('generating')
+                  : session.preview_stale
+                    ? t('wizard.stalePreview')
+                    : t('afterPlaceholder')}
+            </div>
             <figcaption className="mt-2 text-xs font-medium text-foreground/70">{t('afterCaption')}</figcaption>
           </figure>
         </div>
-      )}
+      ) : null}
 
       {failed && session.error_message && (
         <p className="text-sm text-foreground/70">{session.error_message}</p>
@@ -200,13 +246,17 @@ export function VisualizeApp() {
         </p>
       )}
 
+      {canPay && needPayAuth && (
+        <VisualizePayAuth priceLabel={formatCad(session.price_cad, locale)} sessionId={session.id} />
+      )}
+
       <div className="flex flex-col gap-3 sm:flex-row">
-        {canPay && (
+        {canPay && !needPayAuth && (
           <button
             type="button"
             disabled={busy}
             onClick={() => void onPay()}
-            className="rounded-full bg-accent px-6 py-3 text-sm font-semibold text-inverse disabled:opacity-50"
+            className={`${MARKETING_CTA} disabled:opacity-50`}
           >
             {t('pay', { price: formatCad(session.price_cad, locale) })}
           </button>
@@ -216,7 +266,7 @@ export function VisualizeApp() {
             type="button"
             disabled={busy}
             onClick={() => void onGenerate()}
-            className="rounded-full bg-accent px-6 py-3 text-sm font-semibold text-inverse disabled:opacity-50"
+            className={`${MARKETING_CTA} disabled:opacity-50`}
           >
             {failed
               ? t('retry')

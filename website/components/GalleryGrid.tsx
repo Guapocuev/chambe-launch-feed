@@ -227,8 +227,8 @@ export function ProjectCard({
   photoZone = false,
   photoIndex,
   onPhotoIndexChange,
-  keepShotsMounted = false,
   fixedFrame = false,
+  showThumbs = true,
 }: {
   project: GalleryProject;
   priority?: boolean;
@@ -237,10 +237,9 @@ export function ProjectCard({
   photoZone?: boolean;
   photoIndex?: number;
   onPhotoIndexChange?: (index: number) => void;
-  /** Keep every shot in the DOM so swapping photos does not remount images. */
-  keepShotsMounted?: boolean;
   /** Fill a fixed-size parent; clip extra copy instead of growing the card. */
   fixedFrame?: boolean;
+  showThumbs?: boolean;
 }) {
   const t = useTranslations('Gallery');
   const shots = project.photos.length > 0 ? project.photos : [project.coverImage];
@@ -275,7 +274,7 @@ export function ProjectCard({
               priority={priority}
               quality={90}
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 40vw, 420px"
-              className="object-contain bg-surface"
+              className="object-cover"
             />
             <span className="absolute left-2 top-2 rounded bg-background/90 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-foreground">
               Before
@@ -289,7 +288,7 @@ export function ProjectCard({
               priority={priority}
               quality={90}
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 40vw, 420px"
-              className="object-contain bg-surface"
+              className="object-cover object-[center_72%]"
             />
             <span className="absolute left-2 top-2 rounded bg-background/90 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-foreground">
               After
@@ -306,36 +305,17 @@ export function ProjectCard({
             }
             {...(photoZone ? { 'data-photo-zone': '' } : {})}
           >
-            {keepShotsMounted
-              ? shots.map((src) => {
-                  const visible = src === current;
-                  return (
-                    <Image
-                      key={src}
-                      src={src}
-                      alt={visible ? `${project.title}, ${project.location}` : ''}
-                      fill
-                      priority={priority && visible}
-                      loading="eager"
-                      quality={90}
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 640px"
-                      className={`object-contain ${visible ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
-                    />
-                  );
-                })
-              : (
-                  <Image
-                    src={current}
-                    alt={`${project.title}, ${project.location}`}
-                    fill
-                    priority={priority}
-                    quality={90}
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 640px"
-                    className="object-contain"
-                  />
-                )}
+            <Image
+              src={current}
+              alt={`${project.title}, ${project.location}`}
+              fill
+              priority={priority}
+              quality={90}
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 640px"
+              className="object-cover"
+            />
           </div>
-          {shots.length > 1 && (
+          {showThumbs && shots.length > 1 && (
             <PhotoThumbStrip activeIndex={active}>
               {shots.map((src, index) => (
                 <button

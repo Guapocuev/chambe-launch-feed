@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { pageMetadata } from '@/lib/metadata';
+import { MARKETING_CTA } from '@/lib/marketing-cta';
 
 export async function generateMetadata() {
   const t = await getTranslations('Apprentices');
@@ -18,10 +19,7 @@ export default async function ApprenticesPage() {
       <p className="mt-4 text-lg text-foreground/70">{t('intro')}</p>
       <p className="mt-4 text-lg leading-relaxed text-foreground/70">{tAuth('apprenticeHoursNote')}</p>
       <div className="mt-8">
-        <Link
-          href="/apprentice/login"
-          className="inline-block rounded-full bg-accent px-7 py-3.5 text-sm font-semibold text-inverse transition hover:bg-accent-dark"
-        >
+        <Link href="/apprentice/login" className={`inline-block ${MARKETING_CTA}`}>
           {t('cta')}
         </Link>
       </div>

@@ -22,7 +22,18 @@ export function Nav() {
     { href: '/contact', label: t('contact') },
   ] as const;
 
-  if (isApprenticeArea(pathname) || isVisualizeArea(pathname) || isContractorArea(pathname)) {
+  if (isVisualizeArea(pathname)) {
+    return (
+      <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur">
+        <div className="mx-auto flex h-16 max-w-3xl items-center justify-between gap-3 px-6">
+          <Logo size="md" />
+          <LanguageSwitcher compact />
+        </div>
+      </header>
+    );
+  }
+
+  if (isApprenticeArea(pathname) || isContractorArea(pathname)) {
     return (
       <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-md items-center justify-between gap-3 px-5">

@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { pageMetadata } from '@/lib/metadata';
+import { MARKETING_CTA } from '@/lib/marketing-cta';
 import { CALLBACK_MINUTES, CONTRACTOR_ACCEPT_MINUTES } from '@/lib/response-time';
 
 export async function generateMetadata() {
@@ -46,10 +47,7 @@ export default async function HowItWorksPage() {
       <div className="mt-16 rounded-2xl border border-border bg-surface p-8 text-center">
         <h2 className="text-2xl font-bold text-foreground">{t('ctaTitle')}</h2>
         <p className="mt-2 text-foreground/70">{t('ctaBody')}</p>
-        <Link
-          href="/get-a-quote"
-          className="mt-6 inline-block rounded-full bg-accent px-7 py-3.5 text-sm font-semibold text-inverse transition hover:bg-accent-dark"
-        >
+        <Link href="/get-a-quote" className={`mt-6 inline-block ${MARKETING_CTA}`}>
           {tCta('getEstimate')}
         </Link>
       </div>
