@@ -18,6 +18,7 @@ const SECTIONS: LegalSectionData[] = [
       'Job details you provide, such as a description of the work needed and any photos or files you submit.',
       'Communications, including messages you send us and records of SMS/text messages exchanged during the estimate and matching process.',
       'Usage information such as pages visited and general device/browser information, collected automatically.',
+      'We use Google Analytics 4 to understand how visitors use the site (pages viewed and actions such as starting a quote or paying for a kitchen preview). Google may set cookies or similar identifiers. Event parameters do not include your name, phone, email, or address.',
     ],
   },
   {
@@ -33,7 +34,7 @@ const SECTIONS: LegalSectionData[] = [
   {
     heading: 'How We Share Information',
     paragraphs: [
-      'We share your job details and contact information with the independent contractor matched to your job so they can contact you and complete the work. We use third-party service providers to operate our Service, including providers for SMS delivery, cloud hosting and database storage, and AI-based estimate generation. These providers process information on our behalf and are not permitted to use it for their own purposes. We do not sell your personal information.',
+      'We share your job details and contact information with the independent contractor matched to your job so they can contact you and complete the work. We use third-party service providers to operate our Service, including providers for SMS delivery, cloud hosting and database storage, AI-based estimate generation, and Google Analytics 4 for site usage measurement. These providers process information on our behalf and are not permitted to use it for their own purposes. We do not sell your personal information.',
     ],
   },
   {
@@ -80,7 +81,7 @@ export default async function PrivacyPage() {
       <p className="mt-3 rounded-xl border border-border bg-surface px-4 py-3 text-sm text-foreground/70">
         {t('englishOnly')}
       </p>
-      <p className="mt-3 text-sm text-foreground/50">Last updated: August 2026</p>
+      <p className="mt-3 text-sm text-foreground/50">Last updated: September 2026</p>
 
       <p className="mt-8 text-sm leading-relaxed text-foreground/75">
         Chambé (&quot;Chambé,&quot; &quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) operates
