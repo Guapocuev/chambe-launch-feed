@@ -30,7 +30,7 @@ items as `[superseded]` and link to the replacement instead of deleting history.
 | 3 | Mobile sticky CTA | `done` | 2, 8, 10 | — |
 | 4 | Local SEO infrastructure | `done` | 5, 6, 9 | — |
 | 5 | Core Web Vitals / performance | `partial` | 4, 6 | `next/image` when gallery photos exist |
-| 6 | Analytics & event instrumentation | `done` | 4, 5 | Set env vars to activate |
+| 6 | Analytics & event instrumentation | `done` | 4, 5 | — |
 | 7 | Proof-of-work content | `pending` | 1 | Real project photos + lat/lng data |
 | 8 | Form trust microcopy & post-submit UX | `done` | 1, 2, 3, 10 | — |
 | 9 | Trade & location landing pages | `pending` | 4 | Copy/SEO keyword decisions |
@@ -86,14 +86,23 @@ Cannot fully complete without business input:
 **Metrics to watch:** `form_start` → `form_submit` rate, drop-off by step (once step events added).  
 **Follow-ups:** Photo upload (needs Demand Engine endpoint). Address autocomplete (needs Google Places API key). Optional: `form_step` analytics events.
 
-### 2026-08-11 — #6 Analytics & event instrumentation (Batch B)
+### 2026-09-29 — #6 Conversion events (purchase, quote, apply, apprentice)
+**Status:** done  
+**Batch:** B  
+**Files changed:** `lib/analytics.ts`, `app/[locale]/visualize/VisualizeApp.tsx`, `app/[locale]/get-a-quote/QuoteForm.tsx`, `app/[locale]/apply/ApplyForm.tsx`, `app/[locale]/apprentice/ApprenticeJoinForm.tsx`  
+**What changed:** Live conversions now call `trackEvent`. After Stripe return (`?paid=1`) and a successful `confirmVisualizeCheckout`, fire GA4 `purchase` with `value` (session `price_cad`, 19 CAD), `currency` `CAD`, and `transaction_id` set to the Stripe Checkout session id. Quote success fires `quote_submitted` once (not `pending_retry`). Apply success fires `contractor_applied`. Apprentice join success fires `apprentice_signup` before redirect. `cta_click` / `phone_click` / `form_start` / `form_submit` types are unchanged; `form_start` / `form_submit` still have no call sites (`useFormAnalytics` is unused).  
+**Why (ROI):** The $19 visualizer was untracked revenue. Quote, contractor apply, and apprentice signup had no events either.  
+**Metrics to watch:** `purchase` (mark as key event / revenue), `quote_submitted`, `contractor_applied`, `apprentice_signup`.  
+**Follow-ups:** None for this pass.
+
+### 2026-08-11 — #6 Analytics & event instrumentation (Batch B) [superseded] by 2026-09-29 conversion events
 **Status:** done  
 **Batch:** B  
 **Files changed:** `lib/analytics.ts`, `lib/site.ts`, `components/Analytics.tsx`, `hooks/useFormAnalytics.ts`, `components/Nav.tsx`, `components/MobileStickyCta.tsx`, `app/get-a-quote/QuoteForm.tsx`, `app/apply/ApplyForm.tsx`, `.env.example`  
-**What changed:** GA4 and Plausible support via env vars (`NEXT_PUBLIC_GA_MEASUREMENT_ID`, `NEXT_PUBLIC_PLAUSIBLE_DOMAIN`). Tracks `cta_click`, `phone_click`, `form_start`, and `form_submit` (success/error/pending). Dev console debug logging when `NODE_ENV=development`. SPA page-view updates on route change for GA4.  
+**What changed:** GA4 and Plausible loaders via env vars. Loader + `page_view` via `gtag('config')`. Live call sites at the time were only `cta_click` and `phone_click` on `MobileStickyCta` (`phone_click` still needs `NEXT_PUBLIC_CONTACT_PHONE`). `form_start` / `form_submit` were defined on `useFormAnalytics` but QuoteForm, ApplyForm, and Nav never imported the hook — those names did not fire.  
 **Why (ROI):** Enables measuring every Batch A/B improvement and prioritizing Batch C/D by real funnel data.  
-**Metrics to watch:** `form_start` → `form_submit` conversion rate, CTA click rate by location, phone clicks on mobile.  
-**Follow-ups:** Add env vars in production. Consider Meta Pixel if running paid ads.
+**Metrics to watch:** CTA click rate by location; do not treat `form_submit` as a conversion until it has a call site.  
+**Follow-ups:** [superseded] Env vars are set in production (`NEXT_PUBLIC_GA_MEASUREMENT_ID`). Conversion events added 2026-09-29.
 
 ### 2026-08-11 — #4 Local SEO infrastructure (Batch B)
 **Status:** done  
@@ -186,9 +195,9 @@ Cannot fully complete without business input:
 **Reason blocked/deferred:** Needs copy/SEO keyword decisions per trade and neighbourhood.  
 **Unblock when:** You confirm target trades and neighbourhoods to prioritize.
 
-### 2026-08-11 — #6 Analytics activation
-**Reason blocked/deferred:** Env vars not set in production.  
-**Unblock when:** Set `NEXT_PUBLIC_GA_MEASUREMENT_ID` and/or `NEXT_PUBLIC_PLAUSIBLE_DOMAIN`.
+### 2026-08-11 — #6 Analytics activation [superseded]
+**Reason blocked/deferred:** Env vars were not set in production at the time of this log.  
+**Unblock when:** Done 2026-09-28 — `NEXT_PUBLIC_GA_MEASUREMENT_ID` is on Vercel Production/Preview. Conversion events shipped 2026-09-29.
 
 <!--
 

@@ -4,6 +4,7 @@ import { useRouter } from '@/i18n/navigation';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { formatPhoneInput } from '@/lib/phone';
+import { trackEvent } from '@/lib/analytics';
 import { joinApprenticeAction } from './actions';
 
 const fieldClass =
@@ -37,6 +38,7 @@ export function ApprenticeJoinForm() {
       setError(result.error);
       return;
     }
+    trackEvent({ name: 'apprentice_signup', params: {} });
     router.replace('/apprentice');
     router.refresh();
   }

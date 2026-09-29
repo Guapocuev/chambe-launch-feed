@@ -1,7 +1,8 @@
 'use client';
 
-import { useActionState, useState, type ReactNode } from 'react';
+import { useActionState, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
+import { trackEvent } from '@/lib/analytics';
 import { MARKETING_CTA } from '@/lib/marketing-cta';
 import { SubmitButton } from '@/components/SubmitButton';
 import { HoneypotField } from '@/components/HoneypotField';
@@ -31,6 +32,13 @@ export function ApplyForm() {
   const [insured, setInsured] = useState<'yes' | 'no' | ''>('');
   const [wsib, setWsib] = useState<'yes' | 'no' | ''>('');
   const [wsibNumber, setWsibNumber] = useState('');
+  const appliedTracked = useRef(false);
+
+  useEffect(() => {
+    if (state.status !== 'success' || appliedTracked.current) return;
+    appliedTracked.current = true;
+    trackEvent({ name: 'contractor_applied', params: {} });
+  }, [state.status]);
 
   function toggleTrade(value: string) {
     setTrades((current) =>

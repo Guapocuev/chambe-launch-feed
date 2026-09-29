@@ -1,7 +1,8 @@
 'use client';
 
-import { useActionState, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useActionState, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
+import { trackEvent } from '@/lib/analytics';
 import { MARKETING_CTA } from '@/lib/marketing-cta';
 import { SubmitButton } from '@/components/SubmitButton';
 import { HoneypotField } from '@/components/HoneypotField';
@@ -176,6 +177,13 @@ export function QuoteForm() {
 
   const goNextRef = useRef(goNext);
   goNextRef.current = goNext;
+  const quoteTracked = useRef(false);
+
+  useEffect(() => {
+    if (state.status !== 'success' || quoteTracked.current) return;
+    quoteTracked.current = true;
+    trackEvent({ name: 'quote_submitted', params: {} });
+  }, [state.status]);
 
   function goBack() {
     setStepError(null);

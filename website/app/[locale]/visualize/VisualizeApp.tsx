@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from '@/i18n/navigation';
 import { BeforeAfterSlider } from '@/components/BeforeAfterSlider';
+import { trackEventWhenGtagReady } from '@/lib/analytics';
 import { MARKETING_CTA } from '@/lib/marketing-cta';
 import { formatCad } from '@/lib/format-cad';
 import {
@@ -52,7 +53,21 @@ export function VisualizeApp() {
       let current = resolved.data.session;
       if (paidReturn === '1' && checkoutId) {
         const confirmed = await confirmVisualizeCheckout(current.id, checkoutId);
-        if (confirmed.ok) current = confirmed.data;
+        if (confirmed.ok) {
+          current = confirmed.data;
+          const purchaseKey = `visualize_purchase_${checkoutId}`;
+          if (!sessionStorage.getItem(purchaseKey)) {
+            sessionStorage.setItem(purchaseKey, '1');
+            trackEventWhenGtagReady({
+              name: 'purchase',
+              params: {
+                transaction_id: checkoutId,
+                value: typeof current.price_cad === 'number' ? current.price_cad : 19,
+                currency: 'CAD',
+              },
+            });
+          }
+        }
       }
       setHomeownerEmail(resolved.data.homeowner.email);
       setSession(current);
