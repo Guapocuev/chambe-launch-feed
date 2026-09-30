@@ -6,6 +6,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
 import "../globals.css";
 import { Analytics } from "@/components/Analytics";
+import { AuthReturnCatch } from "@/components/AuthReturnCatch";
 import { Footer } from "@/components/Footer";
 import { JsonLd } from "@/components/JsonLd";
 import { MobileStickyCta } from "@/components/MobileStickyCta";
@@ -93,6 +94,7 @@ export default async function LocaleLayout({
           <Footer />
           <MobileStickyCta />
           <Analytics />
+          <AuthReturnCatch />
         </NextIntlClientProvider>
       </body>
     </html>

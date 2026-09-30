@@ -4,7 +4,7 @@ import { Link, useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { formatPhoneInput, isValidEmail, toE164 } from '@/lib/phone';
-import { emailMagicLinkRedirectTo } from '@/lib/supabase/auth-redirect';
+import { emailMagicLinkRedirectTo, rememberAuthReturnTo } from '@/lib/supabase/auth-redirect';
 import { createBrowserSupabase } from '@/lib/supabase/client';
 import { completeContractorLoginFromUrl } from '@/lib/supabase/complete-login';
 
@@ -129,6 +129,7 @@ export function ContractorLoginForm({
     setMessage(null);
     try {
       const supabase = createBrowserSupabase();
+      rememberAuthReturnTo(homePath);
       const { error: otpError } = await supabase.auth.signInWithOtp({
         email: email.trim(),
         options: {

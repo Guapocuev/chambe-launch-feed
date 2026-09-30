@@ -191,6 +191,15 @@ Fix: write `/root/.ssh/config` with `Host github.com` → `IdentityFile /root/.s
 
 If fetch fails again as root, check that config and `ssh -T git@github.com` before copying files onto the box.
 
+### Magic-link redirects (visualize pay)
+
+`NEXT_PUBLIC_SITE_URL` is sitemap/OG only. Magic links use `window.location.origin`. If Supabase Auth **Redirect URLs** do not include the current origin, GoTrue substitutes the project **Site URL** (often `https://chambe.ca` with no path) and the user lands on the homepage unsigned-in. Add at least:
+
+- `https://chambe.ca/**`
+- `https://www.chambe.ca/**`
+- `https://*-guapocuev.vercel.app/**`
+- `http://localhost:3001/**`
+
 ---
 
 ## Deferred / blocked log

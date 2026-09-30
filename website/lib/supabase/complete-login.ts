@@ -1,11 +1,24 @@
 'use client';
 
 import { localeFromDocumentCookie } from '@/i18n/pathname';
+import { peekAuthReturnTo, resumeIdFromAuthLocation } from '@/lib/supabase/auth-redirect';
 import { createBrowserSupabase } from '@/lib/supabase/client';
 
 const PKCE_FLOW_ID_PARAM = 'sb_flow_id';
 
 let inFlight: Promise<{ ok: true } | { ok: false; error: string }> | null = null;
+
+function sessionNextPath(url: URL): string {
+  const stored = peekAuthReturnTo();
+  if (stored) return stored;
+  const resume = resumeIdFromAuthLocation(url.href);
+  if (resume) return `/visualize?resume=${encodeURIComponent(resume)}`;
+  if (url.pathname.includes('/apprentice/auth')) {
+    return localeFromDocumentCookie() === 'es' ? '/es/apprentice' : '/apprentice';
+  }
+  if (url.pathname.includes('/visualize/auth')) return '/visualize';
+  return localeFromDocumentCookie() === 'es' ? '/es/contractor' : '/contractor';
+}
 
 function stripAuthParams(url: URL) {
   url.searchParams.delete('code');
@@ -41,7 +54,7 @@ async function completeOnce(): Promise<{ ok: true } | { ok: false; error: string
   const tokenHash = url.searchParams.get('token_hash');
 
   if (tokenHash) {
-    const next = localeFromDocumentCookie() === 'es' ? '/es/contractor' : '/contractor';
+    const next = sessionNextPath(url);
     const params = new URLSearchParams({
       token_hash: tokenHash,
       type: url.searchParams.get('type') ?? 'email',

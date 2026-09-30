@@ -4,7 +4,11 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { MARKETING_CTA } from '@/lib/marketing-cta';
 import { isValidEmail } from '@/lib/phone';
-import { emailMagicLinkRedirectTo } from '@/lib/supabase/auth-redirect';
+import {
+  emailMagicLinkRedirectTo,
+  rememberAuthReturnTo,
+  visualizeMagicLinkCallbackPath,
+} from '@/lib/supabase/auth-redirect';
 import { createBrowserSupabase } from '@/lib/supabase/client';
 
 export function VisualizePayAuth({ priceLabel, sessionId }: { priceLabel: string; sessionId: string }) {
@@ -26,12 +30,11 @@ export function VisualizePayAuth({ priceLabel, sessionId }: { priceLabel: string
     setMessage(null);
     try {
       const supabase = createBrowserSupabase();
+      rememberAuthReturnTo(`/visualize?resume=${encodeURIComponent(sessionId)}`);
       const { error: otpError } = await supabase.auth.signInWithOtp({
         email: trimmed,
         options: {
-          emailRedirectTo: emailMagicLinkRedirectTo(
-            `/visualize/auth/callback?resume=${encodeURIComponent(sessionId)}`,
-          ),
+          emailRedirectTo: emailMagicLinkRedirectTo(visualizeMagicLinkCallbackPath(sessionId)),
           shouldCreateUser: true,
         },
       });
