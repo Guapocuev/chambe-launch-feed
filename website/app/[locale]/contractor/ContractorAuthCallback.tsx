@@ -2,16 +2,19 @@
 
 import { useEffect, useState } from 'react';
 import { localeFromDocumentCookie, withLocalePrefix } from '@/i18n/pathname';
+import { resumeIdFromAuthLocation } from '@/lib/supabase/auth-redirect';
 import { completeContractorLoginFromUrl } from '@/lib/supabase/complete-login';
 
 export function ContractorAuthCallback({
   homePath = '/contractor',
   loginPath = '/contractor/login',
   heading = 'Opening your jobs…',
+  resumeId,
 }: {
   homePath?: string;
   loginPath?: string;
   heading?: string;
+  resumeId?: string;
 }) {
   const [error, setError] = useState<string | null>(null);
 
@@ -29,7 +32,7 @@ export function ContractorAuthCallback({
           setError(result.error);
           return;
         }
-        const resume = new URLSearchParams(window.location.search).get('resume');
+        const resume = resumeId || resumeIdFromAuthLocation(window.location.href);
         const dest = resume ? `${homePath}?resume=${encodeURIComponent(resume)}` : homePath;
         window.location.replace(withLocalePrefix(dest, localeFromDocumentCookie()));
       })
@@ -43,7 +46,7 @@ export function ContractorAuthCallback({
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [homePath]);
+  }, [homePath, resumeId]);
 
   return (
     <div className="mx-auto w-full max-w-md px-5 py-16">
