@@ -150,6 +150,9 @@ async function callVisualize<T>(
       headers: {
         'Content-Type': 'application/json',
         'X-Api-Key': DEMAND_ENGINE_API_KEY,
+        ...(process.env.VISUALIZE_STRIPE_TEST_SECRET
+          ? { 'X-Chambe-Stripe-Test': process.env.VISUALIZE_STRIPE_TEST_SECRET }
+          : {}),
         ...auth,
         ...(init?.headers ?? {}),
       },

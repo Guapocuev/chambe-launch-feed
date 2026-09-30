@@ -88,7 +88,10 @@ export function VisualizeApp() {
       setError(started.error);
       return;
     }
-    window.location.href = started.data.checkout_url;
+    const checkoutUrl = started.data.checkout_url;
+    window.location.href = checkoutUrl.startsWith('bypass:')
+      ? checkoutUrl.slice('bypass:'.length)
+      : checkoutUrl;
   }
 
   useEffect(() => {
