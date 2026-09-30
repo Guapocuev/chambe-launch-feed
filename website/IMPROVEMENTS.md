@@ -173,6 +173,26 @@ Cannot fully complete without business input:
 
 ---
 
+## Ops decisions (do not lose)
+
+These lived only in chat until 2026-09-29. Do not treat them as optional.
+
+### Preview Stripe bypass stays off production
+
+Website branch `visualize-test-pay` (`ab26b93`) lets a Preview deploy skip live Stripe when `VISUALIZE_STRIPE_TEST_SECRET` matches the Demand Engine header check. **Never merge that branch onto `main`.** **Never set `VISUALIZE_STRIPE_TEST_SECRET` on Vercel Production.** www.chambe.ca must keep going through real Stripe. Preview-only is the unpaid test path.
+
+The engine fails closed: `visualizeTestPayAuthorized` is true only when the env secret and `X-Chambe-Stripe-Test` header are both ≥16 chars and equal. Missing or wrong header → `testPay=false` → `createVisualizeCheckout` / `retrievePaidCheckout` (real Stripe). A `cs_test_bypass_*` id is not treated as paid unless that check passed.
+
+### Hetzner GitHub deploy key (fixed 2026-09-29)
+
+`/home/agent/chambe/Chambe-mvp` on Hetzner (`production-deploy`) could not `git fetch` when run as **root**. The deploy key files existed (`/root/.ssh/github_key`, same fingerprint as `/home/agent/.ssh/github_key`, GitHub identity `Guapocuev/Chambe-mvp`), but **root had no `~/.ssh/config`**, so SSH never offered the key (`Permission denied (publickey)`). The `agent` user already had `IdentityFile ~/.ssh/github_key` and could authenticate.
+
+Fix: write `/root/.ssh/config` with `Host github.com` → `IdentityFile /root/.ssh/github_key` and `IdentitiesOnly yes` (same pattern as the agent user). Do not replace the key unless GitHub rejects it. After fetch, the server was reconciled to a clean `e0077dd` — the four hand-copied bypass files already matched that commit; nothing unique was discarded.
+
+If fetch fails again as root, check that config and `ssh -T git@github.com` before copying files onto the box.
+
+---
+
 ## Deferred / blocked log
 
 ### 2026-08-11 — #2 Photo upload
