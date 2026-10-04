@@ -6,7 +6,9 @@ import { trackEvent } from '@/lib/analytics';
 import { MARKETING_CTA } from '@/lib/marketing-cta';
 import { SubmitButton } from '@/components/SubmitButton';
 import { HoneypotField } from '@/components/HoneypotField';
-import { initialApplyFormState, submitContractorApplication } from './actions';
+import { submitContractorApplication, type ApplyFormState } from './actions';
+
+const initialApplyFormState: ApplyFormState = { status: 'idle' };
 
 const inputClass =
   'w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-foreground/40 focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand';
