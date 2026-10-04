@@ -23,8 +23,6 @@ export interface ApplyFormState {
   };
 }
 
-export const initialApplyFormState: ApplyFormState = { status: 'idle' };
-
 export async function submitContractorApplication(
   _prevState: ApplyFormState,
   formData: FormData,
