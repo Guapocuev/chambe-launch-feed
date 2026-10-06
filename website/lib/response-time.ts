@@ -16,11 +16,11 @@ export const CALLBACK_WINDOW = `During ${BUSINESS_HOURS_LABEL}, we call you back
 export const APPLICANT_CALLBACK_WINDOW = `We'll call you within ${APPLICANT_CALLBACK} about next steps.`;
 
 export function successFollowUpCopy(offersSent: number): string {
-  const matchLine =
-    offersSent > 0
-      ? `We've matched your job with ${offersSent} nearby contractor${offersSent === 1 ? '' : 's'}.`
-      : "We've logged your job and are lining up a contractor match.";
-  return `${matchLine} ${MATCH_WINDOW} ${CALLBACK_WINDOW}`;
+  if (offersSent > 0) {
+    const matchLine = `We've matched your job with ${offersSent} nearby contractor${offersSent === 1 ? '' : 's'}.`;
+    return `${matchLine} ${MATCH_WINDOW} ${CALLBACK_WINDOW}`;
+  }
+  return `We've got your estimate. We'll confirm the details and match a contractor. ${CALLBACK_WINDOW}`;
 }
 
 export const PENDING_RETRY_COPY = `We've received your request and are finishing your estimate. ${CALLBACK_WINDOW}`;

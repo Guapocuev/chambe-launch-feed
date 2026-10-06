@@ -214,14 +214,17 @@ export function QuoteForm() {
           />
         )}
         <p className="mt-3 text-sm text-foreground/70">
-          {`${
-            (state.quote?.offers_sent ?? 0) > 0
-              ? t('matched', { count: state.quote?.offers_sent ?? 0 })
-              : t('logged')
-          } ${tTime('matchWindow', { minutes: CONTRACTOR_ACCEPT_MINUTES })} ${tTime('callbackWindow', {
-            hours: tTime('businessHours'),
-            minutes: CALLBACK_MINUTES,
-          })}`}
+          {(state.quote?.offers_sent ?? 0) > 0
+            ? `${t('matched', { count: state.quote?.offers_sent ?? 0 })} ${tTime('matchWindow', {
+                minutes: CONTRACTOR_ACCEPT_MINUTES,
+              })} ${tTime('callbackWindow', {
+                hours: tTime('businessHours'),
+                minutes: CALLBACK_MINUTES,
+              })}`
+            : `${t('logged')} ${tTime('callbackWindow', {
+                hours: tTime('businessHours'),
+                minutes: CALLBACK_MINUTES,
+              })}`}
         </p>
       </div>
     );
