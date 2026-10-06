@@ -312,7 +312,7 @@
     "photosUploading": "Enviando…",
     "removePhoto": "Remover foto",
     "matched": "Combinamos seu trabalho com {count, plural, one {# contratista próximo} other {# contratistas próximos}}.",
-    "logged": "Registramos seu trabalho e estamos alinhando o match com um contratista.",
+    "logged": "Temos o seu orçamento. Vamos confirmar os detalhes e emparelhar um contratante.",
     "pendingRetry": "Recebemos o pedido e estamos terminando o orçamento. {callback}",
     "timeAbout": "Cerca de",
     "timeRoughly": "Mais ou menos",

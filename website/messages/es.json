@@ -312,7 +312,7 @@
     "photosUploading": "Subiendo…",
     "removePhoto": "Quitar foto",
     "matched": "Emparejamos tu trabajo con {count, plural, one {# contratista cercano} other {# contratistas cercanos}}.",
-    "logged": "Registramos tu trabajo y estamos armando el emparejamiento con un contratista.",
+    "logged": "Tenemos tu estimado. Confirmaremos los detalles y te emparejamos con un contratista.",
     "pendingRetry": "Recibimos tu solicitud y estamos terminando tu estimado. {callback}",
     "timeAbout": "Unos",
     "timeRoughly": "Más o menos",

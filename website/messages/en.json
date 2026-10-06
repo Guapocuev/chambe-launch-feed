@@ -312,7 +312,7 @@
     "photosUploading": "Uploading…",
     "removePhoto": "Remove photo",
     "matched": "We've matched your job with {count, plural, one {# nearby contractor} other {# nearby contractors}}.",
-    "logged": "We've logged your job and are lining up a contractor match.",
+    "logged": "We've got your estimate. We'll confirm the details and match a contractor.",
     "pendingRetry": "We've received your request and are finishing your estimate. {callback}",
     "timeAbout": "About",
     "timeRoughly": "Roughly",

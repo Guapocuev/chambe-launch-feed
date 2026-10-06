@@ -183,6 +183,8 @@ Cannot fully complete without business input:
 **Reason blocked/deferred:** Requires Google Places API key.  
 **Unblock when:** Set `NEXT_PUBLIC_GOOGLE_PLACES_API_KEY` in `.env.local`.
 
+**Geocoder today (2026-10-05):** Demand Engine `createLead` / `resolveAddressLocation` call **Nominatim** (`https://nominatim.openstreetmap.org`, overridable via `GEOCODER_URL`). That is a public OSM service — rate-limited, no typo correction, and a misspelling like "Lappin Avenu" returns no point, so intake skips dispatch (`zone_not_resolved`). Google Places (#10) would fix this at the source (autocomplete + a validated place). No Places work in this pass; skip now alerts the owner and the success screen no longer claims a match is being lined up when `offers_sent === 0`.
+
 ### 2026-08-11 — #1 Trust & social proof
 **Reason blocked/deferred:** Needs real reviews, credentials, job counts from you.  
 **Unblock when:** You provide review text, contractor badges, or stats.
