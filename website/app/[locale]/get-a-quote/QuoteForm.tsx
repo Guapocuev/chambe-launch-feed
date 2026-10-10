@@ -22,6 +22,7 @@ import {
   type FollowUpQuestion,
 } from '@/lib/quote-confidence';
 import { checkReturningClient, submitJobRequest, type QuoteFormState } from './actions';
+import { AddressAutocomplete } from './AddressAutocomplete';
 import { QuoteConfidence } from './QuoteConfidence';
 import { QuotePhotoUpload } from './QuotePhotoUpload';
 import { QuoteSqftReference } from './QuoteSqftReference';
@@ -337,18 +338,15 @@ export function QuoteForm() {
             <label htmlFor="address" className={labelClass}>
               {t('addressLabel')}
             </label>
-            <input
+            <AddressAutocomplete
               id="address"
               name="Full Address"
-              type="text"
-              autoComplete="street-address"
-              placeholder={t('addressPlaceholder')}
               value={address}
-              onChange={(e) => {
-                setAddress(e.target.value);
+              placeholder={t('addressPlaceholder')}
+              onChange={(next) => {
+                setAddress(next);
                 setStepError(null);
               }}
-              className={`mt-1.5 ${inputClass}`}
             />
             {isPartialAddress(address) && (
               <p className="mt-1.5 text-xs text-foreground/55">

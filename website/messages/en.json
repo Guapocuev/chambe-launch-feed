@@ -265,6 +265,7 @@
     "area": "area",
     "addressLabel": "Where is the job?",
     "addressPlaceholder": "123 Queen St W, Toronto",
+    "addressSuggest": "Suggestions are Canada-only and prefer the GTA. You can still type the address.",
     "urgency": "How soon do you need this?",
     "notUrgent": "Not urgent",
     "thisWeek": "This week",

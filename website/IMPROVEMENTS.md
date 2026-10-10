@@ -26,7 +26,7 @@ items as `[superseded]` and link to the replacement instead of deleting history.
 | # | Item | Status | Can batch with | Blocked by |
 |---|------|--------|----------------|------------|
 | 1 | Trust & social proof | `pending` | 8, 10 | Real reviews/credentials content |
-| 2 | Intake funnel optimization | `partial` | 3, 8, 10 | Photo upload + Google Places (see deferred log) |
+| 2 | Intake funnel optimization | `partial` | 3, 8, 10 | Photo upload (see deferred log) |
 | 3 | Mobile sticky CTA | `done` | 2, 8, 10 | — |
 | 4 | Local SEO infrastructure | `done` | 5, 6, 9 | — |
 | 5 | Core Web Vitals / performance | `partial` | 4, 6 | `next/image` when gallery photos exist |
@@ -34,7 +34,7 @@ items as `[superseded]` and link to the replacement instead of deleting history.
 | 7 | Proof-of-work content | `pending` | 1 | Real project photos + lat/lng data |
 | 8 | Form trust microcopy & post-submit UX | `done` | 1, 2, 3, 10 | — |
 | 9 | Trade & location landing pages | `pending` | 4 | Copy/SEO keyword decisions |
-| 10 | Accessibility, input UX & emergency path | `partial` | 2, 8 | Google Places API key (autocomplete) |
+| 10 | Accessibility, input UX & emergency path | `done` | 2, 8 | — |
 
 ---
 
@@ -71,7 +71,7 @@ Cannot fully complete without business input:
 | **Conservative** | 2–3 | One batch, clean review |
 | **Aggressive (no blockers)** | 4–5 | Batch A + B in parallel workstreams |
 | **Maximum practical** | 6–7 | A + B + partial C; quality risk rises |
-| **All 10** | ❌ Not at once | #1, #7, #9 need content; #6/#10 need keys |
+| **All 10** | ❌ Not at once | #1, #7, #9 need content |
 
 ---
 
@@ -84,7 +84,7 @@ Cannot fully complete without business input:
 **What changed:** Quote form rebuilt as 4-step wizard (Job → Location → Contact → Review) with progress bar, per-step validation, back/continue navigation, and review summary before submit. Same Demand Engine payload — no backend changes. Removed "add photos" copy from homepage/how-it-works until photo upload is wired.  
 **Why (ROI):** Shorter perceived form length reduces abandonment; step validation catches errors earlier.  
 **Metrics to watch:** `form_start` → `form_submit` rate, drop-off by step (once step events added).  
-**Follow-ups:** Photo upload (needs Demand Engine endpoint). Address autocomplete (needs Google Places API key). Optional: `form_step` analytics events.
+**Follow-ups:** Photo upload (needs Demand Engine endpoint). Address autocomplete shipped 2026-10-09. Optional: `form_step` analytics events.
 
 ### 2026-09-29 — #6 Conversion events (purchase, quote, apply, apprentice)
 **Status:** done  
@@ -138,7 +138,16 @@ Cannot fully complete without business input:
 **What changed:** Canadian phone auto-formatting `(XXX) XXX-XXXX` on quote and apply forms. Inline blur validation for name, phone, and email with accessible error messages (`aria-invalid`, `role="alert"`). Click-to-call wired in nav, mobile sticky bar, and contact page — enabled by `NEXT_PUBLIC_CONTACT_PHONE` env var. Emergency fallback CTA on contact page when no phone is configured.  
 **Why (ROI):** Form errors and bad phone input are a top abandonment cause; click-to-call captures urgent high-value jobs on mobile.  
 **Metrics to watch:** Form error rate, mobile call clicks, emergency form submissions.  
-**Follow-ups:** Address autocomplete (needs Google Places API key) — defer to Batch C.
+**Follow-ups:** Address autocomplete shipped 2026-10-09.
+
+### 2026-10-09 — #10 Address autocomplete (Places Autocomplete New)
+**Status:** done  
+**Batch:** C  
+**Files changed:** `lib/places-client.ts`, `lib/places-payload.ts`, `app/[locale]/get-a-quote/AddressAutocomplete.tsx`, `app/[locale]/get-a-quote/QuoteForm.tsx`, `app/[locale]/get-a-quote/actions.ts`, `messages/{en,es,pt}.json`, `.env.example`  
+**What changed:** Quote form address field uses Places Autocomplete (New) with session tokens, Canada-only results, and a GTA location bias. A selection sends formatted address, lat/lng, and postal code with the lead. Demand Engine uses those coords for zone resolution and skips Nominatim; typed addresses still geocode via Nominatim. If the key is missing, the script fails, or the request is blocked, the field stays a plain text input and the existing partial-address warning still applies. Visualize has no address field and was not changed.  
+**Why (ROI):** Nominatim misses (typos like "Lappin Avenu") skip dispatch. A validated place at intake removes that drop.  
+**Metrics to watch:** `quote_submitted` with `offers_sent > 0`, `zone_not_resolved` rate.  
+**Follow-ups:** None for this pass.
 
 ### 2026-08-11 — #8 Form trust microcopy & post-submit UX (Batch A)
 **Status:** done  
@@ -208,11 +217,8 @@ If fetch fails again as root, check that config and `ssh -T git@github.com` befo
 **Reason blocked/deferred:** Demand Engine `POST /webhooks/tally-intake` accepts JSON text fields only — no photo storage endpoint exists yet.  
 **Unblock when:** Demand Engine adds job photo upload/storage, or you specify where photos should go (S3, Supabase, etc.).
 
-### 2026-08-11 — #10 Address autocomplete
-**Reason blocked/deferred:** Requires Google Places API key.  
-**Unblock when:** Set `NEXT_PUBLIC_GOOGLE_PLACES_API_KEY` in `.env.local`.
-
-**Geocoder today (2026-10-05):** Demand Engine `createLead` / `resolveAddressLocation` call **Nominatim** (`https://nominatim.openstreetmap.org`, overridable via `GEOCODER_URL`). That is a public OSM service — rate-limited, no typo correction, and a misspelling like "Lappin Avenu" returns no point, so intake skips dispatch (`zone_not_resolved`). Google Places (#10) would fix this at the source (autocomplete + a validated place). No Places work in this pass; skip now alerts the owner and the success screen no longer claims a match is being lined up when `offers_sent === 0`.
+### 2026-08-11 — #10 Address autocomplete [shipped 2026-10-09]
+**Shipped:** Places Autocomplete (New) on `/get-a-quote` with `NEXT_PUBLIC_GOOGLE_PLACES_API_KEY`. Demand Engine uses Places lat/lng when present and falls back to Nominatim. See Completed log 2026-10-09.
 
 ### 2026-08-11 — #1 Trust & social proof
 **Reason blocked/deferred:** Needs real reviews, credentials, job counts from you.  

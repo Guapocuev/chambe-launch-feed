@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import { DEMAND_ENGINE_URL } from '@/lib/config';
 import { demandEngineHeaders } from '@/lib/engine-request';
 import { honeypotFilled } from '@/lib/honeypot';
+import { parsePlaceCoordsFromForm, quoteIntakePlaceFields } from '@/lib/places-payload';
 import { parseAreaSqftAnswer } from '@/lib/quote-confidence';
 import { allowVisitor } from '@/lib/rate-limit';
 import { CALLBACK_MINUTES } from '@/lib/response-time';
@@ -74,11 +75,18 @@ export async function submitJobRequest(
     return { status: 'error', message: t('rateLimited') };
   }
 
+  const place = parsePlaceCoordsFromForm({
+    lat: String(formData.get('place_lat') ?? ''),
+    lng: String(formData.get('place_lng') ?? ''),
+    postal: String(formData.get('place_postal') ?? ''),
+  });
+
   const payload = {
     'Full Name': fullName,
     'Phone Number': phone,
     'Email Address': String(formData.get('Email Address') ?? '').trim() || undefined,
     'Full Address': address,
+    ...quoteIntakePlaceFields(place),
     'Detailed Job Description': description,
     'Urgency': String(formData.get('Urgency') ?? '').trim() || undefined,
     'Is the issue affecting safety or causing damage?': String(formData.get('Safety') ?? '').trim() || undefined,
